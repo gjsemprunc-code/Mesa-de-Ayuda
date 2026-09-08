@@ -1,0 +1,1038 @@
+<!DOCTYPE html>
+<html lang="es-CL">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Mesa de ayuda · Soporte</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@500&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#14212E; --ink-2:#4B5D6B; --ink-3:#7D8D99;
+  --surface:#FFFFFF; --canvas:#E9EDF0; --field:#F3F6F8;
+  --line:#CBD5DC; --line-soft:#E2E8EC;
+  --accent:#0F5F7A; --accent-ink:#0A4A5F;
+  --urgent:#AE2C1F; --warm:#A9690B; --done:#186A45;
+  --radius:5px;
+}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{margin:0;background:var(--canvas);color:var(--ink);
+  font-family:"IBM Plex Sans",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
+  font-size:14px;line-height:1.45;-webkit-font-smoothing:antialiased}
+button,input,select,textarea{font:inherit;color:inherit}
+button{cursor:pointer}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.mono{font-family:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,monospace}
+
+/* ---- Acceso ---- */
+#acceso{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px}
+.acceso-card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);
+  padding:34px 32px;width:min(400px,100%);text-align:center}
+.acceso-card h1{font-size:20px;font-weight:600;margin:0 0 6px}
+.acceso-card p{color:var(--ink-2);margin:0 0 22px;font-size:13.5px}
+.btn-google{width:100%;background:var(--accent);color:#fff;border:0;border-radius:var(--radius);
+  padding:12px;font-weight:600;display:flex;align-items:center;justify-content:center;gap:9px}
+.btn-google:hover{background:var(--accent-ink)}
+.btn-google svg{width:17px;height:17px}
+.acceso-error{background:#FAE9E7;border:1px solid #E0AFA9;color:var(--urgent);
+  padding:10px 13px;border-radius:var(--radius);font-size:13px;margin-bottom:18px;text-align:left}
+
+/* ---- Encabezado ---- */
+header{background:var(--ink);color:#fff;padding:0 18px;display:flex;align-items:center;
+  gap:22px;height:56px;position:sticky;top:0;z-index:40}
+header h1{font-size:15px;font-weight:600;margin:0;white-space:nowrap}
+header h1 span{color:#8FB3C0;font-weight:400}
+.tabs{display:flex;gap:2px}
+.tabs button{background:transparent;border:0;color:#A9C0CB;padding:6px 12px;
+  border-radius:var(--radius);font-weight:500;font-size:13px}
+.tabs button:hover{background:rgba(255,255,255,.09);color:#fff}
+.tabs button[aria-selected="true"]{background:rgba(255,255,255,.16);color:#fff}
+.head-right{margin-left:auto;display:flex;align-items:center;gap:9px}
+#buscar{background:rgba(255,255,255,.11);border:1px solid rgba(255,255,255,.16);
+  color:#fff;padding:6px 10px;border-radius:var(--radius);width:180px}
+#buscar::placeholder{color:#93AAB6}
+.icon-btn{background:rgba(255,255,255,.11);border:1px solid rgba(255,255,255,.16);
+  color:#fff;border-radius:var(--radius);padding:6px 11px;font-size:13px}
+.icon-btn:hover{background:rgba(255,255,255,.2)}
+.quien{font-size:12px;color:#8FB3C0;white-space:nowrap;max-width:150px;overflow:hidden;text-overflow:ellipsis}
+
+/* ---- Estructura ---- */
+main{max-width:1360px;margin:0 auto;padding:18px}
+.workspace{display:grid;grid-template-columns:340px 1fr;gap:18px;align-items:start}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius)}
+.panel-title{font-size:13px;font-weight:600;padding:13px 16px;border-bottom:1px solid var(--line-soft)}
+
+/* ---- Captura ---- */
+.capture{position:sticky;top:74px}
+.capture-body{padding:14px 16px 16px}
+.f{margin-bottom:11px}
+.f label{display:block;font-size:12px;color:var(--ink-2);margin-bottom:4px;font-weight:500}
+.f input[type=text],.f textarea,.f select{width:100%;background:var(--field);
+  border:1px solid var(--line);border-radius:var(--radius);padding:8px 10px}
+.f textarea{resize:vertical;min-height:62px}
+.f input:focus,.f textarea:focus,.f select:focus{background:#fff;border-color:var(--accent)}
+.duo{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.seg{display:grid;grid-template-columns:repeat(3,1fr);gap:5px}
+.seg button{background:var(--field);border:1px solid var(--line);border-radius:var(--radius);
+  padding:8px 2px;display:flex;flex-direction:column;align-items:center;gap:4px;
+  font-size:11px;color:var(--ink-2);font-weight:500}
+.seg button svg{width:17px;height:17px;stroke:currentColor;fill:none;stroke-width:1.7}
+.seg button:hover{border-color:var(--accent);color:var(--accent)}
+.seg button[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:#fff}
+.prio{display:grid;grid-template-columns:repeat(3,1fr);gap:5px}
+.prio button{background:var(--field);border:1px solid var(--line);border-radius:var(--radius);
+  padding:7px 2px;font-size:12px;font-weight:500;color:var(--ink-2)}
+.prio button[aria-pressed="true"][data-p="Baja"]{background:#EEF3F6;border-color:var(--ink-3);color:var(--ink)}
+.prio button[aria-pressed="true"][data-p="Media"]{background:#FBF1DF;border-color:var(--warm);color:var(--warm)}
+.prio button[aria-pressed="true"][data-p="Alta"]{background:#FAE9E7;border-color:var(--urgent);color:var(--urgent)}
+.btn-primary{width:100%;background:var(--accent);color:#fff;border:0;border-radius:var(--radius);
+  padding:11px;font-weight:600;margin-top:4px}
+.btn-primary:hover{background:var(--accent-ink)}
+.btn-primary:disabled{opacity:.55;cursor:progress}
+.hint{font-size:11.5px;color:var(--ink-3);margin-top:8px;text-align:center}
+
+/* ---- Bandeja ---- */
+.stats-strip{display:flex;border:1px solid var(--line);border-radius:var(--radius);
+  background:var(--surface);overflow:hidden;margin-bottom:14px}
+.stat{flex:1;padding:11px 15px;border-right:1px solid var(--line-soft)}
+.stat:last-child{border-right:0}
+.stat b{display:block;font-size:21px;font-weight:600;line-height:1.15}
+.stat span{font-size:12px;color:var(--ink-2)}
+.stat.is-urgent b{color:var(--urgent)}
+.filters{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px}
+.filters button{background:var(--surface);border:1px solid var(--line);border-radius:99px;
+  padding:5px 13px;font-size:12.5px;color:var(--ink-2);font-weight:500}
+.filters button:hover{border-color:var(--ink-3)}
+.filters button[aria-pressed="true"]{background:var(--ink);border-color:var(--ink);color:#fff}
+.list{display:flex;flex-direction:column;gap:7px}
+.ticket{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);
+  border-left:3px solid var(--ink-3);padding:11px 14px;display:grid;
+  grid-template-columns:1fr auto;gap:4px 14px;cursor:pointer;text-align:left;width:100%;
+  font:inherit;color:inherit}
+.ticket:hover{border-color:var(--ink-3);background:#FBFCFD}
+.ticket[data-prio="Alta"]{border-left-color:var(--urgent)}
+.ticket[data-prio="Media"]{border-left-color:var(--warm)}
+.ticket[data-estado="Resuelta"]{opacity:.62;border-left-color:var(--done)}
+.t-line1{display:flex;align-items:center;gap:9px;flex-wrap:wrap}
+.folio{font-size:11.5px;color:var(--ink-3);letter-spacing:.02em}
+.t-asunto{font-weight:600;font-size:14px;grid-column:1/-1;margin-top:1px}
+.t-meta{font-size:12.5px;color:var(--ink-2);grid-column:1/-1}
+.t-edad{font-size:11.5px;color:var(--ink-3);text-align:right;white-space:nowrap}
+.t-edad.old{color:var(--urgent);font-weight:500}
+.chip{font-size:11px;font-weight:500;padding:2px 8px;border-radius:99px;border:1px solid}
+.chip.e-Nueva{color:var(--accent);border-color:#A8CBD8;background:#EBF4F7}
+.chip.e-atencion{color:var(--warm);border-color:#E3C68C;background:#FBF3E4}
+.chip.e-espera{color:var(--ink-2);border-color:var(--line);background:var(--field)}
+.chip.e-Resuelta{color:var(--done);border-color:#A8CFBB;background:#EBF5EF}
+.canal{font-size:11.5px;color:var(--ink-3);display:inline-flex;align-items:center;gap:4px}
+.canal svg{width:13px;height:13px;stroke:currentColor;fill:none;stroke-width:1.8}
+.auto{font-size:10.5px;color:var(--accent);border:1px solid #A8CBD8;background:#EBF4F7;
+  border-radius:3px;padding:1px 5px;font-weight:500}
+.vacio{padding:44px 20px;text-align:center;color:var(--ink-2);background:var(--surface);
+  border:1px dashed var(--line);border-radius:var(--radius)}
+.vacio b{display:block;margin-bottom:5px;font-weight:600;color:var(--ink)}
+.cargando{padding:38px;text-align:center;color:var(--ink-3)}
+
+/* ---- Detalle ---- */
+.scrim{position:fixed;inset:0;background:rgba(20,33,46,.42);z-index:50;display:none}
+.scrim.open{display:block}
+.drawer{position:fixed;top:0;right:0;bottom:0;width:min(580px,100%);background:var(--surface);
+  z-index:51;transform:translateX(100%);transition:transform .22s ease;
+  display:flex;flex-direction:column;box-shadow:-8px 0 28px rgba(20,33,46,.16)}
+.drawer.open{transform:translateX(0)}
+.drawer-head{padding:16px 20px;border-bottom:1px solid var(--line-soft);display:flex;
+  align-items:flex-start;gap:12px}
+.drawer-head h2{margin:3px 0 0;font-size:17px;font-weight:600;line-height:1.3}
+.close-x{background:var(--field);border:1px solid var(--line);border-radius:var(--radius);
+  padding:5px 10px;margin-left:auto;color:var(--ink-2)}
+.drawer-body{padding:16px 20px 26px;overflow:auto;flex:1}
+.kv{display:grid;grid-template-columns:104px 1fr;gap:6px 12px;font-size:13px;margin-bottom:16px}
+.kv dt{color:var(--ink-3)}
+.kv dd{margin:0;white-space:pre-wrap}
+.sec-h{font-size:12px;font-weight:600;color:var(--ink-2);margin:0 0 8px;
+  padding-bottom:6px;border-bottom:1px solid var(--line-soft)}
+.trio{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:18px}
+.trio label{display:block;font-size:11.5px;color:var(--ink-3);margin-bottom:3px}
+.trio select{width:100%;background:var(--field);border:1px solid var(--line);
+  border-radius:var(--radius);padding:7px 8px;font-size:13px}
+.estado-row{display:grid;grid-template-columns:repeat(4,1fr);gap:5px;margin-bottom:18px}
+.estado-row button{background:var(--field);border:1px solid var(--line);border-radius:var(--radius);
+  padding:8px 2px;font-size:12px;font-weight:500;color:var(--ink-2)}
+.estado-row button[aria-pressed="true"]{background:var(--ink);border-color:var(--ink);color:#fff}
+.responder{display:inline-flex;align-items:center;gap:6px;background:var(--field);
+  border:1px solid var(--line);border-radius:var(--radius);padding:7px 12px;
+  text-decoration:none;color:var(--accent);font-size:13px;font-weight:500;margin-bottom:18px}
+.responder:hover{border-color:var(--accent)}
+.bitacora{list-style:none;padding:0;margin:0 0 14px}
+.bitacora li{padding:9px 0;border-bottom:1px solid var(--line-soft);font-size:13px}
+.bitacora li:last-child{border-bottom:0}
+.bit-meta{font-size:11.5px;color:var(--ink-3);margin-bottom:2px}
+.bit-texto{white-space:pre-wrap}
+.bit-sistema{color:var(--ink-2);font-style:italic}
+.add-nota{display:flex;gap:7px}
+.add-nota input{flex:1;background:var(--field);border:1px solid var(--line);
+  border-radius:var(--radius);padding:8px 10px}
+.add-nota button{background:var(--ink);color:#fff;border:0;border-radius:var(--radius);
+  padding:8px 15px;font-weight:500}
+.solucion-box{background:#EBF5EF;border:1px solid #A8CFBB;border-radius:var(--radius);
+  padding:12px;margin-bottom:18px}
+.solucion-box textarea{width:100%;background:#fff;border:1px solid #A8CFBB;
+  border-radius:var(--radius);padding:8px;min-height:60px;resize:vertical}
+.solucion-box p{margin:0 0 7px;font-size:12.5px;color:var(--done);font-weight:500}
+
+/* ---- Resumen ---- */
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+.bars{padding:14px 16px 18px}
+.bar-row{margin-bottom:11px}
+.bar-top{display:flex;justify-content:space-between;font-size:13px;margin-bottom:4px}
+.bar-top span:last-child{color:var(--ink-2);font-variant-numeric:tabular-nums}
+.bar-track{height:7px;background:var(--field);border-radius:99px;overflow:hidden}
+.bar-fill{height:100%;background:var(--accent);border-radius:99px}
+
+/* ---- Ajustes ---- */
+.modal{position:fixed;inset:0;z-index:60;display:none;align-items:center;justify-content:center;
+  padding:20px;background:rgba(20,33,46,.42)}
+.modal.open{display:flex}
+.modal-card{background:var(--surface);border-radius:var(--radius);width:min(480px,100%);
+  max-height:86vh;overflow:auto;padding:20px}
+.modal-card h2{margin:0 0 14px;font-size:16px;font-weight:600}
+.modal-card textarea{width:100%;min-height:96px;background:var(--field);
+  border:1px solid var(--line);border-radius:var(--radius);padding:8px;resize:vertical}
+.modal-actions{display:flex;gap:8px;justify-content:flex-end;margin-top:14px}
+.btn-ghost{background:var(--field);border:1px solid var(--line);border-radius:var(--radius);
+  padding:8px 15px;font-weight:500}
+
+/* ---- Avisos ---- */
+#aviso{position:fixed;left:50%;bottom:22px;transform:translateX(-50%) translateY(16px);
+  background:var(--ink);color:#fff;padding:10px 18px;border-radius:var(--radius);
+  font-size:13px;opacity:0;pointer-events:none;transition:opacity .18s,transform .18s;z-index:80}
+#aviso.show{opacity:1;transform:translateX(-50%) translateY(0)}
+#aviso.malo{background:var(--urgent)}
+.banner{background:#FAE9E7;border:1px solid #E0AFA9;color:var(--urgent);padding:9px 14px;
+  border-radius:var(--radius);font-size:12.5px;margin-bottom:14px}
+.movil-abrir{display:none}
+.oculto{display:none!important}
+
+@media (max-width:900px){
+  .workspace{grid-template-columns:1fr}
+  .capture{position:static;display:none}
+  .capture.abierta{display:block}
+  .movil-abrir{display:block;width:100%;margin-bottom:14px}
+  .grid2{grid-template-columns:1fr}
+  header{gap:12px;padding:0 12px}
+  #buscar{width:110px}
+  .quien{display:none}
+  main{padding:12px}
+  .stat b{font-size:18px}
+  .trio{grid-template-columns:1fr}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+
+<!-- ================= ACCESO ================= -->
+<div id="acceso">
+  <div class="acceso-card">
+    <h1>Mesa de ayuda</h1>
+    <p>Soporte Informático</p>
+    <div id="acceso-error"></div>
+    <button class="btn-google" id="btn-entrar">
+      <svg viewBox="0 0 24 24"><path fill="#fff" d="M21.35 11.1h-9.17v2.96h5.27c-.23 1.4-1.63 4.1-5.27 4.1-3.17 0-5.76-2.63-5.76-5.86s2.59-5.86 5.76-5.86c1.8 0 3.01.77 3.7 1.43l2.52-2.43C16.8 3.87 14.66 3 12.18 3 7.03 3 2.86 7.17 2.86 12.3s4.17 9.3 9.32 9.3c5.38 0 8.94-3.78 8.94-9.1 0-.61-.06-1.08-.15-1.4z"/></svg>
+      Entrar con Google
+    </button>
+    <p style="margin:16px 0 0;font-size:12px;color:var(--ink-3)">
+      Solo cuentas institucionales
+    </p>
+  </div>
+</div>
+
+<!-- ================= APLICACIÓN ================= -->
+<div id="app" class="oculto">
+<header>
+  <h1>Mesa de ayuda <span>· Soporte</span></h1>
+  <nav class="tabs" role="tablist">
+    <button role="tab" aria-selected="true" data-vista="bandeja">Bandeja</button>
+    <button role="tab" aria-selected="false" data-vista="resumen">Resumen</button>
+  </nav>
+  <div class="head-right">
+    <input type="text" id="buscar" placeholder="Buscar…" autocomplete="off">
+    <button class="icon-btn" id="btn-exportar">Exportar</button>
+    <button class="icon-btn" id="btn-ajustes">Ajustes</button>
+    <span class="quien" id="quien"></span>
+    <button class="icon-btn" id="btn-salir">Salir</button>
+  </div>
+</header>
+
+<main>
+  <div id="banner"></div>
+
+  <section id="vista-bandeja">
+    <button class="btn-primary movil-abrir" id="movil-abrir">Registrar solicitud</button>
+    <div class="workspace">
+      <aside class="panel capture" id="capture">
+        <div class="panel-title">Registrar solicitud</div>
+        <div class="capture-body">
+          <div class="f">
+            <label for="c-solicitante">Quién la pide</label>
+            <input type="text" id="c-solicitante" list="l-personas" autocomplete="off" placeholder="Nombre">
+            <datalist id="l-personas"></datalist>
+          </div>
+          <div class="f">
+            <label for="c-asunto">Qué necesita</label>
+            <input type="text" id="c-asunto" autocomplete="off" placeholder="Ej: no imprime la impresora del 3er piso">
+          </div>
+          <div class="f duo">
+            <div><label for="c-unidad">Unidad</label><select id="c-unidad"></select></div>
+            <div><label for="c-categoria">Categoría</label><select id="c-categoria"></select></div>
+          </div>
+          <div class="f">
+            <label>Por dónde llegó</label>
+            <div class="seg" id="c-canal">
+              <button type="button" data-canal="Chat" aria-pressed="true">
+                <svg viewBox="0 0 24 24"><path d="M20 4H4a1.5 1.5 0 0 0-1.5 1.5v9A1.5 1.5 0 0 0 4 16h3v4l4.5-4H20a1.5 1.5 0 0 0 1.5-1.5v-9A1.5 1.5 0 0 0 20 4z"/></svg>Chat</button>
+              <button type="button" data-canal="Presencial" aria-pressed="false">
+                <svg viewBox="0 0 24 24"><circle cx="12" cy="7.5" r="3.5"/><path d="M4.5 21c0-4.2 3.4-6.5 7.5-6.5s7.5 2.3 7.5 6.5"/></svg>En persona</button>
+              <button type="button" data-canal="Teléfono" aria-pressed="false">
+                <svg viewBox="0 0 24 24"><path d="M6 3h3l2 5-2.5 1.5a12 12 0 0 0 6 6L16 13l5 2v3a2 2 0 0 1-2.2 2A16.5 16.5 0 0 1 4 5.2 2 2 0 0 1 6 3z"/></svg>Teléfono</button>
+            </div>
+          </div>
+          <div class="f">
+            <label>Prioridad</label>
+            <div class="prio" id="c-prioridad">
+              <button type="button" data-p="Baja" aria-pressed="false">Baja</button>
+              <button type="button" data-p="Media" aria-pressed="true">Media</button>
+              <button type="button" data-p="Alta" aria-pressed="false">Alta</button>
+            </div>
+          </div>
+          <div class="f">
+            <label for="c-detalle">Detalle <span style="color:var(--ink-3);font-weight:400">(opcional)</span></label>
+            <textarea id="c-detalle" placeholder="Equipo, anexo, mensaje de error…"></textarea>
+          </div>
+          <button class="btn-primary" id="btn-registrar">Registrar solicitud</button>
+          <p class="hint">Las que llegan por correo entran solas</p>
+        </div>
+      </aside>
+
+      <div>
+        <div class="stats-strip" id="stats-strip"></div>
+        <div class="filters" id="filtros"></div>
+        <div class="list" id="lista"><div class="cargando">Cargando solicitudes…</div></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="vista-resumen" hidden>
+    <div class="stats-strip" id="resumen-strip"></div>
+    <div class="grid2">
+      <div class="panel"><div class="panel-title">Por dónde llegan las solicitudes</div><div class="bars" id="bars-canal"></div></div>
+      <div class="panel"><div class="panel-title">Categorías más frecuentes</div><div class="bars" id="bars-categoria"></div></div>
+      <div class="panel"><div class="panel-title">Unidades que más solicitan</div><div class="bars" id="bars-unidad"></div></div>
+      <div class="panel"><div class="panel-title">Carga por mes</div><div class="bars" id="bars-mes"></div></div>
+    </div>
+  </section>
+</main>
+</div>
+
+<!-- ================= DETALLE ================= -->
+<div class="scrim" id="scrim"></div>
+<aside class="drawer" id="drawer" aria-hidden="true">
+  <div class="drawer-head">
+    <div>
+      <div class="folio mono" id="d-folio"></div>
+      <h2 id="d-asunto"></h2>
+    </div>
+    <button class="close-x" id="d-cerrar">Cerrar</button>
+  </div>
+  <div class="drawer-body">
+    <dl class="kv" id="d-kv"></dl>
+    <div id="d-responder"></div>
+    <h3 class="sec-h">Clasificación</h3>
+    <div class="trio">
+      <div><label for="d-unidad">Unidad</label><select id="d-unidad"></select></div>
+      <div><label for="d-categoria">Categoría</label><select id="d-categoria"></select></div>
+      <div><label for="d-prioridad">Prioridad</label><select id="d-prioridad">
+        <option>Baja</option><option>Media</option><option>Alta</option></select></div>
+    </div>
+    <h3 class="sec-h">Estado</h3>
+    <div class="estado-row" id="d-estados"></div>
+    <div id="d-solucion"></div>
+    <h3 class="sec-h">Bitácora</h3>
+    <ul class="bitacora" id="d-bitacora"></ul>
+    <div class="add-nota">
+      <input type="text" id="d-nota" placeholder="Agregar una nota…" autocomplete="off">
+      <button id="d-agregar">Agregar</button>
+    </div>
+  </div>
+</aside>
+
+<!-- ================= AJUSTES ================= -->
+<div class="modal" id="modal-ajustes">
+  <div class="modal-card">
+    <h2>Unidades y categorías</h2>
+    <div class="f">
+      <label for="a-unidades">Unidades (una por línea)</label>
+      <textarea id="a-unidades"></textarea>
+    </div>
+    <div class="f">
+      <label for="a-categorias">Categorías (una por línea)</label>
+      <textarea id="a-categorias"></textarea>
+    </div>
+    <p style="font-size:12px;color:var(--ink-3);margin:0">
+      Quitar un valor de la lista no afecta a las solicitudes que ya lo usan.
+    </p>
+    <div class="modal-actions">
+      <button class="btn-ghost" id="a-cancelar">Cancelar</button>
+      <button class="btn-primary" style="width:auto" id="a-guardar">Guardar cambios</button>
+    </div>
+  </div>
+</div>
+
+<div id="aviso" role="status"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
+<script>
+(function(){
+"use strict";
+
+/* =====================================================================
+   CONFIGURACIÓN — lo único que tienes que editar
+   ===================================================================== */
+var CONFIG = {
+  SUPABASE_URL: "https://xmmnjbusqfbglorxzpdg.supabase.co",
+
+  // Pega aquí la anon key: Supabase > Project Settings > API > anon public
+  SUPABASE_ANON_KEY: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhtbW5qYnVzcWZiZ2xvcnh6cGRnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODg4NzU2MjEsImV4cCI6MjEwNDQ1MTYyMX0.kcnV99OTosocpmreYC9zZ19agNNrdouFwwzJ-33H7Ms",
+
+  // Dominio institucional autorizado
+  DOMINIO: "minciencia.gob.cl"
+};
+/* ===================================================================== */
+
+var SB = window.supabase.createClient(CONFIG.SUPABASE_URL, CONFIG.SUPABASE_ANON_KEY);
+
+var ESTADOS = ["Nueva","En atención","En espera","Resuelta"];
+var ICONOS = {
+  "Correo":'<svg viewBox="0 0 24 24"><rect x="2.5" y="5" width="19" height="14" rx="2"/><path d="M3 7l9 6 9-6"/></svg>',
+  "Chat":'<svg viewBox="0 0 24 24"><path d="M20 4H4a1.5 1.5 0 0 0-1.5 1.5v9A1.5 1.5 0 0 0 4 16h3v4l4.5-4H20a1.5 1.5 0 0 0 1.5-1.5v-9A1.5 1.5 0 0 0 20 4z"/></svg>',
+  "Presencial":'<svg viewBox="0 0 24 24"><circle cx="12" cy="7.5" r="3.5"/><path d="M4.5 21c0-4.2 3.4-6.5 7.5-6.5s7.5 2.3 7.5 6.5"/></svg>',
+  "Teléfono":'<svg viewBox="0 0 24 24"><path d="M6 3h3l2 5-2.5 1.5a12 12 0 0 0 6 6L16 13l5 2v3a2 2 0 0 1-2.2 2A16.5 16.5 0 0 1 4 5.2 2 2 0 0 1 6 3z"/></svg>'
+};
+
+var estado = {
+  usuario:null, solicitudes:[], unidades:[], categorias:[],
+  filtro:"abiertas", busqueda:"", canal:"Chat", prioridad:"Media",
+  abierto:null, vista:"bandeja"
+};
+
+/* ---------- Utilidades ---------- */
+function $(s){ return document.querySelector(s); }
+function crear(t,c,x){ var e=document.createElement(t); if(c)e.className=c; if(x!==undefined)e.textContent=x; return e; }
+function claseEstado(e){
+  return e==="En atención"?"e-atencion":e==="En espera"?"e-espera":"e-"+e;
+}
+function etiquetaCanal(c){ return c==="Presencial"?"En persona":c; }
+function fechaLarga(iso){
+  var d=new Date(iso);
+  return d.toLocaleDateString("es-CL",{day:"2-digit",month:"2-digit",year:"numeric"})+" · "+
+         d.toLocaleTimeString("es-CL",{hour:"2-digit",minute:"2-digit"});
+}
+function edad(iso){
+  var min=Math.floor((Date.now()-new Date(iso).getTime())/60000);
+  if(min<1) return "recién";
+  if(min<60) return "hace "+min+" min";
+  var h=Math.floor(min/60);
+  if(h<24) return "hace "+h+" h";
+  var d=Math.floor(h/24);
+  if(d<30) return "hace "+d+(d===1?" día":" días");
+  return "hace "+Math.floor(d/30)+" meses";
+}
+function dias(a,b){ return (new Date(b)-new Date(a))/86400000; }
+function abierta(s){ return s.estado!=="Resuelta"; }
+function aviso(txt,malo){
+  var a=$("#aviso"); a.textContent=txt;
+  a.className = malo?"show malo":"show";
+  clearTimeout(a._t); a._t=setTimeout(function(){ a.className=""; },2600);
+}
+function fallo(err,contexto){
+  console.error(contexto,err);
+  aviso("No se pudo "+contexto+". Revisa la conexión.",true);
+}
+
+/* =====================================================================
+   ACCESO
+   ===================================================================== */
+$("#btn-entrar").onclick = async function(){
+  if(CONFIG.SUPABASE_ANON_KEY.indexOf("PEGA_AQUI")===0){
+    $("#acceso-error").innerHTML='<div class="acceso-error">Falta pegar la anon key en el bloque CONFIG del archivo.</div>';
+    return;
+  }
+  var { error } = await SB.auth.signInWithOAuth({
+    provider:"google",
+    options:{
+      queryParams:{ hd: CONFIG.DOMINIO, prompt:"select_account" },
+      redirectTo: location.href.split("#")[0].split("?")[0]
+    }
+  });
+  if(error) $("#acceso-error").innerHTML='<div class="acceso-error">'+error.message+'</div>';
+};
+
+$("#btn-salir").onclick = async function(){
+  await SB.auth.signOut();
+  location.reload();
+};
+
+async function revisarSesion(){
+  var { data } = await SB.auth.getSession();
+  var sesion = data.session;
+  if(!sesion) return mostrarAcceso();
+
+  var correo = (sesion.user.email||"").toLowerCase();
+  if(CONFIG.DOMINIO && correo.indexOf("@"+CONFIG.DOMINIO) < 0){
+    await SB.auth.signOut();
+    $("#acceso-error").innerHTML =
+      '<div class="acceso-error">La cuenta '+correo+' no pertenece al dominio institucional.</div>';
+    return mostrarAcceso();
+  }
+
+  estado.usuario = sesion.user;
+  $("#quien").textContent = correo;
+  $("#acceso").classList.add("oculto");
+  $("#app").classList.remove("oculto");
+  await arrancar();
+}
+
+function mostrarAcceso(){
+  $("#acceso").classList.remove("oculto");
+  $("#app").classList.add("oculto");
+}
+
+SB.auth.onAuthStateChange(function(evento){
+  if(evento==="SIGNED_IN" && !estado.usuario) revisarSesion();
+});
+
+/* =====================================================================
+   CARGA DE DATOS
+   ===================================================================== */
+async function cargarCatalogos(){
+  var { data, error } = await SB.from("catalogos").select("tipo,valor").eq("activo",true).order("valor");
+  if(error) return fallo(error,"cargar las listas");
+  estado.unidades   = data.filter(function(c){return c.tipo==="unidad";}).map(function(c){return c.valor;});
+  estado.categorias = data.filter(function(c){return c.tipo==="categoria";}).map(function(c){return c.valor;});
+  poblarSelects();
+}
+
+async function cargarSolicitudes(){
+  var { data, error } = await SB.from("solicitudes").select("*")
+    .order("creada",{ascending:false}).limit(1000);
+  if(error){ fallo(error,"cargar las solicitudes"); return; }
+  estado.solicitudes = data;
+  pintar();
+}
+
+function poblarSelects(){
+  [["#c-unidad",estado.unidades],["#c-categoria",estado.categorias],
+   ["#d-unidad",estado.unidades],["#d-categoria",estado.categorias]].forEach(function(par){
+    var sel=$(par[0]); if(!sel) return;
+    var previo=sel.value;
+    sel.innerHTML="";
+    par[1].forEach(function(v){ sel.appendChild(new Option(v,v)); });
+    if(previo) sel.value=previo;
+  });
+  var dl=$("#l-personas"); dl.innerHTML="";
+  var vistos={};
+  estado.solicitudes.forEach(function(s){
+    if(s.solicitante && !vistos[s.solicitante]){ vistos[s.solicitante]=1; dl.appendChild(new Option(s.solicitante)); }
+  });
+}
+
+/* ---------- Actualización en vivo ---------- */
+function escucharCambios(){
+  SB.channel("mesa-ayuda")
+    .on("postgres_changes",{event:"*",schema:"public",table:"solicitudes"}, function(payload){
+      if(payload.eventType==="INSERT"){
+        var s=payload.new;
+        if(!estado.solicitudes.some(function(x){return x.id===s.id;})){
+          estado.solicitudes.unshift(s);
+          if(s.origen==="correo") aviso("Nueva solicitud por correo: "+s.folio);
+        }
+      } else if(payload.eventType==="UPDATE"){
+        estado.solicitudes = estado.solicitudes.map(function(x){
+          return x.id===payload.new.id ? payload.new : x;
+        });
+      } else if(payload.eventType==="DELETE"){
+        estado.solicitudes = estado.solicitudes.filter(function(x){return x.id!==payload.old.id;});
+      }
+      pintar();
+      if(estado.abierto) pintarDetalle();
+    })
+    .subscribe();
+}
+
+/* =====================================================================
+   REGISTRAR
+   ===================================================================== */
+async function registrar(){
+  var solicitante=$("#c-solicitante").value.trim();
+  var asunto=$("#c-asunto").value.trim();
+  if(!solicitante){ $("#c-solicitante").focus(); return aviso("Falta el nombre de quien pide",true); }
+  if(!asunto){ $("#c-asunto").focus(); return aviso("Falta describir qué necesita",true); }
+
+  var boton=$("#btn-registrar");
+  boton.disabled=true; boton.textContent="Registrando…";
+
+  var registro={
+    solicitante:solicitante,
+    asunto:asunto,
+    unidad:$("#c-unidad").value,
+    categoria:$("#c-categoria").value,
+    canal:estado.canal,
+    prioridad:estado.prioridad,
+    detalle:$("#c-detalle").value.trim()||null,
+    estado:"Nueva",
+    origen:"manual"
+  };
+
+  var { data, error } = await SB.from("solicitudes").insert(registro).select().single();
+
+  boton.disabled=false; boton.textContent="Registrar solicitud";
+
+  if(error) return fallo(error,"registrar la solicitud");
+
+  await SB.from("bitacora").insert({
+    solicitud_id:data.id,
+    texto:"Solicitud registrada por "+etiquetaCanal(estado.canal).toLowerCase()+".",
+    autor:estado.usuario.email,
+    sistema:true
+  });
+
+  if(!estado.solicitudes.some(function(x){return x.id===data.id;})) estado.solicitudes.unshift(data);
+  $("#c-solicitante").value=""; $("#c-asunto").value=""; $("#c-detalle").value="";
+  poblarSelects(); pintar();
+  $("#c-solicitante").focus();
+  aviso("Registrada como "+data.folio);
+}
+
+/* =====================================================================
+   BANDEJA
+   ===================================================================== */
+function filtradas(){
+  var q=estado.busqueda.toLowerCase();
+  var f=estado.solicitudes.filter(function(s){
+    if(estado.filtro==="abiertas" && !abierta(s)) return false;
+    if(ESTADOS.indexOf(estado.filtro)>=0 && s.estado!==estado.filtro) return false;
+    if(estado.filtro==="urgentes" && (s.prioridad!=="Alta"||!abierta(s))) return false;
+    if(q){
+      var blob=[s.folio,s.solicitante,s.correo,s.asunto,s.unidad,s.categoria,s.detalle].join(" ").toLowerCase();
+      if(blob.indexOf(q)<0) return false;
+    }
+    return true;
+  });
+  var peso={Alta:0,Media:1,Baja:2};
+  return f.sort(function(a,b){
+    if(abierta(a)!==abierta(b)) return abierta(a)?-1:1;
+    if(peso[a.prioridad]!==peso[b.prioridad]) return peso[a.prioridad]-peso[b.prioridad];
+    return new Date(b.creada)-new Date(a.creada);
+  });
+}
+
+function pintarStats(){
+  var s=estado.solicitudes;
+  var hoy=new Date().toDateString();
+  var vals=[
+    [s.filter(abierta).length,"abiertas",""],
+    [s.filter(function(x){return x.prioridad==="Alta"&&abierta(x);}).length,"prioridad alta","is-urgent"],
+    [s.filter(function(x){return x.estado==="En espera";}).length,"esperando al usuario",""],
+    [s.filter(function(x){return new Date(x.creada).toDateString()===hoy;}).length,"registradas hoy",""]
+  ];
+  var cont=$("#stats-strip"); cont.innerHTML="";
+  vals.forEach(function(t){
+    var d=crear("div","stat "+t[2]);
+    d.appendChild(crear("b",null,t[0]));
+    d.appendChild(crear("span",null,t[1]));
+    cont.appendChild(d);
+  });
+}
+
+function pintarFiltros(){
+  var cont=$("#filtros"); cont.innerHTML="";
+  [["abiertas","Abiertas"],["urgentes","Prioridad alta"],["Nueva","Sin atender"],
+   ["En atención","En atención"],["En espera","En espera"],["Resuelta","Resueltas"],["todas","Todas"]]
+  .forEach(function(o){
+    var b=crear("button",null,o[1]);
+    b.setAttribute("aria-pressed", estado.filtro===o[0]);
+    b.onclick=function(){ estado.filtro=o[0]; pintar(); };
+    cont.appendChild(b);
+  });
+}
+
+function pintarLista(){
+  var cont=$("#lista"); cont.innerHTML="";
+  var arr=filtradas();
+  if(!arr.length){
+    var v=crear("div","vacio");
+    v.appendChild(crear("b",null, estado.solicitudes.length?"Nada por aquí":"Todavía no hay solicitudes"));
+    v.appendChild(crear("div",null, estado.solicitudes.length
+      ? "Ninguna solicitud coincide con este filtro."
+      : "Las que lleguen por correo aparecerán solas. Las demás, con el formulario."));
+    cont.appendChild(v);
+    return;
+  }
+  arr.forEach(function(s){
+    var b=crear("button","ticket");
+    b.dataset.prio=s.prioridad; b.dataset.estado=s.estado;
+
+    var l1=crear("div","t-line1");
+    l1.appendChild(crear("span","folio mono",s.folio));
+    l1.appendChild(crear("span","chip "+claseEstado(s.estado),s.estado));
+    var canal=crear("span","canal");
+    canal.innerHTML=ICONOS[s.canal]+"<span>"+etiquetaCanal(s.canal)+"</span>";
+    l1.appendChild(canal);
+    if(s.origen==="correo") l1.appendChild(crear("span","auto","automática"));
+    b.appendChild(l1);
+
+    var e=crear("div","t-edad",abierta(s)?edad(s.creada):"resuelta");
+    if(abierta(s) && dias(s.creada,new Date())>3) e.className="t-edad old";
+    b.appendChild(e);
+
+    b.appendChild(crear("div","t-asunto",s.asunto));
+    b.appendChild(crear("div","t-meta",s.solicitante+" · "+(s.unidad||"Por definir")+" · "+s.categoria));
+
+    b.onclick=function(){ abrir(s.id); };
+    cont.appendChild(b);
+  });
+}
+
+/* =====================================================================
+   DETALLE
+   ===================================================================== */
+function buscar(id){ return estado.solicitudes.filter(function(s){return s.id===id;})[0]; }
+
+async function abrir(id){
+  estado.abierto=id;
+  pintarDetalle();
+  $("#drawer").classList.add("open");
+  $("#drawer").setAttribute("aria-hidden","false");
+  $("#scrim").classList.add("open");
+  await cargarBitacora(id);
+}
+
+function cerrar(){
+  estado.abierto=null;
+  $("#drawer").classList.remove("open");
+  $("#drawer").setAttribute("aria-hidden","true");
+  $("#scrim").classList.remove("open");
+}
+
+function pintarDetalle(){
+  var s=buscar(estado.abierto); if(!s) return;
+  $("#d-folio").textContent=s.folio;
+  $("#d-asunto").textContent=s.asunto;
+
+  var kv=$("#d-kv"); kv.innerHTML="";
+  var filas=[["Solicitante",s.solicitante]];
+  if(s.correo) filas.push(["Correo",s.correo]);
+  filas.push(["Canal",etiquetaCanal(s.canal)+(s.origen==="correo"?" (automática)":"")]);
+  filas.push(["Registrada",fechaLarga(s.creada)]);
+  if(s.detalle) filas.push(["Detalle",s.detalle]);
+  if(s.resuelta) filas.push(["Resuelta",fechaLarga(s.resuelta)+" · "+
+    Math.max(1,Math.round(dias(s.creada,s.resuelta)*24))+" h"]);
+  filas.forEach(function(f){ kv.appendChild(crear("dt",null,f[0])); kv.appendChild(crear("dd",null,f[1])); });
+
+  var resp=$("#d-responder"); resp.innerHTML="";
+  if(s.correo){
+    var a=document.createElement("a");
+    a.className="responder";
+    a.href="mailto:"+s.correo+"?subject="+encodeURIComponent("["+s.folio+"] "+s.asunto);
+    a.textContent="Responder por correo";
+    resp.appendChild(a);
+  }
+
+  $("#d-unidad").value = s.unidad || "";
+  $("#d-categoria").value = s.categoria || "";
+  $("#d-prioridad").value = s.prioridad;
+
+  var er=$("#d-estados"); er.innerHTML="";
+  ESTADOS.forEach(function(e){
+    var b=crear("button",null,e);
+    b.setAttribute("aria-pressed", s.estado===e);
+    b.onclick=function(){ cambiarEstado(s,e); };
+    er.appendChild(b);
+  });
+
+  var sol=$("#d-solucion"); sol.innerHTML="";
+  if(s.estado==="Resuelta"){
+    var box=crear("div","solucion-box");
+    box.appendChild(crear("p",null,"Qué se hizo para resolverla"));
+    var ta=crear("textarea"); ta.value=s.solucion||"";
+    ta.placeholder="Se reinstaló el driver y se reconfiguró la cola de impresión.";
+    ta.onchange=async function(){
+      var { error } = await SB.from("solicitudes").update({solucion:ta.value.trim()}).eq("id",s.id);
+      if(error) return fallo(error,"guardar la solución");
+      s.solucion=ta.value.trim();
+      aviso("Solución guardada");
+    };
+    box.appendChild(ta);
+    sol.appendChild(box);
+  }
+}
+
+async function cargarBitacora(id){
+  var lista=$("#d-bitacora");
+  lista.innerHTML="<li style='color:var(--ink-3)'>Cargando…</li>";
+  var { data, error } = await SB.from("bitacora").select("*")
+    .eq("solicitud_id",id).order("fecha",{ascending:false});
+  if(error){ lista.innerHTML="<li style='color:var(--urgent)'>No se pudo cargar la bitácora.</li>"; return; }
+  if(estado.abierto!==id) return;
+  lista.innerHTML="";
+  data.forEach(function(n){
+    var li=crear("li");
+    li.appendChild(crear("div","bit-meta",fechaLarga(n.fecha)+(n.autor?" · "+n.autor:"")));
+    li.appendChild(crear("div","bit-texto"+(n.sistema?" bit-sistema":""),n.texto));
+    lista.appendChild(li);
+  });
+}
+
+async function actualizarCampo(campo,valor){
+  var s=buscar(estado.abierto); if(!s || s[campo]===valor) return;
+  var cambio={}; cambio[campo]=valor;
+  var { error } = await SB.from("solicitudes").update(cambio).eq("id",s.id);
+  if(error) return fallo(error,"guardar el cambio");
+  s[campo]=valor;
+  await SB.from("bitacora").insert({
+    solicitud_id:s.id, texto:campo+" cambiada a "+valor+".",
+    autor:estado.usuario.email, sistema:true
+  });
+  pintar(); cargarBitacora(s.id);
+  aviso("Cambio guardado");
+}
+
+async function cambiarEstado(s,nuevo){
+  if(s.estado===nuevo) return;
+  var { data, error } = await SB.from("solicitudes").update({estado:nuevo}).eq("id",s.id).select().single();
+  if(error) return fallo(error,"cambiar el estado");
+  Object.assign(s,data);
+  await SB.from("bitacora").insert({
+    solicitud_id:s.id, texto:"Estado cambiado a "+nuevo+".",
+    autor:estado.usuario.email, sistema:true
+  });
+  pintarDetalle(); pintar(); cargarBitacora(s.id);
+}
+
+async function agregarNota(){
+  var s=buscar(estado.abierto); if(!s) return;
+  var i=$("#d-nota"); var t=i.value.trim(); if(!t) return;
+  i.value="";
+  var { error } = await SB.from("bitacora").insert({
+    solicitud_id:s.id, texto:t, autor:estado.usuario.email, sistema:false
+  });
+  if(error) return fallo(error,"agregar la nota");
+  cargarBitacora(s.id);
+}
+
+/* =====================================================================
+   RESUMEN
+   ===================================================================== */
+function conteo(campo){
+  var m={};
+  estado.solicitudes.forEach(function(s){
+    var k=s[campo]||"Sin definir"; m[k]=(m[k]||0)+1;
+  });
+  return Object.keys(m).map(function(k){return[k,m[k]];}).sort(function(a,b){return b[1]-a[1];});
+}
+function pintarBarras(sel,pares,etiquetar){
+  var cont=$(sel); cont.innerHTML="";
+  if(!pares.length){ cont.style.color="var(--ink-3)"; cont.textContent="Sin datos todavía."; return; }
+  cont.style.color="";
+  var max=pares[0][1];
+  pares.slice(0,8).forEach(function(p){
+    var row=crear("div","bar-row");
+    var top=crear("div","bar-top");
+    top.appendChild(crear("span",null, etiquetar?etiquetar(p[0]):p[0]));
+    top.appendChild(crear("span",null,p[1]));
+    row.appendChild(top);
+    var tr=crear("div","bar-track"), fi=crear("div","bar-fill");
+    fi.style.width=Math.round(p[1]/max*100)+"%";
+    tr.appendChild(fi); row.appendChild(tr);
+    cont.appendChild(row);
+  });
+}
+function pintarResumen(){
+  var s=estado.solicitudes;
+  var res=s.filter(function(x){return x.estado==="Resuelta"&&x.resuelta;});
+  var prom = res.length ? res.reduce(function(a,x){return a+dias(x.creada,x.resuelta);},0)/res.length : null;
+  var ahora=new Date();
+  var delMes=s.filter(function(x){
+    var d=new Date(x.creada);
+    return d.getMonth()===ahora.getMonth()&&d.getFullYear()===ahora.getFullYear();
+  }).length;
+
+  var strip=$("#resumen-strip"); strip.innerHTML="";
+  [[s.length,"solicitudes en total"],
+   [delMes,"registradas este mes"],
+   [res.length,"resueltas"],
+   [prom===null?"—":(prom<1?Math.max(1,Math.round(prom*24))+" h":prom.toFixed(1)+" d"),
+    "tiempo promedio de resolución"]]
+  .forEach(function(t){
+    var d=crear("div","stat");
+    d.appendChild(crear("b",null,t[0]));
+    d.appendChild(crear("span",null,t[1]));
+    strip.appendChild(d);
+  });
+
+  pintarBarras("#bars-canal",conteo("canal"),etiquetaCanal);
+  pintarBarras("#bars-categoria",conteo("categoria"));
+  pintarBarras("#bars-unidad",conteo("unidad"));
+
+  var meses={};
+  s.forEach(function(x){
+    var k=new Date(x.creada).toLocaleDateString("es-CL",{month:"long",year:"numeric"});
+    meses[k]=(meses[k]||0)+1;
+  });
+  pintarBarras("#bars-mes",Object.keys(meses).map(function(k){return[k,meses[k]];}));
+}
+
+/* =====================================================================
+   EXPORTAR
+   ===================================================================== */
+async function exportar(){
+  if(!estado.solicitudes.length) return aviso("Todavía no hay nada que exportar",true);
+  aviso("Preparando la planilla…");
+
+  var { data: notas } = await SB.from("bitacora").select("solicitud_id,texto,sistema");
+  var porSolicitud={};
+  (notas||[]).forEach(function(n){
+    if(n.sistema) return;
+    (porSolicitud[n.solicitud_id]=porSolicitud[n.solicitud_id]||[]).push(n.texto);
+  });
+
+  var cab=["Folio","Fecha","Hora","Solicitante","Correo","Unidad","Categoría","Canal","Origen",
+           "Prioridad","Asunto","Detalle","Estado","Fecha resolución","Horas","Solución","Notas"];
+  var filas=estado.solicitudes.map(function(s){
+    var d=new Date(s.creada);
+    return [s.folio, d.toLocaleDateString("es-CL"),
+      d.toLocaleTimeString("es-CL",{hour:"2-digit",minute:"2-digit"}),
+      s.solicitante, s.correo||"", s.unidad||"", s.categoria, etiquetaCanal(s.canal),
+      s.origen==="correo"?"Automática":"Manual", s.prioridad, s.asunto, s.detalle||"", s.estado,
+      s.resuelta?new Date(s.resuelta).toLocaleDateString("es-CL"):"",
+      s.resuelta?Math.max(1,Math.round(dias(s.creada,s.resuelta)*24)):"",
+      s.solucion||"", (porSolicitud[s.id]||[]).join(" | ")];
+  });
+
+  var csv=[cab].concat(filas).map(function(f){
+    return f.map(function(c){ return '"'+String(c==null?"":c).replace(/"/g,'""')+'"'; }).join(";");
+  }).join("\r\n");
+
+  var hoy=new Date();
+  var nombre="solicitudes-soporte-"+hoy.getFullYear()+"-"+
+             String(hoy.getMonth()+1).padStart(2,"0")+"-"+
+             String(hoy.getDate()).padStart(2,"0")+".csv";
+  var b=new Blob(["\uFEFF"+csv],{type:"text/csv;charset=utf-8;"});
+  var a=document.createElement("a");
+  a.href=URL.createObjectURL(b); a.download=nombre;
+  document.body.appendChild(a); a.click();
+  setTimeout(function(){ URL.revokeObjectURL(a.href); a.remove(); },600);
+  aviso("Planilla descargada");
+}
+
+/* =====================================================================
+   AJUSTES
+   ===================================================================== */
+function abrirAjustes(){
+  $("#a-unidades").value=estado.unidades.join("\n");
+  $("#a-categorias").value=estado.categorias.join("\n");
+  $("#modal-ajustes").classList.add("open");
+}
+
+async function guardarAjustes(){
+  var u=$("#a-unidades").value.split("\n").map(function(x){return x.trim();}).filter(Boolean);
+  var c=$("#a-categorias").value.split("\n").map(function(x){return x.trim();}).filter(Boolean);
+  if(!u.length || !c.length) return aviso("Las listas no pueden quedar vacías",true);
+
+  await SB.from("catalogos").update({activo:false}).in("tipo",["unidad","categoria"]);
+  var filas=u.map(function(v){return {tipo:"unidad",valor:v,activo:true};})
+    .concat(c.map(function(v){return {tipo:"categoria",valor:v,activo:true};}));
+  var { error } = await SB.from("catalogos").upsert(filas,{onConflict:"tipo,valor"});
+  if(error) return fallo(error,"guardar las listas");
+
+  await cargarCatalogos();
+  $("#modal-ajustes").classList.remove("open");
+  aviso("Listas actualizadas");
+}
+
+/* =====================================================================
+   VISTAS Y EVENTOS
+   ===================================================================== */
+function cambiarVista(v){
+  estado.vista=v;
+  $("#vista-bandeja").hidden = v!=="bandeja";
+  $("#vista-resumen").hidden = v!=="resumen";
+  document.querySelectorAll(".tabs button").forEach(function(b){
+    b.setAttribute("aria-selected", b.dataset.vista===v);
+  });
+  if(v==="resumen") pintarResumen();
+}
+
+function pintar(){
+  pintarStats(); pintarFiltros(); pintarLista();
+  if(estado.vista==="resumen") pintarResumen();
+}
+
+document.querySelectorAll(".tabs button").forEach(function(b){
+  b.onclick=function(){ cambiarVista(b.dataset.vista); };
+});
+$("#c-canal").onclick=function(e){
+  var b=e.target.closest("button[data-canal]"); if(!b) return;
+  estado.canal=b.dataset.canal;
+  this.querySelectorAll("button").forEach(function(x){ x.setAttribute("aria-pressed", x===b); });
+};
+$("#c-prioridad").onclick=function(e){
+  var b=e.target.closest("button[data-p]"); if(!b) return;
+  estado.prioridad=b.dataset.p;
+  this.querySelectorAll("button").forEach(function(x){ x.setAttribute("aria-pressed", x===b); });
+};
+$("#btn-registrar").onclick=registrar;
+$("#capture").addEventListener("keydown",function(e){
+  if((e.ctrlKey||e.metaKey)&&e.key==="Enter") registrar();
+});
+$("#buscar").oninput=function(){ estado.busqueda=this.value; pintarLista(); };
+$("#btn-exportar").onclick=exportar;
+$("#btn-ajustes").onclick=abrirAjustes;
+$("#a-cancelar").onclick=function(){ $("#modal-ajustes").classList.remove("open"); };
+$("#a-guardar").onclick=guardarAjustes;
+$("#modal-ajustes").onclick=function(e){ if(e.target===this) this.classList.remove("open"); };
+$("#d-cerrar").onclick=cerrar;
+$("#scrim").onclick=cerrar;
+$("#d-agregar").onclick=agregarNota;
+$("#d-nota").onkeydown=function(e){ if(e.key==="Enter") agregarNota(); };
+$("#d-unidad").onchange=function(){ actualizarCampo("unidad",this.value); };
+$("#d-categoria").onchange=function(){ actualizarCampo("categoria",this.value); };
+$("#d-prioridad").onchange=function(){ actualizarCampo("prioridad",this.value); };
+$("#movil-abrir").onclick=function(){
+  var c=$("#capture"); c.classList.toggle("abierta");
+  this.textContent=c.classList.contains("abierta")?"Ocultar formulario":"Registrar solicitud";
+  if(c.classList.contains("abierta")) $("#c-solicitante").focus();
+};
+document.addEventListener("keydown",function(e){
+  if(e.key==="Escape"){
+    if($("#modal-ajustes").classList.contains("open")) $("#modal-ajustes").classList.remove("open");
+    else if(estado.abierto) cerrar();
+  }
+});
+
+/* =====================================================================
+   ARRANQUE
+   ===================================================================== */
+async function arrancar(){
+  await cargarCatalogos();
+  await cargarSolicitudes();
+  escucharCambios();
+}
+
+revisarSesion();
+})();
+</script>
+</body>
+</html>
