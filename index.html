@@ -416,7 +416,7 @@ var CONFIG = {
   SUPABASE_URL: "https://xmmnjbusqfbglorxzpdg.supabase.co",
 
   // Pega aquí la anon key: Supabase > Project Settings > API > anon public
-  SUPABASE_ANON_KEY: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhtbW5qYnVzcWZiZ2xvcnh6cGRnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODg4NzU2MjEsImV4cCI6MjEwNDQ1MTYyMX0.kcnV99OTosocpmreYC9zZ19agNNrdouFwwzJ-33H7Ms",
+  SUPABASE_ANON_KEY: "PEGA_AQUI_TU_ANON_KEY",
 
   // Dominio institucional autorizado
   DOMINIO: "minciencia.gob.cl"
@@ -724,6 +724,16 @@ function pintarLista(){
    ===================================================================== */
 function buscar(id){ return estado.solicitudes.filter(function(s){return s.id===id;})[0]; }
 
+/* Si el valor guardado no está en el catálogo (por ejemplo, una categoría
+   que asignó el Apps Script), se agrega al vuelo para que no quede vacío. */
+function ponerValor(sel,valor){
+  var s=$(sel); if(!s) return;
+  if(!valor){ s.value=""; return; }
+  var existe=Array.prototype.some.call(s.options,function(o){return o.value===valor;});
+  if(!existe) s.appendChild(new Option(valor+" (fuera de lista)",valor));
+  s.value=valor;
+}
+
 async function abrir(id){
   estado.abierto=id;
   pintarDetalle();
@@ -764,8 +774,8 @@ function pintarDetalle(){
     resp.appendChild(a);
   }
 
-  $("#d-unidad").value = s.unidad || "";
-  $("#d-categoria").value = s.categoria || "";
+  ponerValor("#d-unidad", s.unidad);
+  ponerValor("#d-categoria", s.categoria);
   $("#d-prioridad").value = s.prioridad;
 
   var er=$("#d-estados"); er.innerHTML="";
