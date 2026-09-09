@@ -155,10 +155,14 @@ main{max-width:1360px;margin:0 auto;padding:18px}
 .kv dd{margin:0;white-space:pre-wrap}
 .sec-h{font-size:12px;font-weight:600;color:var(--ink-2);margin:0 0 8px;
   padding-bottom:6px;border-bottom:1px solid var(--line-soft)}
-.trio{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:18px}
+.trio{display:grid;grid-template-columns:1fr 1fr;gap:8px 10px;margin-bottom:18px}
 .trio label{display:block;font-size:11.5px;color:var(--ink-3);margin-bottom:3px}
 .trio select{width:100%;background:var(--field);border:1px solid var(--line);
   border-radius:var(--radius);padding:7px 8px;font-size:13px}
+.obs{width:100%;background:var(--field);border:1px solid var(--line);
+  border-radius:var(--radius);padding:8px 10px;min-height:56px;resize:vertical;
+  margin-bottom:18px;font-size:13px}
+.obs:focus{background:#fff;border-color:var(--accent)}
 .estado-row{display:grid;grid-template-columns:repeat(4,1fr);gap:5px;margin-bottom:18px}
 .estado-row button{background:var(--field);border:1px solid var(--line);border-radius:var(--radius);
   padding:8px 2px;font-size:12px;font-weight:500;color:var(--ink-2)}
@@ -291,6 +295,10 @@ main{max-width:1360px;margin:0 auto;padding:18px}
             <div><label for="c-categoria">Categoría</label><select id="c-categoria"></select></div>
           </div>
           <div class="f">
+            <label for="c-tecnico">Asignada a</label>
+            <select id="c-tecnico"></select>
+          </div>
+          <div class="f">
             <label>Por dónde llegó</label>
             <div class="seg" id="c-canal">
               <button type="button" data-canal="Chat" aria-pressed="true">
@@ -364,10 +372,13 @@ main{max-width:1360px;margin:0 auto;padding:18px}
     <h3 class="sec-h">Clasificación</h3>
     <div class="trio">
       <div><label for="d-unidad">Unidad</label><select id="d-unidad"></select></div>
-      <div><label for="d-categoria">Categoría</label><select id="d-categoria"></select></div>
+      <div><label for="d-categoria">Tipo de requerimiento</label><select id="d-categoria"></select></div>
       <div><label for="d-prioridad">Prioridad</label><select id="d-prioridad">
         <option>Baja</option><option>Media</option><option>Alta</option></select></div>
+      <div><label for="d-tecnico">Profesional asignado</label><select id="d-tecnico"></select></div>
     </div>
+    <h3 class="sec-h">Observación</h3>
+    <textarea id="d-observacion" class="obs" placeholder="Anotaciones internas que van en la planilla."></textarea>
     <h3 class="sec-h">Estado</h3>
     <div class="estado-row" id="d-estados"></div>
     <div id="d-solucion"></div>
@@ -389,8 +400,12 @@ main{max-width:1360px;margin:0 auto;padding:18px}
       <textarea id="a-unidades"></textarea>
     </div>
     <div class="f">
-      <label for="a-categorias">Categorías (una por línea)</label>
+      <label for="a-categorias">Tipos de requerimiento (una por línea)</label>
       <textarea id="a-categorias"></textarea>
+    </div>
+    <div class="f">
+      <label for="a-tecnicos">Profesionales / técnicos (uno por línea)</label>
+      <textarea id="a-tecnicos"></textarea>
     </div>
     <p style="font-size:12px;color:var(--ink-3);margin:0">
       Quitar un valor de la lista no afecta a las solicitudes que ya lo usan.
@@ -416,7 +431,7 @@ var CONFIG = {
   SUPABASE_URL: "https://xmmnjbusqfbglorxzpdg.supabase.co",
 
   // Pega aquí la anon key: Supabase > Project Settings > API > anon public
-  SUPABASE_ANON_KEY: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhtbW5qYnVzcWZiZ2xvcnh6cGRnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODg4NzU2MjEsImV4cCI6MjEwNDQ1MTYyMX0.kcnV99OTosocpmreYC9zZ19agNNrdouFwwzJ-33H7Ms",
+  SUPABASE_ANON_KEY: "PEGA_AQUI_TU_ANON_KEY",
 
   // Dominio institucional autorizado
   DOMINIO: "minciencia.gob.cl"
@@ -434,7 +449,7 @@ var ICONOS = {
 };
 
 var estado = {
-  usuario:null, solicitudes:[], unidades:[], categorias:[],
+  usuario:null, solicitudes:[], unidades:[], categorias:[], tecnicos:[],
   filtro:"abiertas", busqueda:"", canal:"Chat", prioridad:"Media",
   abierto:null, vista:"bandeja"
 };
@@ -533,6 +548,7 @@ async function cargarCatalogos(){
   if(error) return fallo(error,"cargar las listas");
   estado.unidades   = data.filter(function(c){return c.tipo==="unidad";}).map(function(c){return c.valor;});
   estado.categorias = data.filter(function(c){return c.tipo==="categoria";}).map(function(c){return c.valor;});
+  estado.tecnicos   = data.filter(function(c){return c.tipo==="tecnico";}).map(function(c){return c.valor;});
   poblarSelects();
 }
 
@@ -545,12 +561,14 @@ async function cargarSolicitudes(){
 }
 
 function poblarSelects(){
-  [["#c-unidad",estado.unidades],["#c-categoria",estado.categorias],
-   ["#d-unidad",estado.unidades],["#d-categoria",estado.categorias]].forEach(function(par){
+  [["#c-unidad",estado.unidades,false],["#c-categoria",estado.categorias,false],
+   ["#d-unidad",estado.unidades,false],["#d-categoria",estado.categorias,false],
+   ["#c-tecnico",estado.tecnicos,true],["#d-tecnico",estado.tecnicos,true]].forEach(function(par){
     var sel=$(par[0]); if(!sel) return;
     var previo=sel.value;
     sel.innerHTML="";
-    par[1].forEach(function(v){ sel.appendChild(new Option(v,v)); });
+    if(par[2]) sel.appendChild(new Option("Sin asignar",""));
+    par[1].forEach(function(v){ if(v!=="Sin asignar") sel.appendChild(new Option(v,v)); });
     if(previo) sel.value=previo;
   });
   var dl=$("#l-personas"); dl.innerHTML="";
@@ -601,6 +619,7 @@ async function registrar(){
     asunto:asunto,
     unidad:$("#c-unidad").value,
     categoria:$("#c-categoria").value,
+    tecnico:$("#c-tecnico").value||null,
     canal:estado.canal,
     prioridad:estado.prioridad,
     detalle:$("#c-detalle").value.trim()||null,
@@ -638,6 +657,7 @@ function filtradas(){
     if(estado.filtro==="abiertas" && !abierta(s)) return false;
     if(ESTADOS.indexOf(estado.filtro)>=0 && s.estado!==estado.filtro) return false;
     if(estado.filtro==="urgentes" && (s.prioridad!=="Alta"||!abierta(s))) return false;
+    if(estado.filtro==="sinasignar" && (s.tecnico||!abierta(s))) return false;
     if(q){
       var blob=[s.folio,s.solicitante,s.correo,s.asunto,s.unidad,s.categoria,s.detalle].join(" ").toLowerCase();
       if(blob.indexOf(q)<0) return false;
@@ -673,7 +693,8 @@ function pintarStats(){
 function pintarFiltros(){
   var cont=$("#filtros"); cont.innerHTML="";
   [["abiertas","Abiertas"],["urgentes","Prioridad alta"],["Nueva","Sin atender"],
-   ["En atención","En atención"],["En espera","En espera"],["Resuelta","Resueltas"],["todas","Todas"]]
+   ["sinasignar","Sin asignar"],["En atención","En atención"],["En espera","En espera"],
+   ["Resuelta","Resueltas"],["todas","Todas"]]
   .forEach(function(o){
     var b=crear("button",null,o[1]);
     b.setAttribute("aria-pressed", estado.filtro===o[0]);
@@ -712,7 +733,9 @@ function pintarLista(){
     b.appendChild(e);
 
     b.appendChild(crear("div","t-asunto",s.asunto));
-    b.appendChild(crear("div","t-meta",s.solicitante+" · "+(s.unidad||"Por definir")+" · "+s.categoria));
+    b.appendChild(crear("div","t-meta",
+      s.solicitante+" · "+(s.unidad||"Por definir")+" · "+s.categoria+
+      (s.tecnico? " · "+s.tecnico : "")));
 
     b.onclick=function(){ abrir(s.id); };
     cont.appendChild(b);
@@ -777,6 +800,8 @@ function pintarDetalle(){
   ponerValor("#d-unidad", s.unidad);
   ponerValor("#d-categoria", s.categoria);
   $("#d-prioridad").value = s.prioridad;
+  ponerValor("#d-tecnico", s.tecnico || "");
+  $("#d-observacion").value = s.observacion || "";
 
   var er=$("#d-estados"); er.innerHTML="";
   ESTADOS.forEach(function(e){
@@ -825,8 +850,11 @@ async function actualizarCampo(campo,valor){
   var { error } = await SB.from("solicitudes").update(cambio).eq("id",s.id);
   if(error) return fallo(error,"guardar el cambio");
   s[campo]=valor;
+  var etiquetas={unidad:"Unidad",categoria:"Tipo de requerimiento",
+                 prioridad:"Prioridad",tecnico:"Profesional asignado"};
   await SB.from("bitacora").insert({
-    solicitud_id:s.id, texto:campo+" cambiada a "+valor+".",
+    solicitud_id:s.id,
+    texto:(etiquetas[campo]||campo)+": "+(valor||"sin asignar")+".",
     autor:estado.usuario.email, sistema:true
   });
   pintar(); cargarBitacora(s.id);
@@ -921,6 +949,18 @@ function pintarResumen(){
 /* =====================================================================
    EXPORTAR
    ===================================================================== */
+/** "3 h 25 min" a partir de dos marcas de tiempo. */
+function duracion(desde,hasta){
+  if(!desde||!hasta) return "";
+  var min=Math.max(1,Math.round((new Date(hasta)-new Date(desde))/60000));
+  var h=Math.floor(min/60), m=min%60;
+  return (h? h+" h ":"")+m+" min";
+}
+function soloFecha(iso){ return iso? new Date(iso).toLocaleDateString("es-CL") : ""; }
+function soloHora(iso){
+  return iso? new Date(iso).toLocaleTimeString("es-CL",{hour:"2-digit",minute:"2-digit"}) : "";
+}
+
 async function exportar(){
   if(!estado.solicitudes.length) return aviso("Todavía no hay nada que exportar",true);
   aviso("Preparando la planilla…");
@@ -932,17 +972,35 @@ async function exportar(){
     (porSolicitud[n.solicitud_id]=porSolicitud[n.solicitud_id]||[]).push(n.texto);
   });
 
-  var cab=["Folio","Fecha","Hora","Solicitante","Correo","Unidad","Categoría","Canal","Origen",
-           "Prioridad","Asunto","Detalle","Estado","Fecha resolución","Horas","Solución","Notas"];
-  var filas=estado.solicitudes.map(function(s){
-    var d=new Date(s.creada);
-    return [s.folio, d.toLocaleDateString("es-CL"),
-      d.toLocaleTimeString("es-CL",{hour:"2-digit",minute:"2-digit"}),
-      s.solicitante, s.correo||"", s.unidad||"", s.categoria, etiquetaCanal(s.canal),
-      s.origen==="correo"?"Automática":"Manual", s.prioridad, s.asunto, s.detalle||"", s.estado,
-      s.resuelta?new Date(s.resuelta).toLocaleDateString("es-CL"):"",
-      s.resuelta?Math.max(1,Math.round(dias(s.creada,s.resuelta)*24)):"",
-      s.solucion||"", (porSolicitud[s.id]||[]).join(" | ")];
+  var cab=["N° Ticket","Fecha Ingreso","Hora Inicio","Fecha de Término","Hora término",
+           "Usuario (solicitante)","Tipo de Requerimiento","Solicitud","Solución",
+           "Observación","Estado de Ticket","Profesional/Técnico asignado",
+           "Tiempo de Resolución (Horas/Minutos)"];
+
+  // De más antigua a más reciente, como se lee una planilla
+  var orden=estado.solicitudes.slice().sort(function(a,b){
+    return new Date(a.creada)-new Date(b.creada);
+  });
+
+  var filas=orden.map(function(s){
+    var solicitud=s.asunto+(s.detalle? " — "+s.detalle.replace(/\s*\n\s*/g," ") : "");
+    var obs=[s.observacion||"", (porSolicitud[s.id]||[]).join(" | ")]
+              .filter(Boolean).join(" | ");
+    return [
+      s.folio,
+      soloFecha(s.creada),
+      soloHora(s.creada),
+      soloFecha(s.resuelta),
+      soloHora(s.resuelta),
+      s.solicitante,
+      s.categoria,
+      solicitud,
+      s.solucion||"",
+      obs,
+      s.estado,
+      s.tecnico||"Sin asignar",
+      duracion(s.creada,s.resuelta)
+    ];
   });
 
   var csv=[cab].concat(filas).map(function(f){
@@ -950,7 +1008,7 @@ async function exportar(){
   }).join("\r\n");
 
   var hoy=new Date();
-  var nombre="solicitudes-soporte-"+hoy.getFullYear()+"-"+
+  var nombre="Tickets-Soporte-"+hoy.getFullYear()+"-"+
              String(hoy.getMonth()+1).padStart(2,"0")+"-"+
              String(hoy.getDate()).padStart(2,"0")+".csv";
   var b=new Blob(["\uFEFF"+csv],{type:"text/csv;charset=utf-8;"});
@@ -967,17 +1025,21 @@ async function exportar(){
 function abrirAjustes(){
   $("#a-unidades").value=estado.unidades.join("\n");
   $("#a-categorias").value=estado.categorias.join("\n");
+  $("#a-tecnicos").value=estado.tecnicos.filter(function(t){return t!=="Sin asignar";}).join("\n");
   $("#modal-ajustes").classList.add("open");
 }
 
 async function guardarAjustes(){
-  var u=$("#a-unidades").value.split("\n").map(function(x){return x.trim();}).filter(Boolean);
-  var c=$("#a-categorias").value.split("\n").map(function(x){return x.trim();}).filter(Boolean);
-  if(!u.length || !c.length) return aviso("Las listas no pueden quedar vacías",true);
+  var lineas=function(sel){
+    return $(sel).value.split("\n").map(function(x){return x.trim();}).filter(Boolean);
+  };
+  var u=lineas("#a-unidades"), c=lineas("#a-categorias"), t=lineas("#a-tecnicos");
+  if(!u.length || !c.length) return aviso("Unidades y tipos no pueden quedar vacíos",true);
 
-  await SB.from("catalogos").update({activo:false}).in("tipo",["unidad","categoria"]);
+  await SB.from("catalogos").update({activo:false}).in("tipo",["unidad","categoria","tecnico"]);
   var filas=u.map(function(v){return {tipo:"unidad",valor:v,activo:true};})
-    .concat(c.map(function(v){return {tipo:"categoria",valor:v,activo:true};}));
+    .concat(c.map(function(v){return {tipo:"categoria",valor:v,activo:true};}))
+    .concat(t.map(function(v){return {tipo:"tecnico",valor:v,activo:true};}));
   var { error } = await SB.from("catalogos").upsert(filas,{onConflict:"tipo,valor"});
   if(error) return fallo(error,"guardar las listas");
 
@@ -1035,6 +1097,16 @@ $("#d-nota").onkeydown=function(e){ if(e.key==="Enter") agregarNota(); };
 $("#d-unidad").onchange=function(){ actualizarCampo("unidad",this.value); };
 $("#d-categoria").onchange=function(){ actualizarCampo("categoria",this.value); };
 $("#d-prioridad").onchange=function(){ actualizarCampo("prioridad",this.value); };
+$("#d-tecnico").onchange=function(){ actualizarCampo("tecnico",this.value||null); };
+$("#d-observacion").onchange=async function(){
+  var s=buscar(estado.abierto); if(!s) return;
+  var v=this.value.trim()||null;
+  if(s.observacion===v) return;
+  var { error } = await SB.from("solicitudes").update({observacion:v}).eq("id",s.id);
+  if(error) return fallo(error,"guardar la observación");
+  s.observacion=v;
+  aviso("Observación guardada");
+};
 $("#movil-abrir").onclick=function(){
   var c=$("#capture"); c.classList.toggle("abierta");
   this.textContent=c.classList.contains("abierta")?"Ocultar formulario":"Registrar solicitud";
