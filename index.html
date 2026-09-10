@@ -14,6 +14,7 @@
   --line:#CBD5DC; --line-soft:#E2E8EC;
   --accent:#0F5F7A; --accent-ink:#0A4A5F;
   --urgent:#AE2C1F; --warm:#A9690B; --done:#186A45;
+  --n2:#5B3E8C;
   --radius:5px;
 }
 *{box-sizing:border-box}
@@ -25,11 +26,12 @@ button,input,select,textarea{font:inherit;color:inherit}
 button{cursor:pointer}
 :focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 .mono{font-family:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,monospace}
+.oculto{display:none!important}
 
 /* ---- Acceso ---- */
 #acceso{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px}
 .acceso-card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);
-  padding:34px 32px;width:min(400px,100%);text-align:center}
+  padding:34px 32px;width:min(420px,100%);text-align:center}
 .acceso-card h1{font-size:20px;font-weight:600;margin:0 0 6px}
 .acceso-card p{color:var(--ink-2);margin:0 0 22px;font-size:13.5px}
 .btn-google{width:100%;background:var(--accent);color:#fff;border:0;border-radius:var(--radius);
@@ -37,11 +39,12 @@ button{cursor:pointer}
 .btn-google:hover{background:var(--accent-ink)}
 .btn-google svg{width:17px;height:17px}
 .acceso-error{background:#FAE9E7;border:1px solid #E0AFA9;color:var(--urgent);
-  padding:10px 13px;border-radius:var(--radius);font-size:13px;margin-bottom:18px;text-align:left}
+  padding:11px 14px;border-radius:var(--radius);font-size:13px;margin-bottom:18px;
+  text-align:left;line-height:1.4}
 
 /* ---- Encabezado ---- */
 header{background:var(--ink);color:#fff;padding:0 18px;display:flex;align-items:center;
-  gap:22px;height:56px;position:sticky;top:0;z-index:40}
+  gap:20px;height:56px;position:sticky;top:0;z-index:40}
 header h1{font-size:15px;font-weight:600;margin:0;white-space:nowrap}
 header h1 span{color:#8FB3C0;font-weight:400}
 .tabs{display:flex;gap:2px}
@@ -51,15 +54,16 @@ header h1 span{color:#8FB3C0;font-weight:400}
 .tabs button[aria-selected="true"]{background:rgba(255,255,255,.16);color:#fff}
 .head-right{margin-left:auto;display:flex;align-items:center;gap:9px}
 #buscar{background:rgba(255,255,255,.11);border:1px solid rgba(255,255,255,.16);
-  color:#fff;padding:6px 10px;border-radius:var(--radius);width:180px}
+  color:#fff;padding:6px 10px;border-radius:var(--radius);width:170px}
 #buscar::placeholder{color:#93AAB6}
 .icon-btn{background:rgba(255,255,255,.11);border:1px solid rgba(255,255,255,.16);
   color:#fff;border-radius:var(--radius);padding:6px 11px;font-size:13px}
 .icon-btn:hover{background:rgba(255,255,255,.2)}
-.quien{font-size:12px;color:#8FB3C0;white-space:nowrap;max-width:150px;overflow:hidden;text-overflow:ellipsis}
+.quien{font-size:12px;color:#8FB3C0;white-space:nowrap;text-align:right;line-height:1.25}
+.quien b{display:block;color:#fff;font-weight:500;font-size:12.5px}
 
 /* ---- Estructura ---- */
-main{max-width:1360px;margin:0 auto;padding:18px}
+main{max-width:1400px;margin:0 auto;padding:18px}
 .workspace{display:grid;grid-template-columns:340px 1fr;gap:18px;align-items:start}
 .panel{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius)}
 .panel-title{font-size:13px;font-weight:600;padding:13px 16px;border-bottom:1px solid var(--line-soft)}
@@ -78,11 +82,11 @@ main{max-width:1360px;margin:0 auto;padding:18px}
 .seg button{background:var(--field);border:1px solid var(--line);border-radius:var(--radius);
   padding:8px 2px;display:flex;flex-direction:column;align-items:center;gap:4px;
   font-size:10.5px;color:var(--ink-2);font-weight:500}
-.nota-canal{font-size:11.5px;color:var(--warm);background:#FBF3E4;border:1px solid #E3C68C;
-  border-radius:var(--radius);padding:7px 9px;margin:7px 0 0;line-height:1.35}
 .seg button svg{width:17px;height:17px;stroke:currentColor;fill:none;stroke-width:1.7}
 .seg button:hover{border-color:var(--accent);color:var(--accent)}
 .seg button[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:#fff}
+.nota-canal{font-size:11.5px;color:var(--warm);background:#FBF3E4;border:1px solid #E3C68C;
+  border-radius:var(--radius);padding:7px 9px;margin:7px 0 0;line-height:1.35}
 .prio{display:grid;grid-template-columns:repeat(3,1fr);gap:5px}
 .prio button{background:var(--field);border:1px solid var(--line);border-radius:var(--radius);
   padding:7px 2px;font-size:12px;font-weight:500;color:var(--ink-2)}
@@ -92,7 +96,7 @@ main{max-width:1360px;margin:0 auto;padding:18px}
 .btn-primary{width:100%;background:var(--accent);color:#fff;border:0;border-radius:var(--radius);
   padding:11px;font-weight:600;margin-top:4px}
 .btn-primary:hover{background:var(--accent-ink)}
-.btn-primary:disabled{opacity:.55;cursor:progress}
+.btn-primary:disabled{opacity:.55;cursor:not-allowed}
 .hint{font-size:11.5px;color:var(--ink-3);margin-top:8px;text-align:center}
 
 /* ---- Bandeja ---- */
@@ -103,11 +107,13 @@ main{max-width:1360px;margin:0 auto;padding:18px}
 .stat b{display:block;font-size:21px;font-weight:600;line-height:1.15}
 .stat span{font-size:12px;color:var(--ink-2)}
 .stat.is-urgent b{color:var(--urgent)}
+.stat.is-n2 b{color:var(--n2)}
 .filters{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px}
 .filters button{background:var(--surface);border:1px solid var(--line);border-radius:99px;
   padding:5px 13px;font-size:12.5px;color:var(--ink-2);font-weight:500}
 .filters button:hover{border-color:var(--ink-3)}
 .filters button[aria-pressed="true"]{background:var(--ink);border-color:var(--ink);color:#fff}
+.filters .sep{width:1px;background:var(--line);margin:2px 4px}
 .list{display:flex;flex-direction:column;gap:7px}
 .ticket{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);
   border-left:3px solid var(--ink-3);padding:11px 14px;display:grid;
@@ -128,6 +134,9 @@ main{max-width:1360px;margin:0 auto;padding:18px}
 .chip.e-atencion{color:var(--warm);border-color:#E3C68C;background:#FBF3E4}
 .chip.e-espera{color:var(--ink-2);border-color:var(--line);background:var(--field)}
 .chip.e-Resuelta{color:var(--done);border-color:#A8CFBB;background:#EBF5EF}
+.nivel{font-size:10.5px;font-weight:600;padding:2px 7px;border-radius:3px;
+  border:1px solid var(--line);color:var(--ink-2);background:var(--field)}
+.nivel.n2{color:var(--n2);border-color:#C3B0DE;background:#F2ECFA}
 .canal{font-size:11.5px;color:var(--ink-3);display:inline-flex;align-items:center;gap:4px}
 .canal svg{width:13px;height:13px;stroke:currentColor;fill:none;stroke-width:1.8}
 .auto{font-size:10.5px;color:var(--accent);border:1px solid #A8CBD8;background:#EBF4F7;
@@ -140,7 +149,7 @@ main{max-width:1360px;margin:0 auto;padding:18px}
 /* ---- Detalle ---- */
 .scrim{position:fixed;inset:0;background:rgba(20,33,46,.42);z-index:50;display:none}
 .scrim.open{display:block}
-.drawer{position:fixed;top:0;right:0;bottom:0;width:min(580px,100%);background:var(--surface);
+.drawer{position:fixed;top:0;right:0;bottom:0;width:min(600px,100%);background:var(--surface);
   z-index:51;transform:translateX(100%);transition:transform .22s ease;
   display:flex;flex-direction:column;box-shadow:-8px 0 28px rgba(20,33,46,.16)}
 .drawer.open{transform:translateX(0)}
@@ -150,7 +159,7 @@ main{max-width:1360px;margin:0 auto;padding:18px}
 .close-x{background:var(--field);border:1px solid var(--line);border-radius:var(--radius);
   padding:5px 10px;margin-left:auto;color:var(--ink-2)}
 .drawer-body{padding:16px 20px 26px;overflow:auto;flex:1}
-.kv{display:grid;grid-template-columns:104px 1fr;gap:6px 12px;font-size:13px;margin-bottom:16px}
+.kv{display:grid;grid-template-columns:112px 1fr;gap:6px 12px;font-size:13px;margin-bottom:16px}
 .kv dt{color:var(--ink-3)}
 .kv dd{margin:0;white-space:pre-wrap}
 .sec-h{font-size:12px;font-weight:600;color:var(--ink-2);margin:0 0 8px;
@@ -159,6 +168,7 @@ main{max-width:1360px;margin:0 auto;padding:18px}
 .trio label{display:block;font-size:11.5px;color:var(--ink-3);margin-bottom:3px}
 .trio select{width:100%;background:var(--field);border:1px solid var(--line);
   border-radius:var(--radius);padding:7px 8px;font-size:13px}
+.trio select:disabled{opacity:.6}
 .obs{width:100%;background:var(--field);border:1px solid var(--line);
   border-radius:var(--radius);padding:8px 10px;min-height:56px;resize:vertical;
   margin-bottom:18px;font-size:13px}
@@ -167,6 +177,14 @@ main{max-width:1360px;margin:0 auto;padding:18px}
 .estado-row button{background:var(--field);border:1px solid var(--line);border-radius:var(--radius);
   padding:8px 2px;font-size:12px;font-weight:500;color:var(--ink-2)}
 .estado-row button[aria-pressed="true"]{background:var(--ink);border-color:var(--ink);color:#fff}
+.deriv-box{border:1px solid #C3B0DE;background:#F7F3FC;border-radius:var(--radius);
+  padding:12px;margin-bottom:18px}
+.deriv-box p{margin:0 0 8px;font-size:12.5px;color:var(--n2);font-weight:500}
+.deriv-box input{width:100%;background:#fff;border:1px solid #C3B0DE;border-radius:var(--radius);
+  padding:8px 10px;margin-bottom:8px}
+.btn-deriv{background:var(--n2);color:#fff;border:0;border-radius:var(--radius);
+  padding:9px 16px;font-weight:600;font-size:13px}
+.btn-deriv.volver{background:var(--field);color:var(--ink-2);border:1px solid var(--line)}
 .responder{display:inline-flex;align-items:center;gap:6px;background:var(--field);
   border:1px solid var(--line);border-radius:var(--radius);padding:7px 12px;
   text-decoration:none;color:var(--accent);font-size:13px;font-weight:500;margin-bottom:18px}
@@ -197,16 +215,20 @@ main{max-width:1360px;margin:0 auto;padding:18px}
 .bar-track{height:7px;background:var(--field);border-radius:99px;overflow:hidden}
 .bar-fill{height:100%;background:var(--accent);border-radius:99px}
 
-/* ---- Ajustes ---- */
+/* ---- Modales ---- */
 .modal{position:fixed;inset:0;z-index:60;display:none;align-items:center;justify-content:center;
   padding:20px;background:rgba(20,33,46,.42)}
 .modal.open{display:flex}
-.modal-card{background:var(--surface);border-radius:var(--radius);width:min(480px,100%);
-  max-height:86vh;overflow:auto;padding:20px}
+.modal-card{background:var(--surface);border-radius:var(--radius);width:min(560px,100%);
+  max-height:88vh;overflow:auto;padding:20px}
 .modal-card h2{margin:0 0 14px;font-size:16px;font-weight:600}
-.modal-card textarea{width:100%;min-height:96px;background:var(--field);
+.modal-card textarea{width:100%;min-height:90px;background:var(--field);
   border:1px solid var(--line);border-radius:var(--radius);padding:8px;resize:vertical}
-.modal-actions{display:flex;gap:8px;justify-content:flex-end;margin-top:14px}
+.modal-card input[type=text],.modal-card input[type=month],.modal-card select{
+  width:100%;background:var(--field);border:1px solid var(--line);
+  border-radius:var(--radius);padding:7px 9px}
+.modal-card input:disabled,.modal-card select:disabled{opacity:.45}
+.modal-actions{display:flex;gap:8px;justify-content:flex-end;margin-top:16px}
 .btn-ghost{background:var(--field);border:1px solid var(--line);border-radius:var(--radius);
   padding:8px 15px;font-weight:500}
 .rapidos{display:flex;gap:5px;flex-wrap:wrap}
@@ -214,11 +236,7 @@ main{max-width:1360px;margin:0 auto;padding:18px}
   padding:4px 11px;font-size:12px;color:var(--ink-2);font-weight:500}
 .rapidos button:hover{border-color:var(--accent);color:var(--accent)}
 .rapidos button[aria-pressed="true"]{background:var(--ink);border-color:var(--ink);color:#fff}
-.modal-card input[type=month]{width:100%;background:var(--field);border:1px solid var(--line);
-  border-radius:var(--radius);padding:7px 9px}
-.modal-card input[type=month]:disabled{opacity:.45}
-.check{display:flex;align-items:center;gap:7px;font-size:13px;color:var(--ink);
-  font-weight:400;cursor:pointer}
+.check{display:flex;align-items:center;gap:7px;font-size:13px;font-weight:400;cursor:pointer}
 .check input{width:15px;height:15px;accent-color:var(--accent);cursor:pointer}
 .checks{display:grid;grid-template-columns:1fr 1fr;gap:7px 12px}
 .conteo{margin:4px 0 0;padding:9px 12px;background:var(--field);border:1px solid var(--line);
@@ -226,16 +244,29 @@ main{max-width:1360px;margin:0 auto;padding:18px}
 .conteo b{color:var(--ink);font-weight:600}
 .conteo.vacia{background:#FAE9E7;border-color:#E0AFA9;color:var(--urgent)}
 
+/* ---- Gestión de usuarios ---- */
+.tabla-usuarios{width:100%;border-collapse:collapse;font-size:13px;margin-bottom:12px}
+.tabla-usuarios th{text-align:left;font-size:11.5px;color:var(--ink-3);font-weight:500;
+  padding:0 6px 6px 0;border-bottom:1px solid var(--line-soft)}
+.tabla-usuarios td{padding:6px 6px 6px 0;border-bottom:1px solid var(--line-soft);
+  vertical-align:middle}
+.tabla-usuarios select{padding:4px 6px;font-size:12.5px}
+.tabla-usuarios .nom{font-weight:500}
+.tabla-usuarios .cor{font-size:11.5px;color:var(--ink-3)}
+.quitar{background:none;border:0;color:var(--urgent);font-size:12px;text-decoration:underline;padding:2px}
+.nuevo-usuario{display:grid;grid-template-columns:1fr 1fr auto auto auto;gap:6px;
+  align-items:center;background:var(--field);padding:10px;border-radius:var(--radius)}
+.nuevo-usuario input,.nuevo-usuario select{background:#fff!important;font-size:12.5px;padding:6px 8px}
+.nuevo-usuario button{background:var(--ink);color:#fff;border:0;border-radius:var(--radius);
+  padding:7px 13px;font-weight:500;font-size:12.5px}
+
 /* ---- Avisos ---- */
 #aviso{position:fixed;left:50%;bottom:22px;transform:translateX(-50%) translateY(16px);
   background:var(--ink);color:#fff;padding:10px 18px;border-radius:var(--radius);
   font-size:13px;opacity:0;pointer-events:none;transition:opacity .18s,transform .18s;z-index:80}
 #aviso.show{opacity:1;transform:translateX(-50%) translateY(0)}
 #aviso.malo{background:var(--urgent)}
-.banner{background:#FAE9E7;border:1px solid #E0AFA9;color:var(--urgent);padding:9px 14px;
-  border-radius:var(--radius);font-size:12.5px;margin-bottom:14px}
 .movil-abrir{display:none}
-.oculto{display:none!important}
 
 @media (max-width:900px){
   .workspace{grid-template-columns:1fr}
@@ -243,12 +274,13 @@ main{max-width:1360px;margin:0 auto;padding:18px}
   .capture.abierta{display:block}
   .movil-abrir{display:block;width:100%;margin-bottom:14px}
   .grid2{grid-template-columns:1fr}
-  header{gap:12px;padding:0 12px}
-  #buscar{width:110px}
+  header{gap:10px;padding:0 12px}
+  #buscar{width:100px}
   .quien{display:none}
   main{padding:12px}
   .stat b{font-size:18px}
   .trio{grid-template-columns:1fr}
+  .nuevo-usuario{grid-template-columns:1fr 1fr}
 }
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
 </style>
@@ -266,7 +298,7 @@ main{max-width:1360px;margin:0 auto;padding:18px}
       Entrar con Google
     </button>
     <p style="margin:16px 0 0;font-size:12px;color:var(--ink-3)">
-      Solo cuentas institucionales
+      Acceso restringido al equipo autorizado
     </p>
   </div>
 </div>
@@ -282,15 +314,13 @@ main{max-width:1360px;margin:0 auto;padding:18px}
   <div class="head-right">
     <input type="text" id="buscar" placeholder="Buscar…" autocomplete="off">
     <button class="icon-btn" id="btn-exportar">Exportar</button>
-    <button class="icon-btn" id="btn-ajustes">Ajustes</button>
+    <button class="icon-btn oculto" id="btn-ajustes">Ajustes</button>
     <span class="quien" id="quien"></span>
     <button class="icon-btn" id="btn-salir">Salir</button>
   </div>
 </header>
 
 <main>
-  <div id="banner"></div>
-
   <section id="vista-bandeja">
     <button class="btn-primary movil-abrir" id="movil-abrir">Registrar solicitud</button>
     <div class="workspace">
@@ -308,11 +338,14 @@ main{max-width:1360px;margin:0 auto;padding:18px}
           </div>
           <div class="f duo">
             <div><label for="c-unidad">Unidad</label><select id="c-unidad"></select></div>
-            <div><label for="c-categoria">Categoría</label><select id="c-categoria"></select></div>
+            <div><label for="c-categoria">Tipo</label><select id="c-categoria"></select></div>
           </div>
-          <div class="f">
-            <label for="c-tecnico">Asignada a</label>
-            <select id="c-tecnico"></select>
+          <div class="f duo">
+            <div><label for="c-nivel">Nivel</label><select id="c-nivel">
+              <option value="1">Nivel 1 · Soporte</option>
+              <option value="2">Nivel 2 · Desarrollo y sistemas</option>
+            </select></div>
+            <div><label for="c-tecnico">Asignada a</label><select id="c-tecnico"></select></div>
           </div>
           <div class="f">
             <label>Por dónde llegó</label>
@@ -327,7 +360,7 @@ main{max-width:1360px;margin:0 auto;padding:18px}
                 <svg viewBox="0 0 24 24"><rect x="2.5" y="5" width="19" height="14" rx="2"/><path d="M3 7l9 6 9-6"/></svg>Correo</button>
             </div>
             <p class="nota-canal oculto" id="nota-correo">
-              Si el correo llegó al grupo de soporte, revisa la bandeja antes de registrarlo:
+              Si el correo llegó al grupo de soporte, revisa la bandeja antes:
               lo más probable es que ya esté ingresado.
             </p>
           </div>
@@ -364,7 +397,7 @@ main{max-width:1360px;margin:0 auto;padding:18px}
     <div class="stats-strip" id="resumen-strip"></div>
     <div class="grid2">
       <div class="panel"><div class="panel-title">Por dónde llegan las solicitudes</div><div class="bars" id="bars-canal"></div></div>
-      <div class="panel"><div class="panel-title">Categorías más frecuentes</div><div class="bars" id="bars-categoria"></div></div>
+      <div class="panel"><div class="panel-title">Tipos más frecuentes</div><div class="bars" id="bars-categoria"></div></div>
       <div class="panel"><div class="panel-title">Unidades que más solicitan</div><div class="bars" id="bars-unidad"></div></div>
       <div class="panel"><div class="panel-title">Carga por mes</div><div class="bars" id="bars-mes"></div></div>
     </div>
@@ -385,6 +418,7 @@ main{max-width:1360px;margin:0 auto;padding:18px}
   <div class="drawer-body">
     <dl class="kv" id="d-kv"></dl>
     <div id="d-responder"></div>
+
     <h3 class="sec-h">Clasificación</h3>
     <div class="trio">
       <div><label for="d-unidad">Unidad</label><select id="d-unidad"></select></div>
@@ -393,11 +427,16 @@ main{max-width:1360px;margin:0 auto;padding:18px}
         <option>Baja</option><option>Media</option><option>Alta</option></select></div>
       <div><label for="d-tecnico">Profesional asignado</label><select id="d-tecnico"></select></div>
     </div>
+
+    <div id="d-derivacion"></div>
+
     <h3 class="sec-h">Observación</h3>
     <textarea id="d-observacion" class="obs" placeholder="Anotaciones internas que van en la planilla."></textarea>
+
     <h3 class="sec-h">Estado</h3>
     <div class="estado-row" id="d-estados"></div>
     <div id="d-solucion"></div>
+
     <h3 class="sec-h">Bitácora</h3>
     <ul class="bitacora" id="d-bitacora"></ul>
     <div class="add-nota">
@@ -410,32 +449,49 @@ main{max-width:1360px;margin:0 auto;padding:18px}
 <!-- ================= AJUSTES ================= -->
 <div class="modal" id="modal-ajustes">
   <div class="modal-card">
-    <h2>Unidades y categorías</h2>
+    <h2>Equipo autorizado</h2>
+    <table class="tabla-usuarios">
+      <thead><tr><th>Persona</th><th>Rol</th><th>Nivel</th><th>Estado</th><th></th></tr></thead>
+      <tbody id="tabla-usuarios"></tbody>
+    </table>
+    <div class="nuevo-usuario">
+      <input type="text" id="u-nombre" placeholder="Nombre">
+      <input type="text" id="u-correo" placeholder="correo@minciencia.gob.cl">
+      <select id="u-rol"><option value="tecnico">Técnico</option><option value="admin">Admin</option></select>
+      <select id="u-nivel"><option value="1">Nivel 1</option><option value="2">Nivel 2</option></select>
+      <button id="u-agregar">Agregar</button>
+    </div>
+
+    <h2 style="margin-top:22px">Unidades y tipos</h2>
     <div class="f">
       <label for="a-unidades">Unidades (una por línea)</label>
       <textarea id="a-unidades"></textarea>
     </div>
     <div class="f">
-      <label for="a-categorias">Tipos de requerimiento (una por línea)</label>
+      <label for="a-categorias">Tipos de requerimiento (uno por línea)</label>
       <textarea id="a-categorias"></textarea>
     </div>
-    <div class="f">
-      <label for="a-tecnicos">Profesionales / técnicos (uno por línea)</label>
-      <textarea id="a-tecnicos"></textarea>
-    </div>
-    <p style="font-size:12px;color:var(--ink-3);margin:0">
-      Quitar un valor de la lista no afecta a las solicitudes que ya lo usan.
-    </p>
+
     <div class="modal-actions">
-      <button class="btn-ghost" id="a-cancelar">Cancelar</button>
-      <button class="btn-primary" style="width:auto" id="a-guardar">Guardar cambios</button>
+      <button class="btn-ghost" id="a-cancelar">Cerrar</button>
+      <button class="btn-primary" style="width:auto" id="a-guardar">Guardar listas</button>
     </div>
   </div>
 </div>
 
+<!-- ================= EXPORTAR ================= -->
 <div class="modal" id="modal-exportar">
   <div class="modal-card">
     <h2>Exportar a planilla</h2>
+
+    <div class="f" id="e-ambito-caja">
+      <label for="e-ambito">Planilla</label>
+      <select id="e-ambito">
+        <option value="n1">Nivel 1 · Soporte</option>
+        <option value="n2">Nivel 2 · Desarrollo y sistemas</option>
+        <option value="todo">Consolidada (ambos niveles)</option>
+      </select>
+    </div>
 
     <div class="f">
       <label>Período</label>
@@ -494,10 +550,9 @@ main{max-width:1360px;margin:0 auto;padding:18px}
 var CONFIG = {
   SUPABASE_URL: "https://xmmnjbusqfbglorxzpdg.supabase.co",
 
-  // Pega aquí la anon key: Supabase > Project Settings > API > anon public
-  SUPABASE_ANON_KEY: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhtbW5qYnVzcWZiZ2xvcnh6cGRnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODg4NzU2MjEsImV4cCI6MjEwNDQ1MTYyMX0.kcnV99OTosocpmreYC9zZ19agNNrdouFwwzJ-33H7Ms",
+  // Supabase > Project Settings > API > anon public
+  SUPABASE_ANON_KEY: "PEGA_AQUI_TU_ANON_KEY",
 
-  // Dominio institucional autorizado
   DOMINIO: "minciencia.gob.cl"
 };
 /* ===================================================================== */
@@ -505,6 +560,7 @@ var CONFIG = {
 var SB = window.supabase.createClient(CONFIG.SUPABASE_URL, CONFIG.SUPABASE_ANON_KEY);
 
 var ESTADOS = ["Nueva","En atención","En espera","Resuelta"];
+var NIVELES = {1:"Nivel 1 · Soporte", 2:"Nivel 2 · Desarrollo y sistemas"};
 var ICONOS = {
   "Correo":'<svg viewBox="0 0 24 24"><rect x="2.5" y="5" width="19" height="14" rx="2"/><path d="M3 7l9 6 9-6"/></svg>',
   "Chat":'<svg viewBox="0 0 24 24"><path d="M20 4H4a1.5 1.5 0 0 0-1.5 1.5v9A1.5 1.5 0 0 0 4 16h3v4l4.5-4H20a1.5 1.5 0 0 0 1.5-1.5v-9A1.5 1.5 0 0 0 20 4z"/></svg>',
@@ -513,7 +569,7 @@ var ICONOS = {
 };
 
 var estado = {
-  usuario:null, solicitudes:[], unidades:[], categorias:[], tecnicos:[],
+  perfil:null, solicitudes:[], usuarios:[], unidades:[], categorias:[],
   filtro:"abiertas", busqueda:"", canal:"Chat", prioridad:"Media",
   abierto:null, vista:"bandeja"
 };
@@ -521,14 +577,24 @@ var estado = {
 /* ---------- Utilidades ---------- */
 function $(s){ return document.querySelector(s); }
 function crear(t,c,x){ var e=document.createElement(t); if(c)e.className=c; if(x!==undefined)e.textContent=x; return e; }
-function claseEstado(e){
-  return e==="En atención"?"e-atencion":e==="En espera"?"e-espera":"e-"+e;
-}
+function esAdmin(){ return estado.perfil && estado.perfil.rol==="admin"; }
+function claseEstado(e){ return e==="En atención"?"e-atencion":e==="En espera"?"e-espera":"e-"+e; }
 function etiquetaCanal(c){ return c==="Presencial"?"En persona":c; }
 function fechaLarga(iso){
+  if(!iso) return "";
   var d=new Date(iso);
   return d.toLocaleDateString("es-CL",{day:"2-digit",month:"2-digit",year:"numeric"})+" · "+
          d.toLocaleTimeString("es-CL",{hour:"2-digit",minute:"2-digit"});
+}
+function soloFecha(iso){ return iso? new Date(iso).toLocaleDateString("es-CL") : ""; }
+function soloHora(iso){
+  return iso? new Date(iso).toLocaleTimeString("es-CL",{hour:"2-digit",minute:"2-digit"}) : "";
+}
+function duracion(desde,hasta){
+  if(!desde||!hasta) return "";
+  var min=Math.max(1,Math.round((new Date(hasta)-new Date(desde))/60000));
+  var h=Math.floor(min/60), m=min%60;
+  return (h? h+" h ":"")+m+" min";
 }
 function edad(iso){
   var min=Math.floor((Date.now()-new Date(iso).getTime())/60000);
@@ -549,7 +615,15 @@ function aviso(txt,malo){
 }
 function fallo(err,contexto){
   console.error(contexto,err);
-  aviso("No se pudo "+contexto+". Revisa la conexión.",true);
+  aviso("No se pudo "+contexto+".",true);
+}
+function nombreDe(correo){
+  if(!correo) return "";
+  var u=estado.usuarios.filter(function(x){return x.correo===correo;})[0];
+  return u? u.nombre : correo;
+}
+function tecnicosDe(nivel){
+  return estado.usuarios.filter(function(u){ return u.activo && u.nivel===nivel; });
 }
 
 /* =====================================================================
@@ -577,19 +651,26 @@ $("#btn-salir").onclick = async function(){
 
 async function revisarSesion(){
   var { data } = await SB.auth.getSession();
-  var sesion = data.session;
-  if(!sesion) return mostrarAcceso();
+  if(!data.session) return mostrarAcceso();
 
-  var correo = (sesion.user.email||"").toLowerCase();
-  if(CONFIG.DOMINIO && correo.indexOf("@"+CONFIG.DOMINIO) < 0){
+  var correo=(data.session.user.email||"").toLowerCase();
+
+  // La lista blanca manda: no basta con tener cuenta institucional
+  var { data: filas, error } = await SB.from("usuarios")
+    .select("*").eq("correo",correo).eq("activo",true).limit(1);
+
+  if(error || !filas || !filas.length){
     await SB.auth.signOut();
     $("#acceso-error").innerHTML =
-      '<div class="acceso-error">La cuenta '+correo+' no pertenece al dominio institucional.</div>';
+      '<div class="acceso-error"><b>Sin acceso.</b><br>La cuenta '+correo+
+      ' no está en la lista del equipo. Pídele al administrador de la mesa de ayuda que te agregue.</div>';
     return mostrarAcceso();
   }
 
-  estado.usuario = sesion.user;
-  $("#quien").textContent = correo;
+  estado.perfil = filas[0];
+  $("#quien").innerHTML = "<b>"+estado.perfil.nombre+"</b>"+
+    (esAdmin()? "Administrador" : "Nivel "+estado.perfil.nivel);
+  $("#btn-ajustes").classList.toggle("oculto", !esAdmin());
   $("#acceso").classList.add("oculto");
   $("#app").classList.remove("oculto");
   await arrancar();
@@ -601,22 +682,27 @@ function mostrarAcceso(){
 }
 
 SB.auth.onAuthStateChange(function(evento){
-  if(evento==="SIGNED_IN" && !estado.usuario) revisarSesion();
+  if(evento==="SIGNED_IN" && !estado.perfil) revisarSesion();
 });
 
 /* =====================================================================
    CARGA DE DATOS
    ===================================================================== */
+async function cargarUsuarios(){
+  var { data, error } = await SB.from("usuarios").select("*").order("nombre");
+  if(error) return fallo(error,"cargar el equipo");
+  estado.usuarios=data;
+}
+
 async function cargarCatalogos(){
   var { data, error } = await SB.from("catalogos").select("tipo,valor").eq("activo",true).order("valor");
   if(error) return fallo(error,"cargar las listas");
   estado.unidades   = data.filter(function(c){return c.tipo==="unidad";}).map(function(c){return c.valor;});
   estado.categorias = data.filter(function(c){return c.tipo==="categoria";}).map(function(c){return c.valor;});
-  estado.tecnicos   = data.filter(function(c){return c.tipo==="tecnico";}).map(function(c){return c.valor;});
-  poblarSelects();
 }
 
 async function cargarSolicitudes(){
+  // La base ya filtra por nivel según el rol: aquí no hay que hacer nada.
   var { data, error } = await SB.from("solicitudes").select("*")
     .order("creada",{ascending:false}).limit(1000);
   if(error){ fallo(error,"cargar las solicitudes"); return; }
@@ -625,16 +711,23 @@ async function cargarSolicitudes(){
 }
 
 function poblarSelects(){
-  [["#c-unidad",estado.unidades,false],["#c-categoria",estado.categorias,false],
-   ["#d-unidad",estado.unidades,false],["#d-categoria",estado.categorias,false],
-   ["#c-tecnico",estado.tecnicos,true],["#d-tecnico",estado.tecnicos,true]].forEach(function(par){
+  [["#c-unidad",estado.unidades],["#c-categoria",estado.categorias],
+   ["#d-unidad",estado.unidades],["#d-categoria",estado.categorias]].forEach(function(par){
     var sel=$(par[0]); if(!sel) return;
     var previo=sel.value;
     sel.innerHTML="";
-    if(par[2]) sel.appendChild(new Option("Sin asignar",""));
-    par[1].forEach(function(v){ if(v!=="Sin asignar") sel.appendChild(new Option(v,v)); });
+    par[1].forEach(function(v){ sel.appendChild(new Option(v,v)); });
     if(previo) sel.value=previo;
   });
+
+  // El nivel solo lo elige el admin
+  var selNivel=$("#c-nivel");
+  if(!esAdmin()){
+    selNivel.value=String(estado.perfil.nivel);
+    selNivel.disabled=true;
+  }
+  poblarTecnicos("#c-tecnico", parseInt(selNivel.value,10));
+
   var dl=$("#l-personas"); dl.innerHTML="";
   var vistos={};
   estado.solicitudes.forEach(function(s){
@@ -642,22 +735,48 @@ function poblarSelects(){
   });
 }
 
+function poblarTecnicos(sel,nivel){
+  var s=$(sel); if(!s) return;
+  var previo=s.value;
+  s.innerHTML="";
+  s.appendChild(new Option("Sin asignar",""));
+  tecnicosDe(nivel).forEach(function(u){ s.appendChild(new Option(u.nombre,u.correo)); });
+  if(previo) s.value=previo;
+}
+
+function ponerValor(sel,valor){
+  var s=$(sel); if(!s) return;
+  if(!valor){ s.value=""; return; }
+  var existe=Array.prototype.some.call(s.options,function(o){return o.value===valor;});
+  if(!existe) s.appendChild(new Option(valor+" (fuera de lista)",valor));
+  s.value=valor;
+}
+
 /* ---------- Actualización en vivo ---------- */
 function escucharCambios(){
   SB.channel("mesa-ayuda")
-    .on("postgres_changes",{event:"*",schema:"public",table:"solicitudes"}, function(payload){
-      if(payload.eventType==="INSERT"){
-        var s=payload.new;
+    .on("postgres_changes",{event:"*",schema:"public",table:"solicitudes"}, function(p){
+      if(p.eventType==="INSERT"){
+        var s=p.new;
+        if(!esAdmin() && s.nivel!==estado.perfil.nivel) return;
         if(!estado.solicitudes.some(function(x){return x.id===s.id;})){
           estado.solicitudes.unshift(s);
           if(s.origen==="correo") aviso("Nueva solicitud por correo: "+s.folio);
         }
-      } else if(payload.eventType==="UPDATE"){
-        estado.solicitudes = estado.solicitudes.map(function(x){
-          return x.id===payload.new.id ? payload.new : x;
-        });
-      } else if(payload.eventType==="DELETE"){
-        estado.solicitudes = estado.solicitudes.filter(function(x){return x.id!==payload.old.id;});
+      } else if(p.eventType==="UPDATE"){
+        var visible = esAdmin() || p.new.nivel===estado.perfil.nivel;
+        var estaba = estado.solicitudes.some(function(x){return x.id===p.new.id;});
+        if(visible && estaba){
+          estado.solicitudes=estado.solicitudes.map(function(x){ return x.id===p.new.id? p.new : x; });
+        } else if(visible && !estaba){
+          estado.solicitudes.unshift(p.new);
+          aviso("Te derivaron "+p.new.folio);
+        } else if(!visible && estaba){
+          estado.solicitudes=estado.solicitudes.filter(function(x){return x.id!==p.new.id;});
+          if(estado.abierto===p.new.id) cerrar();
+        }
+      } else if(p.eventType==="DELETE"){
+        estado.solicitudes=estado.solicitudes.filter(function(x){return x.id!==p.old.id;});
       }
       pintar();
       if(estado.abierto) pintarDetalle();
@@ -677,12 +796,14 @@ async function registrar(){
   var boton=$("#btn-registrar");
   boton.disabled=true; boton.textContent="Registrando…";
 
+  var nivel=parseInt($("#c-nivel").value,10);
   var registro={
     solicitante:solicitante,
     correo:$("#c-correo").value.trim().toLowerCase()||null,
     asunto:asunto,
     unidad:$("#c-unidad").value,
     categoria:$("#c-categoria").value,
+    nivel:nivel,
     tecnico:$("#c-tecnico").value||null,
     canal:estado.canal,
     prioridad:estado.prioridad,
@@ -690,23 +811,23 @@ async function registrar(){
     estado:"Nueva",
     origen:"manual"
   };
+  if(nivel===2) registro.derivada=new Date().toISOString();
 
   var { data, error } = await SB.from("solicitudes").insert(registro).select().single();
 
   boton.disabled=false; boton.textContent="Registrar solicitud";
-
   if(error) return fallo(error,"registrar la solicitud");
 
   await SB.from("bitacora").insert({
     solicitud_id:data.id,
-    texto:"Solicitud registrada por "+etiquetaCanal(estado.canal).toLowerCase()+".",
-    autor:estado.usuario.email,
-    sistema:true
+    texto:"Solicitud registrada por "+etiquetaCanal(estado.canal).toLowerCase()+
+          " en "+NIVELES[nivel].split(" · ")[0]+".",
+    autor:estado.perfil.correo, sistema:true
   });
 
   if(!estado.solicitudes.some(function(x){return x.id===data.id;})) estado.solicitudes.unshift(data);
-  $("#c-solicitante").value=""; $("#c-asunto").value=""; $("#c-detalle").value="";
-  $("#c-correo").value="";
+  $("#c-solicitante").value=""; $("#c-asunto").value="";
+  $("#c-detalle").value=""; $("#c-correo").value="";
   poblarSelects(); pintar();
   $("#c-solicitante").focus();
   aviso("Registrada como "+data.folio);
@@ -722,8 +843,12 @@ function filtradas(){
     if(ESTADOS.indexOf(estado.filtro)>=0 && s.estado!==estado.filtro) return false;
     if(estado.filtro==="urgentes" && (s.prioridad!=="Alta"||!abierta(s))) return false;
     if(estado.filtro==="sinasignar" && (s.tecnico||!abierta(s))) return false;
+    if(estado.filtro==="mias" && s.tecnico!==estado.perfil.correo) return false;
+    if(estado.filtro==="n1" && s.nivel!==1) return false;
+    if(estado.filtro==="n2" && s.nivel!==2) return false;
     if(q){
-      var blob=[s.folio,s.solicitante,s.correo,s.asunto,s.unidad,s.categoria,s.detalle].join(" ").toLowerCase();
+      var blob=[s.folio,s.solicitante,s.correo,s.asunto,s.unidad,s.categoria,
+                s.detalle,nombreDe(s.tecnico)].join(" ").toLowerCase();
       if(blob.indexOf(q)<0) return false;
     }
     return true;
@@ -742,9 +867,12 @@ function pintarStats(){
   var vals=[
     [s.filter(abierta).length,"abiertas",""],
     [s.filter(function(x){return x.prioridad==="Alta"&&abierta(x);}).length,"prioridad alta","is-urgent"],
-    [s.filter(function(x){return x.estado==="En espera";}).length,"esperando al usuario",""],
-    [s.filter(function(x){return new Date(x.creada).toDateString()===hoy;}).length,"registradas hoy",""]
+    [s.filter(function(x){return abierta(x)&&!x.tecnico;}).length,"sin asignar",""],
+    [s.filter(function(x){return new Date(x.creada).toDateString()===hoy;}).length,"ingresadas hoy",""]
   ];
+  if(esAdmin()){
+    vals.splice(3,0,[s.filter(function(x){return x.nivel===2&&abierta(x);}).length,"en nivel 2","is-n2"]);
+  }
   var cont=$("#stats-strip"); cont.innerHTML="";
   vals.forEach(function(t){
     var d=crear("div","stat "+t[2]);
@@ -756,15 +884,24 @@ function pintarStats(){
 
 function pintarFiltros(){
   var cont=$("#filtros"); cont.innerHTML="";
-  [["abiertas","Abiertas"],["urgentes","Prioridad alta"],["Nueva","Sin atender"],
-   ["sinasignar","Sin asignar"],["En atención","En atención"],["En espera","En espera"],
-   ["Resuelta","Resueltas"],["todas","Todas"]]
-  .forEach(function(o){
+  var ops=[["abiertas","Abiertas"],["urgentes","Prioridad alta"],["mias","Asignadas a mí"],
+           ["sinasignar","Sin asignar"],["Nueva","Sin atender"],["En atención","En atención"],
+           ["En espera","En espera"],["Resuelta","Resueltas"],["todas","Todas"]];
+  ops.forEach(function(o){
     var b=crear("button",null,o[1]);
     b.setAttribute("aria-pressed", estado.filtro===o[0]);
     b.onclick=function(){ estado.filtro=o[0]; pintar(); };
     cont.appendChild(b);
   });
+  if(esAdmin()){
+    cont.appendChild(crear("div","sep"));
+    [["n1","Nivel 1"],["n2","Nivel 2"]].forEach(function(o){
+      var b=crear("button",null,o[1]);
+      b.setAttribute("aria-pressed", estado.filtro===o[0]);
+      b.onclick=function(){ estado.filtro=o[0]; pintar(); };
+      cont.appendChild(b);
+    });
+  }
 }
 
 function pintarLista(){
@@ -775,7 +912,7 @@ function pintarLista(){
     v.appendChild(crear("b",null, estado.solicitudes.length?"Nada por aquí":"Todavía no hay solicitudes"));
     v.appendChild(crear("div",null, estado.solicitudes.length
       ? "Ninguna solicitud coincide con este filtro."
-      : "Las que lleguen por correo aparecerán solas. Las demás, con el formulario."));
+      : "Las que lleguen al correo de soporte aparecerán solas."));
     cont.appendChild(v);
     return;
   }
@@ -786,6 +923,9 @@ function pintarLista(){
     var l1=crear("div","t-line1");
     l1.appendChild(crear("span","folio mono",s.folio));
     l1.appendChild(crear("span","chip "+claseEstado(s.estado),s.estado));
+    if(esAdmin() || s.nivel===2){
+      l1.appendChild(crear("span","nivel"+(s.nivel===2?" n2":""),"N"+s.nivel));
+    }
     var canal=crear("span","canal");
     canal.innerHTML=ICONOS[s.canal]+"<span>"+etiquetaCanal(s.canal)+"</span>";
     l1.appendChild(canal);
@@ -799,7 +939,7 @@ function pintarLista(){
     b.appendChild(crear("div","t-asunto",s.asunto));
     b.appendChild(crear("div","t-meta",
       s.solicitante+" · "+(s.unidad||"Por definir")+" · "+s.categoria+
-      (s.tecnico? " · "+s.tecnico : "")));
+      (s.tecnico? " · "+nombreDe(s.tecnico) : "")));
 
     b.onclick=function(){ abrir(s.id); };
     cont.appendChild(b);
@@ -810,16 +950,6 @@ function pintarLista(){
    DETALLE
    ===================================================================== */
 function buscar(id){ return estado.solicitudes.filter(function(s){return s.id===id;})[0]; }
-
-/* Si el valor guardado no está en el catálogo (por ejemplo, una categoría
-   que asignó el Apps Script), se agrega al vuelo para que no quede vacío. */
-function ponerValor(sel,valor){
-  var s=$(sel); if(!s) return;
-  if(!valor){ s.value=""; return; }
-  var existe=Array.prototype.some.call(s.options,function(o){return o.value===valor;});
-  if(!existe) s.appendChild(new Option(valor+" (fuera de lista)",valor));
-  s.value=valor;
-}
 
 async function abrir(id){
   estado.abierto=id;
@@ -846,10 +976,18 @@ function pintarDetalle(){
   var filas=[["Solicitante",s.solicitante]];
   if(s.correo) filas.push(["Correo",s.correo]);
   filas.push(["Canal",etiquetaCanal(s.canal)+(s.origen==="correo"?" (automática)":"")]);
-  filas.push(["Registrada",fechaLarga(s.creada)]);
+  filas.push(["Nivel",NIVELES[s.nivel]]);
+  filas.push(["Ingreso",fechaLarga(s.creada)]);
+  if(s.derivada){
+    filas.push(["Derivada",fechaLarga(s.derivada)+" · "+duracion(s.creada,s.derivada)+" en soporte"]);
+    if(s.motivo_deriv) filas.push(["Motivo",s.motivo_deriv]);
+  }
   if(s.detalle) filas.push(["Detalle",s.detalle]);
-  if(s.resuelta) filas.push(["Resuelta",fechaLarga(s.resuelta)+" · "+
-    Math.max(1,Math.round(dias(s.creada,s.resuelta)*24))+" h"]);
+  if(s.resuelta){
+    filas.push(["Término",fechaLarga(s.resuelta)]);
+    filas.push(["Duración total",duracion(s.creada,s.resuelta)]);
+    if(s.derivada) filas.push(["En nivel 2",duracion(s.derivada,s.resuelta)]);
+  }
   filas.forEach(function(f){ kv.appendChild(crear("dt",null,f[0])); kv.appendChild(crear("dd",null,f[1])); });
 
   var resp=$("#d-responder"); resp.innerHTML="";
@@ -864,8 +1002,11 @@ function pintarDetalle(){
   ponerValor("#d-unidad", s.unidad);
   ponerValor("#d-categoria", s.categoria);
   $("#d-prioridad").value = s.prioridad;
+  poblarTecnicos("#d-tecnico", s.nivel);
   ponerValor("#d-tecnico", s.tecnico || "");
   $("#d-observacion").value = s.observacion || "";
+
+  pintarDerivacion(s);
 
   var er=$("#d-estados"); er.innerHTML="";
   ESTADOS.forEach(function(e){
@@ -892,6 +1033,55 @@ function pintarDetalle(){
   }
 }
 
+function pintarDerivacion(s){
+  var cont=$("#d-derivacion"); cont.innerHTML="";
+  if(!esAdmin()) return;   // solo el administrador mueve tickets entre niveles
+
+  var box=crear("div","deriv-box");
+  if(s.nivel===1){
+    box.appendChild(crear("p",null,"Derivar a Nivel 2"));
+    var inp=document.createElement("input");
+    inp.type="text";
+    inp.placeholder="Motivo: requiere desarrollo, compra de licencia, caída de sistema…";
+    box.appendChild(inp);
+    var btn=crear("button","btn-deriv","Derivar a Nivel 2");
+    btn.onclick=function(){
+      if(!inp.value.trim()) { inp.focus(); return aviso("Escribe el motivo de la derivación",true); }
+      derivar(s,2,inp.value.trim());
+    };
+    box.appendChild(btn);
+    var nota=crear("p",null,"El tiempo de soporte se cierra en este momento y el conteo de Nivel 2 parte desde aquí.");
+    nota.style.cssText="margin:9px 0 0;font-weight:400;color:var(--ink-2);font-size:12px";
+    box.appendChild(nota);
+  } else {
+    box.appendChild(crear("p",null,"Esta solicitud está en Nivel 2"));
+    var volver=crear("button","btn-deriv volver","Devolver a Nivel 1");
+    volver.onclick=function(){ derivar(s,1,null); };
+    box.appendChild(volver);
+  }
+  cont.appendChild(box);
+}
+
+async function derivar(s,nivel,motivo){
+  var cambio={nivel:nivel};
+  if(motivo!==null && motivo!==undefined) cambio.motivo_deriv=motivo;
+
+  var { data, error } = await SB.from("solicitudes").update(cambio).eq("id",s.id).select().single();
+  if(error) return fallo(error,"derivar la solicitud");
+  Object.assign(s,data);
+
+  await SB.from("bitacora").insert({
+    solicitud_id:s.id,
+    texto: nivel===2
+      ? "Derivada a Nivel 2. Motivo: "+motivo
+      : "Devuelta a Nivel 1.",
+    autor:estado.perfil.correo, sistema:true
+  });
+
+  pintarDetalle(); pintar(); cargarBitacora(s.id);
+  aviso(nivel===2? "Derivada a Nivel 2" : "Devuelta a Nivel 1");
+}
+
 async function cargarBitacora(id){
   var lista=$("#d-bitacora");
   lista.innerHTML="<li style='color:var(--ink-3)'>Cargando…</li>";
@@ -902,7 +1092,8 @@ async function cargarBitacora(id){
   lista.innerHTML="";
   data.forEach(function(n){
     var li=crear("li");
-    li.appendChild(crear("div","bit-meta",fechaLarga(n.fecha)+(n.autor?" · "+n.autor:"")));
+    li.appendChild(crear("div","bit-meta",
+      fechaLarga(n.fecha)+(n.autor? " · "+nombreDe(n.autor) : "")));
     li.appendChild(crear("div","bit-texto"+(n.sistema?" bit-sistema":""),n.texto));
     lista.appendChild(li);
   });
@@ -918,11 +1109,12 @@ async function actualizarCampo(campo,valor){
                  prioridad:"Prioridad",tecnico:"Profesional asignado"};
   await SB.from("bitacora").insert({
     solicitud_id:s.id,
-    texto:(etiquetas[campo]||campo)+": "+(valor||"sin asignar")+".",
-    autor:estado.usuario.email, sistema:true
+    texto:(etiquetas[campo]||campo)+": "+
+          (campo==="tecnico" ? (valor? nombreDe(valor) : "sin asignar") : (valor||"sin definir"))+".",
+    autor:estado.perfil.correo, sistema:true
   });
   pintar(); cargarBitacora(s.id);
-  aviso("Cambio guardado");
+  aviso(campo==="tecnico" && valor ? "Asignada. Se enviará el aviso por correo." : "Cambio guardado");
 }
 
 async function cambiarEstado(s,nuevo){
@@ -932,7 +1124,7 @@ async function cambiarEstado(s,nuevo){
   Object.assign(s,data);
   await SB.from("bitacora").insert({
     solicitud_id:s.id, texto:"Estado cambiado a "+nuevo+".",
-    autor:estado.usuario.email, sistema:true
+    autor:estado.perfil.correo, sistema:true
   });
   pintarDetalle(); pintar(); cargarBitacora(s.id);
 }
@@ -942,7 +1134,7 @@ async function agregarNota(){
   var i=$("#d-nota"); var t=i.value.trim(); if(!t) return;
   i.value="";
   var { error } = await SB.from("bitacora").insert({
-    solicitud_id:s.id, texto:t, autor:estado.usuario.email, sistema:false
+    solicitud_id:s.id, texto:t, autor:estado.perfil.correo, sistema:false
   });
   if(error) return fallo(error,"agregar la nota");
   cargarBitacora(s.id);
@@ -978,7 +1170,16 @@ function pintarBarras(sel,pares,etiquetar){
 function pintarResumen(){
   var s=estado.solicitudes;
   var res=s.filter(function(x){return x.estado==="Resuelta"&&x.resuelta;});
-  var prom = res.length ? res.reduce(function(a,x){return a+dias(x.creada,x.resuelta);},0)/res.length : null;
+
+  // El promedio de soporte cuenta hasta la derivación, no hasta el cierre final
+  var propias=s.filter(function(x){ return x.derivada || (x.estado==="Resuelta"&&x.resuelta); });
+  var suma=0, n=0;
+  propias.forEach(function(x){
+    var fin = x.derivada || x.resuelta;
+    if(fin){ suma += dias(x.creada,fin); n++; }
+  });
+  var prom = n? suma/n : null;
+
   var ahora=new Date();
   var delMes=s.filter(function(x){
     var d=new Date(x.creada);
@@ -987,10 +1188,10 @@ function pintarResumen(){
 
   var strip=$("#resumen-strip"); strip.innerHTML="";
   [[s.length,"solicitudes en total"],
-   [delMes,"registradas este mes"],
+   [delMes,"ingresadas este mes"],
    [res.length,"resueltas"],
    [prom===null?"—":(prom<1?Math.max(1,Math.round(prom*24))+" h":prom.toFixed(1)+" d"),
-    "tiempo promedio de resolución"]]
+    "promedio de atención"]]
   .forEach(function(t){
     var d=crear("div","stat");
     d.appendChild(crear("b",null,t[0]));
@@ -1013,35 +1214,41 @@ function pintarResumen(){
 /* =====================================================================
    EXPORTAR
    ===================================================================== */
-/** "3 h 25 min" a partir de dos marcas de tiempo. */
-function duracion(desde,hasta){
-  if(!desde||!hasta) return "";
-  var min=Math.max(1,Math.round((new Date(hasta)-new Date(desde))/60000));
-  var h=Math.floor(min/60), m=min%60;
-  return (h? h+" h ":"")+m+" min";
-}
-function soloFecha(iso){ return iso? new Date(iso).toLocaleDateString("es-CL") : ""; }
-function soloHora(iso){
-  return iso? new Date(iso).toLocaleTimeString("es-CL",{hour:"2-digit",minute:"2-digit"}) : "";
-}
-
-/** "2026-09" a partir de una marca de tiempo. */
 function mesClave(iso){
   var d=new Date(iso);
   return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0");
 }
 function mesDesplazado(meses){
-  var d=new Date();
-  d.setDate(1);
-  d.setMonth(d.getMonth()+meses);
+  var d=new Date(); d.setDate(1); d.setMonth(d.getMonth()+meses);
   return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0");
 }
-function nombreMes(clave){
-  var p=clave.split("-");
-  return new Date(p[0],p[1]-1,1).toLocaleDateString("es-CL",{month:"long",year:"numeric"});
+
+/**
+ * Cada ámbito ve el mismo ticket con un reloj distinto.
+ * En Nivel 1 una solicitud derivada termina en el momento de la derivación:
+ * así el tiempo del otro equipo no contamina el SLA de soporte.
+ */
+function tramo(s,ambito){
+  if(ambito==="n2"){
+    return { ingreso:s.derivada, termino:s.resuelta, estado:s.estado };
+  }
+  if(ambito==="n1"){
+    return s.nivel===2
+      ? { ingreso:s.creada, termino:s.derivada, estado:"Derivada a Nivel 2" }
+      : { ingreso:s.creada, termino:s.resuelta, estado:s.estado };
+  }
+  return { ingreso:s.creada, termino:s.resuelta, estado:s.estado };
 }
 
 function abrirExportar(){
+  var caja=$("#e-ambito-caja");
+  if(esAdmin()){
+    caja.classList.remove("oculto");
+  } else {
+    caja.classList.add("oculto");
+    $("#e-ambito").value = estado.perfil.nivel===2 ? "n2" : "n1";
+  }
+
   aplicarRango("mes");
 
   var cont=$("#e-estados"); cont.innerHTML="";
@@ -1055,17 +1262,21 @@ function abrirExportar(){
     cont.appendChild(lab);
   });
 
-  var t=$("#e-tecnico"); t.innerHTML="";
-  t.appendChild(new Option("Todos",""));
-  estado.tecnicos.forEach(function(v){
-    if(v!=="Sin asignar") t.appendChild(new Option(v,v));
-  });
-  t.appendChild(new Option("Sin asignar","__sin__"));
-
+  poblarTecnicosExport();
   $("#e-todo").checked=false;
   $("#e-base").value="creada";
   actualizarConteo();
   $("#modal-exportar").classList.add("open");
+}
+
+function poblarTecnicosExport(){
+  var amb=$("#e-ambito").value;
+  var t=$("#e-tecnico"); t.innerHTML="";
+  t.appendChild(new Option("Todos",""));
+  var lista = amb==="todo" ? estado.usuarios.filter(function(u){return u.activo;})
+            : tecnicosDe(amb==="n2"?2:1);
+  lista.forEach(function(u){ t.appendChild(new Option(u.nombre,u.correo)); });
+  t.appendChild(new Option("Sin asignar","__sin__"));
 }
 
 function aplicarRango(cual){
@@ -1082,6 +1293,7 @@ function aplicarRango(cual){
 }
 
 function seleccionExportar(){
+  var amb=$("#e-ambito").value;
   var todo=$("#e-todo").checked;
   var desde=$("#e-desde").value, hasta=$("#e-hasta").value;
   var base=$("#e-base").value;
@@ -1090,18 +1302,30 @@ function seleccionExportar(){
   var tec=$("#e-tecnico").value;
 
   return estado.solicitudes.filter(function(s){
-    if(estados.indexOf(s.estado)<0) return false;
+    if(amb==="n2" && (s.nivel!==2 || !s.derivada)) return false;
+
+    // En la planilla de Nivel 1, una derivada se informa como cerrada por
+    // derivación, así que no se filtra por su estado actual.
+    if(!(amb==="n1" && s.nivel===2)){
+      if(estados.indexOf(s.estado)<0) return false;
+    }
+
     if(tec==="__sin__" && s.tecnico) return false;
     if(tec && tec!=="__sin__" && s.tecnico!==tec) return false;
+
     if(!todo){
-      var iso = base==="resuelta" ? s.resuelta : s.creada;
-      if(!iso) return false;                     // sin fecha de término aún
+      var t=tramo(s,amb);
+      var iso = base==="resuelta" ? t.termino : t.ingreso;
+      if(!iso) return false;
       var k=mesClave(iso);
       if(desde && k<desde) return false;
       if(hasta && k>hasta) return false;
     }
     return true;
-  }).sort(function(a,b){ return new Date(a.creada)-new Date(b.creada); });
+  }).sort(function(a,b){
+    var ta=tramo(a,amb).ingreso, tb=tramo(b,amb).ingreso;
+    return new Date(ta)-new Date(tb);
+  });
 }
 
 function actualizarConteo(){
@@ -1120,12 +1344,15 @@ function actualizarConteo(){
 }
 
 function nombreArchivo(){
-  if($("#e-todo").checked) return "Tickets-Soporte-historico.csv";
+  var amb=$("#e-ambito").value;
+  var etiqueta = amb==="n1"?"Nivel1" : amb==="n2"?"Nivel2" : "Consolidado";
+  if($("#e-todo").checked) return "Tickets-"+etiqueta+"-historico.csv";
   var d=$("#e-desde").value, h=$("#e-hasta").value;
-  return "Tickets-Soporte-"+(d===h? d : d+"_a_"+h)+".csv";
+  return "Tickets-"+etiqueta+"-"+(d===h? d : d+"_a_"+h)+".csv";
 }
 
 async function exportar(){
+  var amb=$("#e-ambito").value;
   var seleccion=seleccionExportar();
   if(!seleccion.length) return aviso("Ninguna solicitud cumple con estos criterios",true);
   aviso("Preparando la planilla…");
@@ -1141,17 +1368,27 @@ async function exportar(){
            "Usuario (solicitante)","Tipo de Requerimiento","Solicitud","Solución",
            "Observación","Estado de Ticket","Profesional/Técnico asignado",
            "Tiempo de Resolución (Horas/Minutos)"];
+  if(amb==="todo") cab.splice(11,0,"Nivel");
 
   var filas=seleccion.map(function(s){
+    var t=tramo(s,amb);
     var solicitud=s.asunto+(s.detalle? " — "+s.detalle.replace(/\s*\n\s*/g," ") : "");
-    var obs=[s.observacion||"", (porSolicitud[s.id]||[]).join(" | ")]
-              .filter(Boolean).join(" | ");
-    return [
-      s.folio, soloFecha(s.creada), soloHora(s.creada),
-      soloFecha(s.resuelta), soloHora(s.resuelta),
-      s.solicitante, s.categoria, solicitud, s.solucion||"", obs,
-      s.estado, s.tecnico||"Sin asignar", duracion(s.creada,s.resuelta)
+    var obs=[s.observacion||"",
+             s.motivo_deriv? "Derivación: "+s.motivo_deriv : "",
+             (porSolicitud[s.id]||[]).join(" | ")].filter(Boolean).join(" | ");
+    var solucion = (amb==="n1" && s.nivel===2)
+      ? "Derivada a Nivel 2: "+(s.motivo_deriv||"")
+      : (s.solucion||"");
+
+    var fila=[
+      s.folio, soloFecha(t.ingreso), soloHora(t.ingreso),
+      soloFecha(t.termino), soloHora(t.termino),
+      s.solicitante, s.categoria, solicitud, solucion, obs,
+      t.estado, nombreDe(s.tecnico)||"Sin asignar",
+      duracion(t.ingreso,t.termino)
     ];
+    if(amb==="todo") fila.splice(11,0,"Nivel "+s.nivel);
+    return fila;
   });
 
   var csv=[cab].concat(filas).map(function(f){
@@ -1169,31 +1406,113 @@ async function exportar(){
 }
 
 /* =====================================================================
-   AJUSTES
+   AJUSTES (solo admin)
    ===================================================================== */
 function abrirAjustes(){
+  if(!esAdmin()) return;
   $("#a-unidades").value=estado.unidades.join("\n");
   $("#a-categorias").value=estado.categorias.join("\n");
-  $("#a-tecnicos").value=estado.tecnicos.filter(function(t){return t!=="Sin asignar";}).join("\n");
+  pintarTablaUsuarios();
   $("#modal-ajustes").classList.add("open");
 }
 
-async function guardarAjustes(){
+function pintarTablaUsuarios(){
+  var tb=$("#tabla-usuarios"); tb.innerHTML="";
+  estado.usuarios.forEach(function(u){
+    var tr=document.createElement("tr");
+
+    var td1=document.createElement("td");
+    td1.appendChild(crear("div","nom",u.nombre));
+    td1.appendChild(crear("div","cor",u.correo));
+    tr.appendChild(td1);
+
+    var td2=document.createElement("td");
+    var selRol=document.createElement("select");
+    [["tecnico","Técnico"],["admin","Admin"]].forEach(function(o){
+      selRol.appendChild(new Option(o[1],o[0]));
+    });
+    selRol.value=u.rol;
+    selRol.onchange=function(){ actualizarUsuario(u.correo,{rol:selRol.value}); };
+    td2.appendChild(selRol); tr.appendChild(td2);
+
+    var td3=document.createElement("td");
+    var selNiv=document.createElement("select");
+    selNiv.appendChild(new Option("Nivel 1","1"));
+    selNiv.appendChild(new Option("Nivel 2","2"));
+    selNiv.value=String(u.nivel);
+    selNiv.onchange=function(){ actualizarUsuario(u.correo,{nivel:parseInt(selNiv.value,10)}); };
+    td3.appendChild(selNiv); tr.appendChild(td3);
+
+    var td4=document.createElement("td");
+    var selAct=document.createElement("select");
+    selAct.appendChild(new Option("Activo","1"));
+    selAct.appendChild(new Option("Inactivo","0"));
+    selAct.value=u.activo?"1":"0";
+    selAct.onchange=function(){ actualizarUsuario(u.correo,{activo:selAct.value==="1"}); };
+    td4.appendChild(selAct); tr.appendChild(td4);
+
+    var td5=document.createElement("td");
+    if(u.correo!==estado.perfil.correo){
+      var q=crear("button","quitar","Quitar");
+      q.onclick=function(){ quitarUsuario(u); };
+      td5.appendChild(q);
+    }
+    tr.appendChild(td5);
+
+    tb.appendChild(tr);
+  });
+}
+
+async function actualizarUsuario(correo,cambio){
+  var { error } = await SB.from("usuarios").update(cambio).eq("correo",correo);
+  if(error) return fallo(error,"actualizar el usuario");
+  await cargarUsuarios();
+  pintarTablaUsuarios(); poblarSelects(); pintar();
+  aviso("Equipo actualizado");
+}
+
+async function quitarUsuario(u){
+  if(!confirm("¿Quitar a "+u.nombre+" del equipo? Perderá el acceso al panel.")) return;
+  var { error } = await SB.from("usuarios").delete().eq("correo",u.correo);
+  if(error) return fallo(error,"quitar al usuario");
+  await cargarUsuarios();
+  pintarTablaUsuarios(); poblarSelects();
+  aviso("Persona quitada del equipo");
+}
+
+$("#u-agregar").onclick = async function(){
+  var nombre=$("#u-nombre").value.trim();
+  var correo=$("#u-correo").value.trim().toLowerCase();
+  if(!nombre) { $("#u-nombre").focus(); return aviso("Falta el nombre",true); }
+  if(correo.indexOf("@")<1) { $("#u-correo").focus(); return aviso("El correo no es válido",true); }
+
+  var { error } = await SB.from("usuarios").upsert({
+    correo:correo, nombre:nombre,
+    rol:$("#u-rol").value, nivel:parseInt($("#u-nivel").value,10), activo:true
+  },{onConflict:"correo"});
+  if(error) return fallo(error,"agregar al usuario");
+
+  $("#u-nombre").value=""; $("#u-correo").value="";
+  await cargarUsuarios();
+  pintarTablaUsuarios(); poblarSelects();
+  aviso(nombre+" ya puede entrar al panel");
+};
+
+async function guardarListas(){
   var lineas=function(sel){
     return $(sel).value.split("\n").map(function(x){return x.trim();}).filter(Boolean);
   };
-  var u=lineas("#a-unidades"), c=lineas("#a-categorias"), t=lineas("#a-tecnicos");
-  if(!u.length || !c.length) return aviso("Unidades y tipos no pueden quedar vacíos",true);
+  var u=lineas("#a-unidades"), c=lineas("#a-categorias");
+  if(!u.length || !c.length) return aviso("Las listas no pueden quedar vacías",true);
 
-  await SB.from("catalogos").update({activo:false}).in("tipo",["unidad","categoria","tecnico"]);
+  await SB.from("catalogos").update({activo:false}).in("tipo",["unidad","categoria"]);
   var filas=u.map(function(v){return {tipo:"unidad",valor:v,activo:true};})
-    .concat(c.map(function(v){return {tipo:"categoria",valor:v,activo:true};}))
-    .concat(t.map(function(v){return {tipo:"tecnico",valor:v,activo:true};}));
+    .concat(c.map(function(v){return {tipo:"categoria",valor:v,activo:true};}));
   var { error } = await SB.from("catalogos").upsert(filas,{onConflict:"tipo,valor"});
   if(error) return fallo(error,"guardar las listas");
 
   await cargarCatalogos();
-  $("#modal-ajustes").classList.remove("open");
+  poblarSelects();
   aviso("Listas actualizadas");
 }
 
@@ -1229,11 +1548,13 @@ $("#c-prioridad").onclick=function(e){
   estado.prioridad=b.dataset.p;
   this.querySelectorAll("button").forEach(function(x){ x.setAttribute("aria-pressed", x===b); });
 };
+$("#c-nivel").onchange=function(){ poblarTecnicos("#c-tecnico", parseInt(this.value,10)); };
 $("#btn-registrar").onclick=registrar;
 $("#capture").addEventListener("keydown",function(e){
   if((e.ctrlKey||e.metaKey)&&e.key==="Enter") registrar();
 });
 $("#buscar").oninput=function(){ estado.busqueda=this.value; pintarLista(); };
+
 $("#btn-exportar").onclick=abrirExportar;
 $("#e-cancelar").onclick=function(){ $("#modal-exportar").classList.remove("open"); };
 $("#e-descargar").onclick=exportar;
@@ -1243,6 +1564,7 @@ $("#e-rapidos").onclick=function(e){
   $("#e-todo").checked=false;
   aplicarRango(b.dataset.rango);
 };
+$("#e-ambito").onchange=function(){ poblarTecnicosExport(); actualizarConteo(); };
 ["#e-desde","#e-hasta","#e-base","#e-tecnico"].forEach(function(sel){
   $(sel).onchange=function(){
     if(sel==="#e-desde"||sel==="#e-hasta"){
@@ -1254,10 +1576,12 @@ $("#e-rapidos").onclick=function(e){
   };
 });
 $("#e-todo").onchange=actualizarConteo;
+
 $("#btn-ajustes").onclick=abrirAjustes;
 $("#a-cancelar").onclick=function(){ $("#modal-ajustes").classList.remove("open"); };
-$("#a-guardar").onclick=guardarAjustes;
+$("#a-guardar").onclick=guardarListas;
 $("#modal-ajustes").onclick=function(e){ if(e.target===this) this.classList.remove("open"); };
+
 $("#d-cerrar").onclick=cerrar;
 $("#scrim").onclick=cerrar;
 $("#d-agregar").onclick=agregarNota;
@@ -1292,8 +1616,10 @@ document.addEventListener("keydown",function(e){
    ARRANQUE
    ===================================================================== */
 async function arrancar(){
+  await cargarUsuarios();
   await cargarCatalogos();
   await cargarSolicitudes();
+  poblarSelects();
   escucharCambios();
 }
 
