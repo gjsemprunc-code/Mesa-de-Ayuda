@@ -209,6 +209,22 @@ main{max-width:1360px;margin:0 auto;padding:18px}
 .modal-actions{display:flex;gap:8px;justify-content:flex-end;margin-top:14px}
 .btn-ghost{background:var(--field);border:1px solid var(--line);border-radius:var(--radius);
   padding:8px 15px;font-weight:500}
+.rapidos{display:flex;gap:5px;flex-wrap:wrap}
+.rapidos button{background:var(--field);border:1px solid var(--line);border-radius:99px;
+  padding:4px 11px;font-size:12px;color:var(--ink-2);font-weight:500}
+.rapidos button:hover{border-color:var(--accent);color:var(--accent)}
+.rapidos button[aria-pressed="true"]{background:var(--ink);border-color:var(--ink);color:#fff}
+.modal-card input[type=month]{width:100%;background:var(--field);border:1px solid var(--line);
+  border-radius:var(--radius);padding:7px 9px}
+.modal-card input[type=month]:disabled{opacity:.45}
+.check{display:flex;align-items:center;gap:7px;font-size:13px;color:var(--ink);
+  font-weight:400;cursor:pointer}
+.check input{width:15px;height:15px;accent-color:var(--accent);cursor:pointer}
+.checks{display:grid;grid-template-columns:1fr 1fr;gap:7px 12px}
+.conteo{margin:4px 0 0;padding:9px 12px;background:var(--field);border:1px solid var(--line);
+  border-radius:var(--radius);font-size:13px;color:var(--ink-2)}
+.conteo b{color:var(--ink);font-weight:600}
+.conteo.vacia{background:#FAE9E7;border-color:#E0AFA9;color:var(--urgent)}
 
 /* ---- Avisos ---- */
 #aviso{position:fixed;left:50%;bottom:22px;transform:translateX(-50%) translateY(16px);
@@ -417,6 +433,54 @@ main{max-width:1360px;margin:0 auto;padding:18px}
   </div>
 </div>
 
+<div class="modal" id="modal-exportar">
+  <div class="modal-card">
+    <h2>Exportar a planilla</h2>
+
+    <div class="f">
+      <label>Período</label>
+      <div class="rapidos" id="e-rapidos">
+        <button type="button" data-rango="mes">Este mes</button>
+        <button type="button" data-rango="anterior">Mes anterior</button>
+        <button type="button" data-rango="trimestre">Últimos 3 meses</button>
+        <button type="button" data-rango="anio">Este año</button>
+      </div>
+      <div class="duo" style="margin-top:9px">
+        <div><label for="e-desde">Desde</label><input type="month" id="e-desde"></div>
+        <div><label for="e-hasta">Hasta</label><input type="month" id="e-hasta"></div>
+      </div>
+      <label class="check" style="margin-top:8px">
+        <input type="checkbox" id="e-todo"> Todo el histórico, sin filtrar por fecha
+      </label>
+    </div>
+
+    <div class="f">
+      <label for="e-base">Contar el período según</label>
+      <select id="e-base">
+        <option value="creada">Fecha de ingreso</option>
+        <option value="resuelta">Fecha de término</option>
+      </select>
+    </div>
+
+    <div class="f">
+      <label>Estado del ticket</label>
+      <div class="checks" id="e-estados"></div>
+    </div>
+
+    <div class="f">
+      <label for="e-tecnico">Profesional asignado</label>
+      <select id="e-tecnico"></select>
+    </div>
+
+    <p class="conteo" id="e-conteo"></p>
+
+    <div class="modal-actions">
+      <button class="btn-ghost" id="e-cancelar">Cancelar</button>
+      <button class="btn-primary" style="width:auto" id="e-descargar">Descargar</button>
+    </div>
+  </div>
+</div>
+
 <div id="aviso" role="status"></div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
@@ -431,7 +495,7 @@ var CONFIG = {
   SUPABASE_URL: "https://xmmnjbusqfbglorxzpdg.supabase.co",
 
   // Pega aquí la anon key: Supabase > Project Settings > API > anon public
-  SUPABASE_ANON_KEY: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhtbW5qYnVzcWZiZ2xvcnh6cGRnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODg4NzU2MjEsImV4cCI6MjEwNDQ1MTYyMX0.kcnV99OTosocpmreYC9zZ19agNNrdouFwwzJ-33H7Ms",
+  SUPABASE_ANON_KEY: "PEGA_AQUI_TU_ANON_KEY",
 
   // Dominio institucional autorizado
   DOMINIO: "minciencia.gob.cl"
@@ -961,8 +1025,109 @@ function soloHora(iso){
   return iso? new Date(iso).toLocaleTimeString("es-CL",{hour:"2-digit",minute:"2-digit"}) : "";
 }
 
+/** "2026-09" a partir de una marca de tiempo. */
+function mesClave(iso){
+  var d=new Date(iso);
+  return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0");
+}
+function mesDesplazado(meses){
+  var d=new Date();
+  d.setDate(1);
+  d.setMonth(d.getMonth()+meses);
+  return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0");
+}
+function nombreMes(clave){
+  var p=clave.split("-");
+  return new Date(p[0],p[1]-1,1).toLocaleDateString("es-CL",{month:"long",year:"numeric"});
+}
+
+function abrirExportar(){
+  aplicarRango("mes");
+
+  var cont=$("#e-estados"); cont.innerHTML="";
+  ESTADOS.forEach(function(e){
+    var lab=crear("label","check");
+    var inp=document.createElement("input");
+    inp.type="checkbox"; inp.value=e; inp.checked=true;
+    inp.onchange=actualizarConteo;
+    lab.appendChild(inp);
+    lab.appendChild(document.createTextNode(e));
+    cont.appendChild(lab);
+  });
+
+  var t=$("#e-tecnico"); t.innerHTML="";
+  t.appendChild(new Option("Todos",""));
+  estado.tecnicos.forEach(function(v){
+    if(v!=="Sin asignar") t.appendChild(new Option(v,v));
+  });
+  t.appendChild(new Option("Sin asignar","__sin__"));
+
+  $("#e-todo").checked=false;
+  $("#e-base").value="creada";
+  actualizarConteo();
+  $("#modal-exportar").classList.add("open");
+}
+
+function aplicarRango(cual){
+  var desde, hasta=mesDesplazado(0);
+  if(cual==="mes"){ desde=mesDesplazado(0); }
+  else if(cual==="anterior"){ desde=mesDesplazado(-1); hasta=mesDesplazado(-1); }
+  else if(cual==="trimestre"){ desde=mesDesplazado(-2); }
+  else if(cual==="anio"){ desde=new Date().getFullYear()+"-01"; }
+  $("#e-desde").value=desde; $("#e-hasta").value=hasta;
+  $("#e-rapidos").querySelectorAll("button").forEach(function(b){
+    b.setAttribute("aria-pressed", b.dataset.rango===cual);
+  });
+  actualizarConteo();
+}
+
+function seleccionExportar(){
+  var todo=$("#e-todo").checked;
+  var desde=$("#e-desde").value, hasta=$("#e-hasta").value;
+  var base=$("#e-base").value;
+  var estados=Array.prototype.map.call(
+    $("#e-estados").querySelectorAll("input:checked"), function(i){ return i.value; });
+  var tec=$("#e-tecnico").value;
+
+  return estado.solicitudes.filter(function(s){
+    if(estados.indexOf(s.estado)<0) return false;
+    if(tec==="__sin__" && s.tecnico) return false;
+    if(tec && tec!=="__sin__" && s.tecnico!==tec) return false;
+    if(!todo){
+      var iso = base==="resuelta" ? s.resuelta : s.creada;
+      if(!iso) return false;                     // sin fecha de término aún
+      var k=mesClave(iso);
+      if(desde && k<desde) return false;
+      if(hasta && k>hasta) return false;
+    }
+    return true;
+  }).sort(function(a,b){ return new Date(a.creada)-new Date(b.creada); });
+}
+
+function actualizarConteo(){
+  var todo=$("#e-todo").checked;
+  $("#e-desde").disabled=todo;
+  $("#e-hasta").disabled=todo;
+  $("#e-base").disabled=todo;
+
+  var n=seleccionExportar().length;
+  var caja=$("#e-conteo");
+  caja.className = n? "conteo" : "conteo vacia";
+  caja.innerHTML = n
+    ? "Se exportarán <b>"+n+"</b> "+(n===1?"solicitud":"solicitudes")+"."
+    : "Ninguna solicitud cumple con estos criterios.";
+  $("#e-descargar").disabled = !n;
+}
+
+function nombreArchivo(){
+  if($("#e-todo").checked) return "Tickets-Soporte-historico.csv";
+  var d=$("#e-desde").value, h=$("#e-hasta").value;
+  return "Tickets-Soporte-"+(d===h? d : d+"_a_"+h)+".csv";
+}
+
 async function exportar(){
-  if(!estado.solicitudes.length) return aviso("Todavía no hay nada que exportar",true);
+  var seleccion=seleccionExportar();
+  if(!seleccion.length) return aviso("Ninguna solicitud cumple con estos criterios",true);
   aviso("Preparando la planilla…");
 
   var { data: notas } = await SB.from("bitacora").select("solicitud_id,texto,sistema");
@@ -977,29 +1142,15 @@ async function exportar(){
            "Observación","Estado de Ticket","Profesional/Técnico asignado",
            "Tiempo de Resolución (Horas/Minutos)"];
 
-  // De más antigua a más reciente, como se lee una planilla
-  var orden=estado.solicitudes.slice().sort(function(a,b){
-    return new Date(a.creada)-new Date(b.creada);
-  });
-
-  var filas=orden.map(function(s){
+  var filas=seleccion.map(function(s){
     var solicitud=s.asunto+(s.detalle? " — "+s.detalle.replace(/\s*\n\s*/g," ") : "");
     var obs=[s.observacion||"", (porSolicitud[s.id]||[]).join(" | ")]
               .filter(Boolean).join(" | ");
     return [
-      s.folio,
-      soloFecha(s.creada),
-      soloHora(s.creada),
-      soloFecha(s.resuelta),
-      soloHora(s.resuelta),
-      s.solicitante,
-      s.categoria,
-      solicitud,
-      s.solucion||"",
-      obs,
-      s.estado,
-      s.tecnico||"Sin asignar",
-      duracion(s.creada,s.resuelta)
+      s.folio, soloFecha(s.creada), soloHora(s.creada),
+      soloFecha(s.resuelta), soloHora(s.resuelta),
+      s.solicitante, s.categoria, solicitud, s.solucion||"", obs,
+      s.estado, s.tecnico||"Sin asignar", duracion(s.creada,s.resuelta)
     ];
   });
 
@@ -1007,16 +1158,14 @@ async function exportar(){
     return f.map(function(c){ return '"'+String(c==null?"":c).replace(/"/g,'""')+'"'; }).join(";");
   }).join("\r\n");
 
-  var hoy=new Date();
-  var nombre="Tickets-Soporte-"+hoy.getFullYear()+"-"+
-             String(hoy.getMonth()+1).padStart(2,"0")+"-"+
-             String(hoy.getDate()).padStart(2,"0")+".csv";
   var b=new Blob(["\uFEFF"+csv],{type:"text/csv;charset=utf-8;"});
   var a=document.createElement("a");
-  a.href=URL.createObjectURL(b); a.download=nombre;
+  a.href=URL.createObjectURL(b); a.download=nombreArchivo();
   document.body.appendChild(a); a.click();
   setTimeout(function(){ URL.revokeObjectURL(a.href); a.remove(); },600);
-  aviso("Planilla descargada");
+
+  $("#modal-exportar").classList.remove("open");
+  aviso(filas.length+" solicitudes exportadas");
 }
 
 /* =====================================================================
@@ -1085,7 +1234,26 @@ $("#capture").addEventListener("keydown",function(e){
   if((e.ctrlKey||e.metaKey)&&e.key==="Enter") registrar();
 });
 $("#buscar").oninput=function(){ estado.busqueda=this.value; pintarLista(); };
-$("#btn-exportar").onclick=exportar;
+$("#btn-exportar").onclick=abrirExportar;
+$("#e-cancelar").onclick=function(){ $("#modal-exportar").classList.remove("open"); };
+$("#e-descargar").onclick=exportar;
+$("#modal-exportar").onclick=function(e){ if(e.target===this) this.classList.remove("open"); };
+$("#e-rapidos").onclick=function(e){
+  var b=e.target.closest("button[data-rango]"); if(!b) return;
+  $("#e-todo").checked=false;
+  aplicarRango(b.dataset.rango);
+};
+["#e-desde","#e-hasta","#e-base","#e-tecnico"].forEach(function(sel){
+  $(sel).onchange=function(){
+    if(sel==="#e-desde"||sel==="#e-hasta"){
+      $("#e-rapidos").querySelectorAll("button").forEach(function(b){
+        b.setAttribute("aria-pressed","false");
+      });
+    }
+    actualizarConteo();
+  };
+});
+$("#e-todo").onchange=actualizarConteo;
 $("#btn-ajustes").onclick=abrirAjustes;
 $("#a-cancelar").onclick=function(){ $("#modal-ajustes").classList.remove("open"); };
 $("#a-guardar").onclick=guardarAjustes;
@@ -1114,7 +1282,8 @@ $("#movil-abrir").onclick=function(){
 };
 document.addEventListener("keydown",function(e){
   if(e.key==="Escape"){
-    if($("#modal-ajustes").classList.contains("open")) $("#modal-ajustes").classList.remove("open");
+    if($("#modal-exportar").classList.contains("open")) $("#modal-exportar").classList.remove("open");
+    else if($("#modal-ajustes").classList.contains("open")) $("#modal-ajustes").classList.remove("open");
     else if(estado.abierto) cerrar();
   }
 });
