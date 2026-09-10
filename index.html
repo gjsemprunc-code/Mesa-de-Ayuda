@@ -182,6 +182,8 @@ main{max-width:1400px;margin:0 auto;padding:18px}
 .deriv-box p{margin:0 0 8px;font-size:12.5px;color:var(--n2);font-weight:500}
 .deriv-box input{width:100%;background:#fff;border:1px solid #C3B0DE;border-radius:var(--radius);
   padding:8px 10px;margin-bottom:8px}
+.deriv-box select{width:100%;background:#fff;border:1px solid #C3B0DE;border-radius:var(--radius);
+  padding:8px 10px;margin-bottom:10px;font-size:13px}
 .btn-deriv{background:var(--n2);color:#fff;border:0;border-radius:var(--radius);
   padding:9px 16px;font-weight:600;font-size:13px}
 .btn-deriv.volver{background:var(--field);color:var(--ink-2);border:1px solid var(--line)}
@@ -551,7 +553,7 @@ var CONFIG = {
   SUPABASE_URL: "https://xmmnjbusqfbglorxzpdg.supabase.co",
 
   // Supabase > Project Settings > API > anon public
-  SUPABASE_ANON_KEY: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhtbW5qYnVzcWZiZ2xvcnh6cGRnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODg4NzU2MjEsImV4cCI6MjEwNDQ1MTYyMX0.kcnV99OTosocpmreYC9zZ19agNNrdouFwwzJ-33H7Ms",
+  SUPABASE_ANON_KEY: "PEGA_AQUI_TU_ANON_KEY",
 
   DOMINIO: "minciencia.gob.cl"
 };
@@ -1035,49 +1037,92 @@ function pintarDetalle(){
 
 function pintarDerivacion(s){
   var cont=$("#d-derivacion"); cont.innerHTML="";
-  if(!esAdmin()) return;   // solo el administrador mueve tickets entre niveles
 
-  var box=crear("div","deriv-box");
   if(s.nivel===1){
+    if(!esAdmin()) return;              // solo el admin sube un ticket de nivel
+
+    var box=crear("div","deriv-box");
     box.appendChild(crear("p",null,"Derivar a Nivel 2"));
+
     var inp=document.createElement("input");
     inp.type="text";
     inp.placeholder="Motivo: requiere desarrollo, compra de licencia, caída de sistema…";
     box.appendChild(inp);
+
+    var selT=document.createElement("select");
+    selT.appendChild(new Option("Sin asignar · avisar a todo Nivel 2",""));
+    tecnicosDe(2).forEach(function(u){ selT.appendChild(new Option(u.nombre,u.correo)); });
+    box.appendChild(selT);
+
+    if(!tecnicosDe(2).length){
+      var sin=crear("p",null,"Todavía no hay nadie registrado en Nivel 2. Agrégalos desde Ajustes.");
+      sin.style.cssText="margin:0 0 8px;font-weight:400;color:var(--warm);font-size:12px";
+      box.appendChild(sin);
+    }
+
     var btn=crear("button","btn-deriv","Derivar a Nivel 2");
     btn.onclick=function(){
-      if(!inp.value.trim()) { inp.focus(); return aviso("Escribe el motivo de la derivación",true); }
-      derivar(s,2,inp.value.trim());
+      if(!inp.value.trim()){ inp.focus(); return aviso("Escribe el motivo de la derivación",true); }
+      derivar(s,2,inp.value.trim(),selT.value||null);
     };
     box.appendChild(btn);
+
     var nota=crear("p",null,"El tiempo de soporte se cierra en este momento y el conteo de Nivel 2 parte desde aquí.");
     nota.style.cssText="margin:9px 0 0;font-weight:400;color:var(--ink-2);font-size:12px";
     box.appendChild(nota);
-  } else {
-    box.appendChild(crear("p",null,"Esta solicitud está en Nivel 2"));
-    var volver=crear("button","btn-deriv volver","Devolver a Nivel 1");
-    volver.onclick=function(){ derivar(s,1,null); };
-    box.appendChild(volver);
+    cont.appendChild(box);
+    return;
   }
-  cont.appendChild(box);
+
+  // Ticket en Nivel 2: lo puede devolver el admin o quien trabaje en ese nivel
+  if(!esAdmin() && estado.perfil.nivel!==2) return;
+
+  var box2=crear("div","deriv-box");
+  box2.appendChild(crear("p",null,"Esta solicitud está en Nivel 2"));
+
+  var inp2=document.createElement("input");
+  inp2.type="text";
+  inp2.placeholder="Motivo de la devolución (opcional)";
+  box2.appendChild(inp2);
+
+  var volver=crear("button","btn-deriv volver","Devolver a Nivel 1");
+  volver.onclick=function(){ derivar(s,1,inp2.value.trim()||null,null); };
+  box2.appendChild(volver);
+
+  var nota2=crear("p",null,"Al devolverla dejarás de verla: vuelve a la bandeja de soporte.");
+  nota2.style.cssText="margin:9px 0 0;font-weight:400;color:var(--ink-2);font-size:12px";
+  box2.appendChild(nota2);
+  cont.appendChild(box2);
 }
 
-async function derivar(s,nivel,motivo){
+async function derivar(s,nivel,motivo,tecnico){
   var cambio={nivel:nivel};
-  if(motivo!==null && motivo!==undefined) cambio.motivo_deriv=motivo;
+  if(nivel===2){
+    cambio.motivo_deriv=motivo;
+    cambio.tecnico=tecnico||null;
+  }
 
   var { data, error } = await SB.from("solicitudes").update(cambio).eq("id",s.id).select().single();
-  if(error) return fallo(error,"derivar la solicitud");
-  Object.assign(s,data);
+  if(error) return fallo(error,"cambiar el nivel de la solicitud");
+
+  var texto = nivel===2
+    ? "Derivada a Nivel 2. Motivo: "+motivo+
+      (tecnico? " Asignada a "+nombreDe(tecnico)+"." : " Sin asignar.")
+    : "Devuelta a Nivel 1."+(motivo? " Motivo: "+motivo : "");
 
   await SB.from("bitacora").insert({
-    solicitud_id:s.id,
-    texto: nivel===2
-      ? "Derivada a Nivel 2. Motivo: "+motivo
-      : "Devuelta a Nivel 1.",
-    autor:estado.perfil.correo, sistema:true
+    solicitud_id:s.id, texto:texto, autor:estado.perfil.correo, sistema:true
   });
 
+  // Si el cambio la saca de mi alcance, la lista se actualiza y se cierra el panel
+  var visible = esAdmin() || data.nivel===estado.perfil.nivel;
+  if(!visible){
+    estado.solicitudes=estado.solicitudes.filter(function(x){return x.id!==s.id;});
+    cerrar(); pintar();
+    return aviso("Devuelta a Nivel 1");
+  }
+
+  Object.assign(s,data);
   pintarDetalle(); pintar(); cargarBitacora(s.id);
   aviso(nivel===2? "Derivada a Nivel 2" : "Devuelta a Nivel 1");
 }
