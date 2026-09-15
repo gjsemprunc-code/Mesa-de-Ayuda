@@ -141,6 +141,21 @@ main{max-width:1400px;margin:0 auto;padding:18px}
 .canal svg{width:13px;height:13px;stroke:currentColor;fill:none;stroke-width:1.8}
 .auto{font-size:10.5px;color:var(--accent);border:1px solid #A8CBD8;background:#EBF4F7;
   border-radius:3px;padding:1px 5px;font-weight:500}
+.sla{font-size:10.5px;font-weight:600;border-radius:3px;padding:1px 6px;border:1px solid}
+.sla-en_plazo{color:var(--ink-3);border-color:var(--line);background:var(--field)}
+.sla-por_vencer{color:var(--warm);border-color:#E3C68C;background:#FBF3E4}
+.sla-vencido{color:#fff;border-color:var(--urgent);background:var(--urgent)}
+.sla-cumplido{color:var(--done);border-color:#A8CFBB;background:#EBF5EF}
+.sla-incumplido{color:var(--urgent);border-color:#E0AFA9;background:#FAE9E7}
+.tabla-sla{width:100%;border-collapse:collapse;font-size:13px}
+.tabla-sla th{text-align:left;font-size:11.5px;color:var(--ink-3);font-weight:500;
+  padding:0 8px 7px 0;border-bottom:1px solid var(--line-soft)}
+.tabla-sla td{padding:8px 8px 8px 0;border-bottom:1px solid var(--line-soft)}
+.tabla-sla td.num{text-align:right;font-variant-numeric:tabular-nums}
+.pct{font-weight:600}
+.pct.bien{color:var(--done)}
+.pct.regular{color:var(--warm)}
+.pct.mal{color:var(--urgent)}
 .vacio{padding:44px 20px;text-align:center;color:var(--ink-2);background:var(--surface);
   border:1px dashed var(--line);border-radius:var(--radius)}
 .vacio b{display:block;margin-bottom:5px;font-weight:600;color:var(--ink)}
@@ -419,6 +434,13 @@ main{max-width:1400px;margin:0 auto;padding:18px}
 
   <section id="vista-resumen" hidden>
     <div class="stats-strip" id="resumen-strip"></div>
+    <div class="panel" style="margin-bottom:18px">
+      <div class="panel-title">Cumplimiento de plazos por profesional</div>
+      <div class="bars"><table class="tabla-sla"><thead><tr>
+        <th>Profesional</th><th class="num">Cerrados</th><th class="num">En plazo</th>
+        <th class="num">Fuera de plazo</th><th class="num">Abiertos vencidos</th><th class="num">Cumplimiento</th>
+      </tr></thead><tbody id="tabla-sla"></tbody></table></div>
+    </div>
     <div class="grid2">
       <div class="panel"><div class="panel-title">Por dónde llegan las solicitudes</div><div class="bars" id="bars-canal"></div></div>
       <div class="panel"><div class="panel-title">Tipos más frecuentes</div><div class="bars" id="bars-categoria"></div></div>
@@ -502,18 +524,27 @@ main{max-width:1400px;margin:0 auto;padding:18px}
       <button id="u-agregar">Agregar</button>
     </div>
 
-    <h2 style="margin-top:22px">Unidades y tipos</h2>
+    <h2 style="margin-top:22px">Tipos de requerimiento y plazos</h2>
+    <p style="font-size:12px;color:var(--ink-3);margin:0 0 10px">
+      El plazo se cuenta en horas hábiles (lun a vie, 8:30 a 17:30) salvo que marques horario corrido.
+      Déjalo vacío si esa categoría no tiene compromiso de tiempo.
+    </p>
+    <table class="tabla-usuarios">
+      <thead><tr><th>Tipo</th><th>Nivel</th><th>Horas</th><th>Horario</th><th></th></tr></thead>
+      <tbody id="tabla-categorias"></tbody>
+    </table>
+    <div class="nuevo-usuario">
+      <input type="text" id="k-valor" placeholder="Nombre del tipo">
+      <select id="k-nivel"><option value="1">Nivel 1</option><option value="2">Nivel 2</option></select>
+      <input type="text" id="k-horas" placeholder="Horas" style="max-width:80px">
+      <select id="k-habil"><option value="1">Hábil</option><option value="0">Corrido</option></select>
+      <button id="k-agregar">Agregar</button>
+    </div>
+
+    <h2 style="margin-top:22px">Unidades</h2>
     <div class="f">
-      <label for="a-unidades">Unidades (una por línea)</label>
+      <label for="a-unidades">Una por línea</label>
       <textarea id="a-unidades"></textarea>
-    </div>
-    <div class="f">
-      <label for="a-categorias">Tipos de requerimiento · Nivel 1 (uno por línea)</label>
-      <textarea id="a-categorias"></textarea>
-    </div>
-    <div class="f">
-      <label for="a-categorias2">Tipos de requerimiento · Nivel 2 (uno por línea)</label>
-      <textarea id="a-categorias2"></textarea>
     </div>
 
     <div class="modal-actions">
@@ -595,7 +626,7 @@ var CONFIG = {
   SUPABASE_URL: "https://xmmnjbusqfbglorxzpdg.supabase.co",
 
   // Supabase > Project Settings > API > anon public
-  SUPABASE_ANON_KEY: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhtbW5qYnVzcWZiZ2xvcnh6cGRnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODg4NzU2MjEsImV4cCI6MjEwNDQ1MTYyMX0.kcnV99OTosocpmreYC9zZ19agNNrdouFwwzJ-33H7Ms",
+  SUPABASE_ANON_KEY: "PEGA_AQUI_TU_ANON_KEY",
 
   DOMINIO: "minciencia.gob.cl"
 };
@@ -652,6 +683,37 @@ function edad(iso){
 }
 function dias(a,b){ return (new Date(b)-new Date(a))/86400000; }
 function abierta(s){ return s.estado!=="Resuelta"; }
+
+/* ---------- SLA ---------- */
+/** Momento en que termina la responsabilidad sobre este ticket. */
+function finSla(s){ return s.nivel===2 ? s.resuelta : (s.derivada || s.resuelta); }
+
+/**
+ * cumplido / incumplido cuando ya cerró; en_plazo / por_vencer / vencido
+ * mientras sigue abierto. null si esa categoría no tiene plazo definido.
+ */
+function estadoSla(s){
+  if(!s.vence) return null;
+  var fin=finSla(s);
+  if(fin) return new Date(fin) <= new Date(s.vence) ? "cumplido" : "incumplido";
+  var faltan=(new Date(s.vence)-Date.now())/3600000;
+  if(faltan<0) return "vencido";
+  if(faltan<=24) return "por_vencer";
+  return "en_plazo";
+}
+
+function textoSla(s){
+  var e=estadoSla(s);
+  if(!e) return "";
+  var ms=Math.abs(new Date(s.vence)-Date.now());
+  var h=Math.floor(ms/3600000), d=Math.floor(h/24);
+  var lapso = d>=1 ? d+(d===1?" día":" días") : (h>=1? h+" h" : Math.round(ms/60000)+" min");
+  if(e==="vencido")    return "vencido hace "+lapso;
+  if(e==="por_vencer") return "vence en "+lapso;
+  if(e==="en_plazo")   return "vence en "+lapso;
+  if(e==="cumplido")   return "en plazo";
+  return "fuera de plazo";
+}
 function aviso(txt,malo){
   var a=$("#aviso"); a.textContent=txt;
   a.className = malo?"show malo":"show";
@@ -739,12 +801,14 @@ async function cargarUsuarios(){
 }
 
 async function cargarCatalogos(){
-  var { data, error } = await SB.from("catalogos").select("tipo,valor,nivel").eq("activo",true).order("valor");
+  var { data, error } = await SB.from("catalogos")
+    .select("tipo,valor,nivel,sla_horas,sla_habil").eq("activo",true).order("valor");
   if(error) return fallo(error,"cargar las listas");
   estado.unidades = data.filter(function(c){return c.tipo==="unidad";}).map(function(c){return c.valor;});
+  estado.cats = data.filter(function(c){return c.tipo==="categoria";});
   estado.categorias = {
-    1: data.filter(function(c){return c.tipo==="categoria" && c.nivel===1;}).map(function(c){return c.valor;}),
-    2: data.filter(function(c){return c.tipo==="categoria" && c.nivel===2;}).map(function(c){return c.valor;})
+    1: estado.cats.filter(function(c){return c.nivel===1;}).map(function(c){return c.valor;}),
+    2: estado.cats.filter(function(c){return c.nivel===2;}).map(function(c){return c.valor;})
   };
 }
 
@@ -902,6 +966,8 @@ function filtradas(){
     if(estado.filtro==="urgentes" && (s.prioridad!=="Alta"||!abierta(s))) return false;
     if(estado.filtro==="sinasignar" && (s.tecnico||!abierta(s))) return false;
     if(estado.filtro==="mias" && s.tecnico!==estado.perfil.correo) return false;
+    if(estado.filtro==="vencidos" && estadoSla(s)!=="vencido") return false;
+    if(estado.filtro==="porvencer" && estadoSla(s)!=="por_vencer") return false;
     if(estado.filtro==="n1" && s.nivel!==1) return false;
     if(estado.filtro==="n2" && s.nivel!==2) return false;
     if(q){
@@ -924,7 +990,8 @@ function pintarStats(){
   var hoy=new Date().toDateString();
   var vals=[
     [s.filter(abierta).length,"abiertas",""],
-    [s.filter(function(x){return x.prioridad==="Alta"&&abierta(x);}).length,"prioridad alta","is-urgent"],
+    [s.filter(function(x){return estadoSla(x)==="vencido";}).length,"fuera de plazo","is-urgent"],
+    [s.filter(function(x){return estadoSla(x)==="por_vencer";}).length,"vencen en 24 h",""],
     [s.filter(function(x){return abierta(x)&&!x.tecnico;}).length,"sin asignar",""],
     [s.filter(function(x){return new Date(x.creada).toDateString()===hoy;}).length,"ingresadas hoy",""]
   ];
@@ -942,7 +1009,8 @@ function pintarStats(){
 
 function pintarFiltros(){
   var cont=$("#filtros"); cont.innerHTML="";
-  var ops=[["abiertas","Abiertas"],["urgentes","Prioridad alta"],["mias","Asignadas a mí"],
+  var ops=[["abiertas","Abiertas"],["vencidos","Fuera de plazo"],["porvencer","Por vencer"],
+           ["urgentes","Prioridad alta"],["mias","Asignadas a mí"],
            ["sinasignar","Sin asignar"],["Nueva","Sin atender"],["En atención","En atención"],
            ["En espera","En espera"],["Resuelta","Resueltas"],["todas","Todas"]];
   ops.forEach(function(o){
@@ -987,6 +1055,8 @@ function pintarLista(){
     var canal=crear("span","canal");
     canal.innerHTML=ICONOS[s.canal]+"<span>"+etiquetaCanal(s.canal)+"</span>";
     l1.appendChild(canal);
+    var sla=estadoSla(s);
+    if(sla) l1.appendChild(crear("span","sla sla-"+sla, textoSla(s)));
     if(s.origen==="correo") l1.appendChild(crear("span","auto","automática"));
     b.appendChild(l1);
 
@@ -1039,6 +1109,10 @@ function pintarDetalle(){
   filas.push(["Canal",etiquetaCanal(s.canal)+(s.origen==="correo"?" (automática)":"")]);
   filas.push(["Nivel",NIVELES[s.nivel]]);
   filas.push(["Ingreso",fechaLarga(s.creada)]);
+  if(s.vence){
+    filas.push(["Plazo",fechaLarga(s.vence)+" · "+textoSla(s)+
+      (s.espera_horas>0? " (incluye "+Math.round(s.espera_horas)+" h en espera)" : "")]);
+  }
   if(s.derivada){
     filas.push(["Derivada",fechaLarga(s.derivada)+" · "+duracion(s.creada,s.derivada)+" en soporte"]);
     if(s.motivo_deriv) filas.push(["Motivo",s.motivo_deriv]);
@@ -1401,6 +1475,59 @@ function pintarBarras(sel,pares,etiquetar){
     cont.appendChild(row);
   });
 }
+function pintarTablaSla(){
+  var tb=$("#tabla-sla"); if(!tb) return;
+  tb.innerHTML="";
+
+  var porTecnico={};
+  estado.solicitudes.forEach(function(s){
+    var e=estadoSla(s);
+    if(!e) return;                       // categoría sin plazo definido
+    var k=s.tecnico||"__sin__";
+    var r=porTecnico[k]=porTecnico[k]||{cumplidos:0,incumplidos:0,vencidos:0};
+    if(e==="cumplido")   r.cumplidos++;
+    if(e==="incumplido") r.incumplidos++;
+    if(e==="vencido")    r.vencidos++;
+  });
+
+  var filas=Object.keys(porTecnico).map(function(k){
+    var r=porTecnico[k];
+    var cerrados=r.cumplidos+r.incumplidos;
+    return {
+      nombre: k==="__sin__" ? "Sin asignar" : nombreDe(k),
+      cerrados:cerrados, cumplidos:r.cumplidos, incumplidos:r.incumplidos,
+      vencidos:r.vencidos,
+      pct: cerrados? Math.round(r.cumplidos/cerrados*100) : null
+    };
+  }).sort(function(a,b){ return b.cerrados-a.cerrados; });
+
+  if(!filas.length){
+    var tr=document.createElement("tr");
+    var td=document.createElement("td");
+    td.colSpan=6; td.style.color="var(--ink-3)";
+    td.textContent="Todavía no hay solicitudes con plazo definido. Configura las horas en Ajustes.";
+    tr.appendChild(td); tb.appendChild(tr);
+    return;
+  }
+
+  filas.forEach(function(f){
+    var tr=document.createElement("tr");
+    tr.appendChild(crear("td",null,f.nombre));
+    tr.appendChild(crear("td","num",f.cerrados));
+    tr.appendChild(crear("td","num",f.cumplidos));
+    tr.appendChild(crear("td","num",f.incumplidos));
+    tr.appendChild(crear("td","num",f.vencidos));
+    var td=crear("td","num");
+    if(f.pct===null){ td.textContent="—"; }
+    else {
+      var sp=crear("span","pct "+(f.pct>=90?"bien":f.pct>=70?"regular":"mal"), f.pct+"%");
+      td.appendChild(sp);
+    }
+    tr.appendChild(td);
+    tb.appendChild(tr);
+  });
+}
+
 function pintarResumen(){
   var s=estado.solicitudes;
   var res=s.filter(function(x){return x.estado==="Resuelta"&&x.resuelta;});
@@ -1433,6 +1560,7 @@ function pintarResumen(){
     strip.appendChild(d);
   });
 
+  pintarTablaSla();
   pintarBarras("#bars-canal",conteo("canal"),etiquetaCanal);
   pintarBarras("#bars-categoria",conteo("categoria"));
   pintarBarras("#bars-unidad",conteo("unidad"));
@@ -1602,7 +1730,7 @@ async function exportar(){
            "Usuario (solicitante)","Tipo de Requerimiento","Solicitud","Solución",
            "Observación","Estado de Ticket","Profesional/Técnico asignado",
            "Tiempo de Resolución (Horas/Minutos)"];
-  if(amb==="todo") cab.splice(11,0,"Nivel");
+  if(amb==="todo") cab.splice(11,0,"Nivel","Plazo comprometido","Cumplimiento SLA");
 
   var filas=seleccion.map(function(s){
     var t=tramo(s,amb);
@@ -1621,7 +1749,14 @@ async function exportar(){
       t.estado, nombreDe(s.tecnico)||"Sin asignar",
       duracion(t.ingreso,t.termino)
     ];
-    if(amb==="todo") fila.splice(11,0,"Nivel "+s.nivel);
+    if(amb==="todo"){
+      var etq={cumplido:"En plazo",incumplido:"Fuera de plazo",
+               vencido:"Vencido (abierto)",por_vencer:"Por vencer",en_plazo:"En curso"};
+      var e=estadoSla(s);
+      fila.splice(11,0,"Nivel "+s.nivel,
+                  s.vence? fechaLarga(s.vence) : "Sin plazo",
+                  e? etq[e] : "Sin plazo");
+    }
     return fila;
   });
 
@@ -1645,10 +1780,102 @@ async function exportar(){
 function abrirAjustes(){
   if(!esAdmin()) return;
   $("#a-unidades").value=estado.unidades.join("\n");
-  $("#a-categorias").value=estado.categorias[1].join("\n");
-  $("#a-categorias2").value=estado.categorias[2].join("\n");
   pintarTablaUsuarios();
+  pintarTablaCategorias();
   $("#modal-ajustes").classList.add("open");
+}
+
+function pintarTablaCategorias(){
+  var tb=$("#tabla-categorias"); tb.innerHTML="";
+  estado.cats.slice().sort(function(a,b){
+    return a.nivel-b.nivel || a.valor.localeCompare(b.valor);
+  }).forEach(function(c){
+    var tr=document.createElement("tr");
+
+    tr.appendChild(crear("td","nom",c.valor));
+    tr.appendChild(crear("td",null,"N"+c.nivel));
+
+    var tdH=document.createElement("td");
+    var inpH=document.createElement("input");
+    inpH.type="text"; inpH.value=(c.sla_horas===null||c.sla_horas===undefined)?"":c.sla_horas;
+    inpH.placeholder="—"; inpH.style.width="62px";
+    inpH.onchange=function(){
+      var v=inpH.value.trim();
+      var n = v===""? null : parseFloat(v.replace(",","."));
+      if(v!=="" && (isNaN(n)||n<=0)){ inpH.value=c.sla_horas||""; return aviso("Las horas deben ser un número mayor que cero",true); }
+      actualizarCategoria(c,{sla_horas:n});
+    };
+    tdH.appendChild(inpH); tr.appendChild(tdH);
+
+    var tdHab=document.createElement("td");
+    var sel=document.createElement("select");
+    sel.appendChild(new Option("Hábil","1"));
+    sel.appendChild(new Option("Corrido","0"));
+    sel.value=c.sla_habil?"1":"0";
+    sel.onchange=function(){ actualizarCategoria(c,{sla_habil:sel.value==="1"}); };
+    tdHab.appendChild(sel); tr.appendChild(tdHab);
+
+    var tdX=document.createElement("td");
+    var q=crear("button","quitar","Quitar");
+    q.onclick=function(){ quitarCategoria(c); };
+    tdX.appendChild(q); tr.appendChild(tdX);
+
+    tb.appendChild(tr);
+  });
+}
+
+async function actualizarCategoria(c,cambio){
+  var { error } = await SB.from("catalogos").update(cambio)
+    .eq("tipo","categoria").eq("valor",c.valor).eq("nivel",c.nivel);
+  if(error) return fallo(error,"guardar el plazo");
+  await cargarCatalogos();
+  await cargarSolicitudes();     // el trigger recalculó los vencimientos
+  pintarTablaCategorias(); poblarSelects();
+  aviso("Plazo actualizado");
+}
+
+async function quitarCategoria(c){
+  if(!confirm("¿Quitar «"+c.valor+"» de Nivel "+c.nivel+"? Las solicitudes que ya lo usan no cambian.")) return;
+  var { error } = await SB.from("catalogos").update({activo:false})
+    .eq("tipo","categoria").eq("valor",c.valor).eq("nivel",c.nivel);
+  if(error) return fallo(error,"quitar el tipo");
+  await cargarCatalogos();
+  pintarTablaCategorias(); poblarSelects();
+  aviso("Tipo desactivado");
+}
+
+$("#k-agregar").onclick = async function(){
+  var valor=$("#k-valor").value.trim();
+  if(!valor){ $("#k-valor").focus(); return aviso("Falta el nombre del tipo",true); }
+  var hv=$("#k-horas").value.trim();
+  var horas = hv===""? null : parseFloat(hv.replace(",","."));
+  if(hv!=="" && (isNaN(horas)||horas<=0)) return aviso("Las horas deben ser un número mayor que cero",true);
+
+  var { error } = await SB.from("catalogos").upsert({
+    tipo:"categoria", valor:valor, nivel:parseInt($("#k-nivel").value,10),
+    sla_horas:horas, sla_habil:$("#k-habil").value==="1", activo:true
+  },{onConflict:"tipo,valor,nivel"});
+  if(error) return fallo(error,"agregar el tipo");
+
+  $("#k-valor").value=""; $("#k-horas").value="";
+  await cargarCatalogos();
+  pintarTablaCategorias(); poblarSelects();
+  aviso("Tipo agregado");
+};
+
+async function guardarListas(){
+  var u=$("#a-unidades").value.split("\n").map(function(x){return x.trim();}).filter(Boolean);
+  if(!u.length) return aviso("La lista de unidades no puede quedar vacía",true);
+
+  await SB.from("catalogos").update({activo:false}).eq("tipo","unidad");
+  var { error } = await SB.from("catalogos").upsert(
+    u.map(function(v){return {tipo:"unidad",valor:v,nivel:1,activo:true};}),
+    {onConflict:"tipo,valor,nivel"});
+  if(error) return fallo(error,"guardar las unidades");
+
+  await cargarCatalogos();
+  poblarSelects();
+  aviso("Unidades actualizadas");
 }
 
 function pintarTablaUsuarios(){
@@ -1732,26 +1959,6 @@ $("#u-agregar").onclick = async function(){
   pintarTablaUsuarios(); poblarSelects();
   aviso(nombre+" ya puede entrar al panel");
 };
-
-async function guardarListas(){
-  var lineas=function(sel){
-    return $(sel).value.split("\n").map(function(x){return x.trim();}).filter(Boolean);
-  };
-  var u=lineas("#a-unidades"), c1=lineas("#a-categorias"), c2=lineas("#a-categorias2");
-  if(!u.length || !c1.length || !c2.length)
-    return aviso("Ninguna de las listas puede quedar vacía",true);
-
-  await SB.from("catalogos").update({activo:false}).in("tipo",["unidad","categoria"]);
-  var filas=u.map(function(v){return {tipo:"unidad",valor:v,nivel:1,activo:true};})
-    .concat(c1.map(function(v){return {tipo:"categoria",valor:v,nivel:1,activo:true};}))
-    .concat(c2.map(function(v){return {tipo:"categoria",valor:v,nivel:2,activo:true};}));
-  var { error } = await SB.from("catalogos").upsert(filas,{onConflict:"tipo,valor,nivel"});
-  if(error) return fallo(error,"guardar las listas");
-
-  await cargarCatalogos();
-  poblarSelects();
-  aviso("Listas actualizadas");
-}
 
 /* =====================================================================
    VISTAS Y EVENTOS
