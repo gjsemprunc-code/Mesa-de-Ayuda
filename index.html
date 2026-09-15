@@ -204,6 +204,28 @@ main{max-width:1400px;margin:0 auto;padding:18px}
   padding:8px 15px;font-weight:500}
 .solucion-box{background:#EBF5EF;border:1px solid #A8CFBB;border-radius:var(--radius);
   padding:12px;margin-bottom:18px}
+.resp-box{border:1px solid var(--line);border-radius:var(--radius);padding:12px;margin-bottom:18px}
+.resp-box textarea{width:100%;background:var(--field);border:1px solid var(--line);
+  border-radius:var(--radius);padding:9px 10px;min-height:96px;resize:vertical;font-size:13px}
+.resp-box textarea:focus{background:#fff;border-color:var(--accent)}
+.adj-fila{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-top:9px}
+.adj-btn{background:var(--field);border:1px solid var(--line);border-radius:var(--radius);
+  padding:6px 12px;font-size:12.5px;font-weight:500;color:var(--ink-2);cursor:pointer}
+.adj-btn:hover{border-color:var(--accent);color:var(--accent)}
+.adj-lista{font-size:12px;color:var(--ink-2);display:flex;gap:6px;flex-wrap:wrap}
+.adj-item{background:var(--field);border:1px solid var(--line);border-radius:3px;
+  padding:2px 7px;display:inline-flex;align-items:center;gap:5px}
+.adj-item button{background:none;border:0;color:var(--urgent);font-size:13px;line-height:1;padding:0}
+.destinatarios{font-size:12px;color:var(--ink-2);margin:10px 0 0;
+  background:var(--field);border-radius:var(--radius);padding:8px 10px;line-height:1.4}
+.destinatarios.alerta{background:#FBF3E4;color:var(--warm)}
+.resp-acciones{display:flex;gap:8px;justify-content:flex-end;margin-top:12px;flex-wrap:wrap}
+.previas{margin-top:14px;border-top:1px solid var(--line-soft);padding-top:10px}
+.previas h4{margin:0 0 7px;font-size:11.5px;color:var(--ink-3);font-weight:600}
+.previa{font-size:12.5px;padding:7px 0;border-bottom:1px solid var(--line-soft)}
+.previa:last-child{border-bottom:0}
+.previa .meta{font-size:11px;color:var(--ink-3)}
+.previa .pend{color:var(--warm)}
 .solucion-box textarea{width:100%;background:#fff;border:1px solid #A8CFBB;
   border-radius:var(--radius);padding:8px;min-height:60px;resize:vertical}
 .solucion-box p{margin:0 0 7px;font-size:12.5px;color:var(--done);font-weight:500}
@@ -437,7 +459,23 @@ main{max-width:1400px;margin:0 auto;padding:18px}
 
     <h3 class="sec-h">Estado</h3>
     <div class="estado-row" id="d-estados"></div>
-    <div id="d-solucion"></div>
+
+    <h3 class="sec-h">Solución y respuesta al solicitante</h3>
+    <div class="resp-box">
+      <textarea id="d-solucion-texto"
+        placeholder="Describe cómo se resolvió. Este mismo texto es el que se envía al solicitante y el que queda en la columna Solución de la planilla."></textarea>
+      <div class="adj-fila">
+        <label class="adj-btn" for="d-adjuntos">Adjuntar archivos</label>
+        <input type="file" id="d-adjuntos" multiple hidden>
+        <span class="adj-lista" id="d-adj-lista"></span>
+      </div>
+      <p class="destinatarios" id="d-destinatarios"></p>
+      <div class="resp-acciones">
+        <button class="btn-ghost" id="d-guardar-sol">Guardar sin enviar</button>
+        <button class="btn-primary" style="width:auto" id="d-enviar">Enviar respuesta y cerrar ticket</button>
+      </div>
+      <div id="d-respuestas-previas"></div>
+    </div>
 
     <h3 class="sec-h">Bitácora</h3>
     <ul class="bitacora" id="d-bitacora"></ul>
@@ -470,8 +508,12 @@ main{max-width:1400px;margin:0 auto;padding:18px}
       <textarea id="a-unidades"></textarea>
     </div>
     <div class="f">
-      <label for="a-categorias">Tipos de requerimiento (uno por línea)</label>
+      <label for="a-categorias">Tipos de requerimiento · Nivel 1 (uno por línea)</label>
       <textarea id="a-categorias"></textarea>
+    </div>
+    <div class="f">
+      <label for="a-categorias2">Tipos de requerimiento · Nivel 2 (uno por línea)</label>
+      <textarea id="a-categorias2"></textarea>
     </div>
 
     <div class="modal-actions">
@@ -553,7 +595,7 @@ var CONFIG = {
   SUPABASE_URL: "https://xmmnjbusqfbglorxzpdg.supabase.co",
 
   // Supabase > Project Settings > API > anon public
-  SUPABASE_ANON_KEY: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhtbW5qYnVzcWZiZ2xvcnh6cGRnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODg4NzU2MjEsImV4cCI6MjEwNDQ1MTYyMX0.kcnV99OTosocpmreYC9zZ19agNNrdouFwwzJ-33H7Ms",
+  SUPABASE_ANON_KEY: "PEGA_AQUI_TU_ANON_KEY",
 
   DOMINIO: "minciencia.gob.cl"
 };
@@ -571,7 +613,7 @@ var ICONOS = {
 };
 
 var estado = {
-  perfil:null, solicitudes:[], usuarios:[], unidades:[], categorias:[],
+  perfil:null, solicitudes:[], usuarios:[], unidades:[], categorias:{1:[],2:[]}, adjuntos:[],
   filtro:"abiertas", busqueda:"", canal:"Chat", prioridad:"Media",
   abierto:null, vista:"bandeja"
 };
@@ -697,10 +739,13 @@ async function cargarUsuarios(){
 }
 
 async function cargarCatalogos(){
-  var { data, error } = await SB.from("catalogos").select("tipo,valor").eq("activo",true).order("valor");
+  var { data, error } = await SB.from("catalogos").select("tipo,valor,nivel").eq("activo",true).order("valor");
   if(error) return fallo(error,"cargar las listas");
-  estado.unidades   = data.filter(function(c){return c.tipo==="unidad";}).map(function(c){return c.valor;});
-  estado.categorias = data.filter(function(c){return c.tipo==="categoria";}).map(function(c){return c.valor;});
+  estado.unidades = data.filter(function(c){return c.tipo==="unidad";}).map(function(c){return c.valor;});
+  estado.categorias = {
+    1: data.filter(function(c){return c.tipo==="categoria" && c.nivel===1;}).map(function(c){return c.valor;}),
+    2: data.filter(function(c){return c.tipo==="categoria" && c.nivel===2;}).map(function(c){return c.valor;})
+  };
 }
 
 async function cargarSolicitudes(){
@@ -713,14 +758,15 @@ async function cargarSolicitudes(){
 }
 
 function poblarSelects(){
-  [["#c-unidad",estado.unidades],["#c-categoria",estado.categorias],
-   ["#d-unidad",estado.unidades],["#d-categoria",estado.categorias]].forEach(function(par){
-    var sel=$(par[0]); if(!sel) return;
-    var previo=sel.value;
-    sel.innerHTML="";
-    par[1].forEach(function(v){ sel.appendChild(new Option(v,v)); });
-    if(previo) sel.value=previo;
-  });
+  var selU=$("#c-unidad"), prevU=selU.value;
+  selU.innerHTML="";
+  estado.unidades.forEach(function(v){ selU.appendChild(new Option(v,v)); });
+  if(prevU) selU.value=prevU;
+
+  var selD=$("#d-unidad"), prevD=selD.value;
+  selD.innerHTML="";
+  estado.unidades.forEach(function(v){ selD.appendChild(new Option(v,v)); });
+  if(prevD) selD.value=prevD;
 
   // El nivel solo lo elige el admin
   var selNivel=$("#c-nivel");
@@ -728,13 +774,23 @@ function poblarSelects(){
     selNivel.value=String(estado.perfil.nivel);
     selNivel.disabled=true;
   }
-  poblarTecnicos("#c-tecnico", parseInt(selNivel.value,10));
+  var nivelCaptura=parseInt(selNivel.value,10);
+  poblarCategorias("#c-categoria", nivelCaptura);
+  poblarTecnicos("#c-tecnico", nivelCaptura);
 
   var dl=$("#l-personas"); dl.innerHTML="";
   var vistos={};
   estado.solicitudes.forEach(function(s){
     if(s.solicitante && !vistos[s.solicitante]){ vistos[s.solicitante]=1; dl.appendChild(new Option(s.solicitante)); }
   });
+}
+
+function poblarCategorias(sel,nivel){
+  var s=$(sel); if(!s) return;
+  var previo=s.value;
+  s.innerHTML="";
+  (estado.categorias[nivel]||[]).forEach(function(v){ s.appendChild(new Option(v,v)); });
+  if(previo) s.value=previo;
 }
 
 function poblarTecnicos(sel,nivel){
@@ -955,11 +1011,14 @@ function buscar(id){ return estado.solicitudes.filter(function(s){return s.id===
 
 async function abrir(id){
   estado.abierto=id;
+  estado.adjuntos=[];
+  $("#d-adjuntos").value="";
   pintarDetalle();
   $("#drawer").classList.add("open");
   $("#drawer").setAttribute("aria-hidden","false");
   $("#scrim").classList.add("open");
   await cargarBitacora(id);
+  await cargarRespuestas(id);
 }
 
 function cerrar(){
@@ -1002,13 +1061,17 @@ function pintarDetalle(){
   }
 
   ponerValor("#d-unidad", s.unidad);
+  poblarCategorias("#d-categoria", s.nivel);
   ponerValor("#d-categoria", s.categoria);
   $("#d-prioridad").value = s.prioridad;
   poblarTecnicos("#d-tecnico", s.nivel);
   ponerValor("#d-tecnico", s.tecnico || "");
   $("#d-observacion").value = s.observacion || "";
+  $("#d-solucion-texto").value = s.solucion || "";
 
   pintarDerivacion(s);
+  pintarDestinatarios(s);
+  pintarAdjuntos();
 
   var er=$("#d-estados"); er.innerHTML="";
   ESTADOS.forEach(function(e){
@@ -1017,21 +1080,134 @@ function pintarDetalle(){
     b.onclick=function(){ cambiarEstado(s,e); };
     er.appendChild(b);
   });
+}
 
-  var sol=$("#d-solucion"); sol.innerHTML="";
-  if(s.estado==="Resuelta"){
-    var box=crear("div","solucion-box");
-    box.appendChild(crear("p",null,"Qué se hizo para resolverla"));
-    var ta=crear("textarea"); ta.value=s.solucion||"";
-    ta.placeholder="Se reinstaló el driver y se reconfiguró la cola de impresión.";
-    ta.onchange=async function(){
-      var { error } = await SB.from("solicitudes").update({solucion:ta.value.trim()}).eq("id",s.id);
-      if(error) return fallo(error,"guardar la solución");
-      s.solucion=ta.value.trim();
-      aviso("Solución guardada");
-    };
-    box.appendChild(ta);
-    sol.appendChild(box);
+/* ---------- Respuesta al solicitante ---------- */
+function pintarDestinatarios(s){
+  var p=$("#d-destinatarios");
+  if(s.gmail_thread_id){
+    p.className="destinatarios";
+    p.textContent="La respuesta se enviará como continuación del correo original, "+
+      "así que la reciben el solicitante y todos los que estaban en copia.";
+  } else if(s.correo){
+    p.className="destinatarios";
+    p.textContent="Se enviará a "+s.correo+".";
+  } else {
+    p.className="destinatarios alerta";
+    p.textContent="Esta solicitud no tiene correo asociado, así que no se puede responder por esa vía. "+
+      "Agrega el correo del solicitante si quieres enviarle la respuesta.";
+  }
+}
+
+function pintarAdjuntos(){
+  var cont=$("#d-adj-lista"); cont.innerHTML="";
+  estado.adjuntos.forEach(function(f,i){
+    var it=crear("span","adj-item");
+    it.appendChild(document.createTextNode(f.name+" ("+Math.round(f.size/1024)+" KB)"));
+    var x=crear("button",null,"×");
+    x.title="Quitar";
+    x.onclick=function(){ estado.adjuntos.splice(i,1); pintarAdjuntos(); };
+    it.appendChild(x);
+    cont.appendChild(it);
+  });
+}
+
+async function cargarRespuestas(id){
+  var cont=$("#d-respuestas-previas"); cont.innerHTML="";
+  var { data } = await SB.from("respuestas").select("*")
+    .eq("solicitud_id",id).order("creada",{ascending:false});
+  if(!data || !data.length || estado.abierto!==id) return;
+
+  var box=crear("div","previas");
+  box.appendChild(crear("h4",null,"Respuestas enviadas"));
+  data.forEach(function(r){
+    var d=crear("div","previa");
+    var adj=(r.adjuntos||[]).map(function(a){return a.nombre;}).join(", ");
+    d.appendChild(crear("div","meta"+(r.enviada?"":" pend"),
+      (r.enviada? "Enviada "+fechaLarga(r.enviada) : "En cola de envío")+
+      (r.autor? " · "+nombreDe(r.autor) : "")+
+      (adj? " · adjuntos: "+adj : "")+
+      (r.error? " · error: "+r.error : "")));
+    d.appendChild(crear("div",null,r.texto));
+    box.appendChild(d);
+  });
+  cont.appendChild(box);
+}
+
+async function guardarSolucion(avisar){
+  var s=buscar(estado.abierto); if(!s) return false;
+  var v=$("#d-solucion-texto").value.trim()||null;
+  if(s.solucion===v){ if(avisar) aviso("No hay cambios que guardar"); return true; }
+  var { error } = await SB.from("solicitudes").update({solucion:v}).eq("id",s.id);
+  if(error){ fallo(error,"guardar la solución"); return false; }
+  s.solucion=v;
+  if(avisar) aviso("Solución guardada");
+  return true;
+}
+
+async function enviarRespuesta(){
+  var s=buscar(estado.abierto); if(!s) return;
+  var texto=$("#d-solucion-texto").value.trim();
+
+  if(!texto){
+    $("#d-solucion-texto").focus();
+    return aviso("Escribe cómo se resolvió antes de enviar",true);
+  }
+  if(!s.gmail_thread_id && !s.correo){
+    return aviso("Esta solicitud no tiene correo al cual responder",true);
+  }
+
+  var pesoTotal=estado.adjuntos.reduce(function(a,f){return a+f.size;},0);
+  if(pesoTotal > 20*1024*1024){
+    return aviso("Los adjuntos superan los 20 MB. Reduce el tamaño o comparte un enlace.",true);
+  }
+
+  var btn=$("#d-enviar");
+  btn.disabled=true; btn.textContent="Enviando…";
+
+  try{
+    // 1. Subir adjuntos
+    var subidos=[];
+    for(var i=0;i<estado.adjuntos.length;i++){
+      var f=estado.adjuntos[i];
+      var ruta=s.id+"/"+Date.now()+"-"+f.name.replace(/[^\w.\-]/g,"_");
+      var up=await SB.storage.from("adjuntos").upload(ruta,f,{upsert:false});
+      if(up.error) throw up.error;
+      subidos.push({path:ruta, nombre:f.name, tipo:f.type||"application/octet-stream"});
+    }
+
+    // 2. Guardar la solución (va a la planilla)
+    var ok=await guardarSolucion(false);
+    if(!ok) throw new Error("No se pudo guardar la solución");
+
+    // 3. Dejar la respuesta en la cola de envío
+    var ins=await SB.from("respuestas").insert({
+      solicitud_id:s.id, texto:texto, adjuntos:subidos,
+      destinatarios:s.correo||null, autor:estado.perfil.correo
+    });
+    if(ins.error) throw ins.error;
+
+    // 4. Cerrar el ticket
+    var upd=await SB.from("solicitudes").update({estado:"Resuelta"}).eq("id",s.id).select().single();
+    if(upd.error) throw upd.error;
+    Object.assign(s,upd.data);
+
+    await SB.from("bitacora").insert({
+      solicitud_id:s.id,
+      texto:"Respuesta enviada al solicitante y ticket cerrado."+
+            (subidos.length? " Adjuntos: "+subidos.map(function(a){return a.nombre;}).join(", ")+"." : ""),
+      autor:estado.perfil.correo, sistema:true
+    });
+
+    estado.adjuntos=[];
+    $("#d-adjuntos").value="";
+    pintarAdjuntos(); pintarDetalle(); pintar();
+    cargarBitacora(s.id); cargarRespuestas(s.id);
+    aviso("Respuesta en cola. Sale por correo en menos de un minuto.");
+  } catch(err){
+    fallo(err,"enviar la respuesta");
+  } finally {
+    btn.disabled=false; btn.textContent="Enviar respuesta y cerrar ticket";
   }
 }
 
@@ -1164,6 +1340,19 @@ async function actualizarCampo(campo,valor){
 
 async function cambiarEstado(s,nuevo){
   if(s.estado===nuevo) return;
+
+  // No se cierra un ticket sin dejar constancia de cómo se resolvió
+  if(nuevo==="Resuelta"){
+    var texto=$("#d-solucion-texto").value.trim();
+    if(!texto){
+      $("#d-solucion-texto").focus();
+      $("#d-solucion-texto").scrollIntoView({block:"center"});
+      return aviso("Escribe cómo se resolvió antes de cerrar el ticket",true);
+    }
+    var ok=await guardarSolucion(false);
+    if(!ok) return;
+  }
+
   var { data, error } = await SB.from("solicitudes").update({estado:nuevo}).eq("id",s.id).select().single();
   if(error) return fallo(error,"cambiar el estado");
   Object.assign(s,data);
@@ -1456,7 +1645,8 @@ async function exportar(){
 function abrirAjustes(){
   if(!esAdmin()) return;
   $("#a-unidades").value=estado.unidades.join("\n");
-  $("#a-categorias").value=estado.categorias.join("\n");
+  $("#a-categorias").value=estado.categorias[1].join("\n");
+  $("#a-categorias2").value=estado.categorias[2].join("\n");
   pintarTablaUsuarios();
   $("#modal-ajustes").classList.add("open");
 }
@@ -1547,13 +1737,15 @@ async function guardarListas(){
   var lineas=function(sel){
     return $(sel).value.split("\n").map(function(x){return x.trim();}).filter(Boolean);
   };
-  var u=lineas("#a-unidades"), c=lineas("#a-categorias");
-  if(!u.length || !c.length) return aviso("Las listas no pueden quedar vacías",true);
+  var u=lineas("#a-unidades"), c1=lineas("#a-categorias"), c2=lineas("#a-categorias2");
+  if(!u.length || !c1.length || !c2.length)
+    return aviso("Ninguna de las listas puede quedar vacía",true);
 
   await SB.from("catalogos").update({activo:false}).in("tipo",["unidad","categoria"]);
-  var filas=u.map(function(v){return {tipo:"unidad",valor:v,activo:true};})
-    .concat(c.map(function(v){return {tipo:"categoria",valor:v,activo:true};}));
-  var { error } = await SB.from("catalogos").upsert(filas,{onConflict:"tipo,valor"});
+  var filas=u.map(function(v){return {tipo:"unidad",valor:v,nivel:1,activo:true};})
+    .concat(c1.map(function(v){return {tipo:"categoria",valor:v,nivel:1,activo:true};}))
+    .concat(c2.map(function(v){return {tipo:"categoria",valor:v,nivel:2,activo:true};}));
+  var { error } = await SB.from("catalogos").upsert(filas,{onConflict:"tipo,valor,nivel"});
   if(error) return fallo(error,"guardar las listas");
 
   await cargarCatalogos();
@@ -1593,7 +1785,11 @@ $("#c-prioridad").onclick=function(e){
   estado.prioridad=b.dataset.p;
   this.querySelectorAll("button").forEach(function(x){ x.setAttribute("aria-pressed", x===b); });
 };
-$("#c-nivel").onchange=function(){ poblarTecnicos("#c-tecnico", parseInt(this.value,10)); };
+$("#c-nivel").onchange=function(){
+  var n=parseInt(this.value,10);
+  poblarCategorias("#c-categoria", n);
+  poblarTecnicos("#c-tecnico", n);
+};
 $("#btn-registrar").onclick=registrar;
 $("#capture").addEventListener("keydown",function(e){
   if((e.ctrlKey||e.metaKey)&&e.key==="Enter") registrar();
@@ -1644,6 +1840,12 @@ $("#d-observacion").onchange=async function(){
   s.observacion=v;
   aviso("Observación guardada");
 };
+$("#d-adjuntos").onchange=function(){
+  Array.prototype.forEach.call(this.files,function(f){ estado.adjuntos.push(f); });
+  pintarAdjuntos();
+};
+$("#d-guardar-sol").onclick=function(){ guardarSolucion(true); };
+$("#d-enviar").onclick=enviarRespuesta;
 $("#movil-abrir").onclick=function(){
   var c=$("#capture"); c.classList.toggle("abierta");
   this.textContent=c.classList.contains("abierta")?"Ocultar formulario":"Registrar solicitud";
