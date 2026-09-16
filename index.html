@@ -245,12 +245,57 @@ main{max-width:1400px;margin:0 auto;padding:18px}
   border-radius:var(--radius);padding:8px;min-height:60px;resize:vertical}
 .solucion-box p{margin:0 0 7px;font-size:12.5px;color:var(--done);font-weight:500}
 
-/* ---- Resumen ---- */
-.grid2{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+/* ---- Tablero ---- */
+.dash-head{display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-bottom:14px}
+.dash-rango{font-size:12.5px;color:var(--ink-3)}
+.kpis{display:grid;grid-template-columns:repeat(5,1fr);gap:0;background:var(--surface);
+  border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;margin-bottom:18px}
+.kpi{padding:15px 18px 16px;border-right:1px solid var(--line-soft);position:relative}
+.kpi:last-child{border-right:0}
+.kpi::before{content:"";position:absolute;top:0;left:0;right:0;height:3px;background:var(--ink-3)}
+.kpi.ok::before{background:var(--done)}
+.kpi.warn::before{background:var(--warm)}
+.kpi.bad::before{background:var(--urgent)}
+.kpi.neutro::before{background:var(--accent)}
+.kpi .valor{font-size:29px;font-weight:600;line-height:1.05;font-variant-numeric:tabular-nums;
+  display:flex;align-items:baseline;gap:8px}
+.kpi.ok .valor{color:var(--done)}
+.kpi.warn .valor{color:var(--warm)}
+.kpi.bad .valor{color:var(--urgent)}
+.kpi .rotulo{font-size:12px;color:var(--ink-2);margin-top:5px}
+.kpi .delta{font-size:12px;font-weight:500;color:var(--ink-3);white-space:nowrap}
+.kpi .pie{font-size:11.5px;color:var(--ink-3);margin-top:3px}
+
+.dash-grid{display:grid;grid-template-columns:2fr 1fr;gap:18px;margin-bottom:18px}
+.dash-grid3{display:grid;grid-template-columns:repeat(auto-fit,minmax(272px,1fr));gap:18px}
+.chart{padding:16px}
+.chart svg{display:block;width:100%;height:auto}
+.leyenda{float:right;font-weight:400;font-size:11.5px;color:var(--ink-3);
+  display:inline-flex;align-items:center;gap:5px}
+.pt{width:9px;height:9px;border-radius:2px;display:inline-block;margin-left:7px}
+.pt.in{background:var(--accent)}
+.pt.out{background:var(--done)}
+.donut-centro{text-align:center;margin-top:-6px}
+.donut-centro b{font-size:26px;font-weight:600;display:block;line-height:1.1}
+.donut-leyenda{margin-top:14px;font-size:12.5px}
+.donut-leyenda div{display:flex;align-items:center;gap:8px;padding:4px 0}
+.donut-leyenda i{width:10px;height:10px;border-radius:2px;flex:none}
+.donut-leyenda span:last-child{margin-left:auto;font-variant-numeric:tabular-nums;color:var(--ink-2)}
+.barra-pct{height:6px;background:var(--field);border-radius:99px;overflow:hidden;min-width:90px}
+.barra-pct div{height:100%;border-radius:99px}
+.sin-datos{color:var(--ink-3);font-size:13px;padding:18px 0;text-align:center}
+
+@media (max-width:1050px){
+  .kpis{grid-template-columns:repeat(2,1fr)}
+  .kpi{border-bottom:1px solid var(--line-soft)}
+  .dash-grid{grid-template-columns:1fr}
+}
 .bars{padding:14px 16px 18px}
-.bar-row{margin-bottom:11px}
-.bar-top{display:flex;justify-content:space-between;font-size:13px;margin-bottom:4px}
-.bar-top span:last-child{color:var(--ink-2);font-variant-numeric:tabular-nums}
+.bar-row{margin-bottom:12px}
+.bar-row:last-child{margin-bottom:0}
+.bar-top{display:flex;justify-content:space-between;font-size:13px;margin-bottom:5px;gap:12px}
+.bar-top span:first-child{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.bar-top span:last-child{color:var(--ink-2);font-variant-numeric:tabular-nums;flex:none}
 .bar-track{height:7px;background:var(--field);border-radius:99px;overflow:hidden}
 .bar-fill{height:100%;background:var(--accent);border-radius:99px}
 
@@ -290,6 +335,9 @@ main{max-width:1400px;margin:0 auto;padding:18px}
 .tabla-usuarios td{padding:6px 6px 6px 0;border-bottom:1px solid var(--line-soft);
   vertical-align:middle}
 .tabla-usuarios select{padding:4px 6px;font-size:12.5px}
+.tabla-usuarios input[type=text]{background:var(--field);border:1px solid var(--line);
+  border-radius:var(--radius);padding:5px 8px;font-size:12.5px;width:100%}
+.tabla-usuarios input[type=text]:focus{background:#fff;border-color:var(--accent)}
 .tabla-usuarios .nom{font-weight:500}
 .tabla-usuarios .cor{font-size:11.5px;color:var(--ink-3)}
 .quitar{background:none;border:0;color:var(--urgent);font-size:12px;text-decoration:underline;padding:2px}
@@ -433,19 +481,53 @@ main{max-width:1400px;margin:0 auto;padding:18px}
   </section>
 
   <section id="vista-resumen" hidden>
-    <div class="stats-strip" id="resumen-strip"></div>
-    <div class="panel" style="margin-bottom:18px">
-      <div class="panel-title">Cumplimiento de plazos por profesional</div>
-      <div class="bars"><table class="tabla-sla"><thead><tr>
-        <th>Profesional</th><th class="num">Cerrados</th><th class="num">En plazo</th>
-        <th class="num">Fuera de plazo</th><th class="num">Abiertos vencidos</th><th class="num">Cumplimiento</th>
-      </tr></thead><tbody id="tabla-sla"></tbody></table></div>
+    <div class="dash-head">
+      <div class="rapidos" id="r-periodo">
+        <button type="button" data-p="mes" aria-pressed="true">Este mes</button>
+        <button type="button" data-p="anterior">Mes anterior</button>
+        <button type="button" data-p="trimestre">Últimos 3 meses</button>
+        <button type="button" data-p="anio">Este año</button>
+        <button type="button" data-p="todo">Todo</button>
+      </div>
+      <span class="dash-rango" id="r-rango"></span>
     </div>
-    <div class="grid2">
-      <div class="panel"><div class="panel-title">Por dónde llegan las solicitudes</div><div class="bars" id="bars-canal"></div></div>
-      <div class="panel"><div class="panel-title">Tipos más frecuentes</div><div class="bars" id="bars-categoria"></div></div>
-      <div class="panel"><div class="panel-title">Unidades que más solicitan</div><div class="bars" id="bars-unidad"></div></div>
-      <div class="panel"><div class="panel-title">Carga por mes</div><div class="bars" id="bars-mes"></div></div>
+
+    <div class="kpis" id="r-kpis"></div>
+
+    <div class="dash-grid">
+      <div class="panel">
+        <div class="panel-title">Ingreso y cierre por mes
+          <span class="leyenda">
+            <i class="pt in"></i>ingresadas <i class="pt out"></i>cerradas
+          </span>
+        </div>
+        <div class="chart" id="r-tendencia"></div>
+      </div>
+      <div class="panel">
+        <div class="panel-title">Cumplimiento de plazos</div>
+        <div class="chart" id="r-donut"></div>
+      </div>
+    </div>
+
+    <div class="panel" style="margin-bottom:18px">
+      <div class="panel-title">Desempeño por profesional</div>
+      <div class="bars">
+        <table class="tabla-sla">
+          <thead><tr>
+            <th>Profesional</th><th class="num">Cerrados</th><th class="num">En plazo</th>
+            <th class="num">Fuera de plazo</th><th class="num">Vencidos hoy</th>
+            <th style="min-width:140px">Cumplimiento</th>
+          </tr></thead>
+          <tbody id="tabla-sla"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="dash-grid3">
+      <div class="panel"><div class="panel-title">Canal de ingreso</div><div class="bars" id="r-canal"></div></div>
+      <div class="panel"><div class="panel-title">Tipo de requerimiento</div><div class="bars" id="r-tipo"></div></div>
+      <div class="panel"><div class="panel-title">Unidad solicitante</div><div class="bars" id="r-unidad"></div></div>
+      <div class="panel oculto" id="panel-nivel"><div class="panel-title">Distribución por nivel</div><div class="bars" id="r-nivel"></div></div>
     </div>
   </section>
 </main>
@@ -626,7 +708,7 @@ var CONFIG = {
   SUPABASE_URL: "https://xmmnjbusqfbglorxzpdg.supabase.co",
 
   // Supabase > Project Settings > API > anon public
-  SUPABASE_ANON_KEY: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhtbW5qYnVzcWZiZ2xvcnh6cGRnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODg4NzU2MjEsImV4cCI6MjEwNDQ1MTYyMX0.kcnV99OTosocpmreYC9zZ19agNNrdouFwwzJ-33H7Ms",
+  SUPABASE_ANON_KEY: "PEGA_AQUI_TU_ANON_KEY",
 
   DOMINIO: "minciencia.gob.cl"
 };
@@ -646,7 +728,7 @@ var ICONOS = {
 var estado = {
   perfil:null, solicitudes:[], usuarios:[], unidades:[], categorias:{1:[],2:[]}, adjuntos:[],
   filtro:"abiertas", busqueda:"", canal:"Chat", prioridad:"Media",
-  abierto:null, vista:"bandeja"
+  periodo:"mes", abierto:null, vista:"bandeja"
 };
 
 /* ---------- Utilidades ---------- */
@@ -1449,25 +1531,244 @@ async function agregarNota(){
 }
 
 /* =====================================================================
-   RESUMEN
+   TABLERO
    ===================================================================== */
-function conteo(campo){
-  var m={};
+var MESES_CORTOS=["ene","feb","mar","abr","may","jun","jul","ago","sep","oct","nov","dic"];
+
+function rangoPeriodo(p){
+  var hoy=new Date(), y=hoy.getFullYear(), m=hoy.getMonth();
+  if(p==="mes")       return {desde:new Date(y,m,1),   hasta:new Date(y,m+1,1), meses:1};
+  if(p==="anterior")  return {desde:new Date(y,m-1,1), hasta:new Date(y,m,1),   meses:1};
+  if(p==="trimestre") return {desde:new Date(y,m-2,1), hasta:new Date(y,m+1,1), meses:3};
+  if(p==="anio")      return {desde:new Date(y,0,1),   hasta:new Date(y+1,0,1), meses:12};
+  return null;
+}
+
+/** Igual cantidad de meses, corridos hacia atrás. Restar milisegundos
+    fallaría, porque los meses no miden lo mismo. */
+function rangoAnterior(r){
+  if(!r) return null;
+  return {
+    desde: new Date(r.desde.getFullYear(), r.desde.getMonth()-r.meses, 1),
+    hasta: new Date(r.hasta.getFullYear(), r.hasta.getMonth()-r.meses, 1),
+    meses: r.meses
+  };
+}
+
+function enRango(iso,r){
+  if(!r) return true;
+  if(!iso) return false;
+  var d=new Date(iso);
+  return d>=r.desde && d<r.hasta;
+}
+
+function etiquetaRango(r){
+  if(!r) return "Todo el histórico";
+  var f=function(d){ return d.toLocaleDateString("es-CL",{day:"2-digit",month:"short",year:"numeric"}); };
+  return f(r.desde)+" al "+f(new Date(r.hasta-86400000));
+}
+
+function delPeriodo(r){
+  return estado.solicitudes.filter(function(s){ return enRango(s.creada,r); });
+}
+
+/* ---------- Indicadores ---------- */
+function pintarKpis(r){
+  var act=delPeriodo(r);
+  var ant=delPeriodo(rangoAnterior(r));
+
+  var cerradas=act.filter(function(s){ return !abierta(s); });
+
+  var conPlazo=act.filter(function(s){
+    var e=estadoSla(s); return e==="cumplido"||e==="incumplido";
+  });
+  var cumplidas=conPlazo.filter(function(s){ return estadoSla(s)==="cumplido"; }).length;
+  var pct = conPlazo.length? Math.round(cumplidas/conPlazo.length*100) : null;
+
+  // El promedio mide hasta donde llega la responsabilidad del nivel
+  var suma=0,n=0;
+  act.forEach(function(s){
+    var fin=finSla(s);
+    if(fin){ suma+=(new Date(fin)-new Date(s.creada))/3600000; n++; }
+  });
+  var prom = n? suma/n : null;
+
+  // Los vencidos se miran siempre a hoy, no dentro del período
+  var vencidos=estado.solicitudes.filter(function(s){ return estadoSla(s)==="vencido"; }).length;
+
+  var cont=$("#r-kpis"); cont.innerHTML="";
+
+  agregarKpi(cont,"neutro",act.length,"solicitudes ingresadas",
+             r? delta(act.length,ant.length) : "", null);
+  agregarKpi(cont,"neutro",cerradas.length,"cerradas en el período","",
+             act.length? Math.round(cerradas.length/act.length*100)+"% de lo ingresado" : null);
+  agregarKpi(cont, pct===null?"neutro":(pct>=90?"ok":pct>=70?"warn":"bad"),
+             pct===null?"—":pct+"%","cumplimiento de plazos","",
+             conPlazo.length? "sobre "+conPlazo.length+" con plazo definido" : "sin casos medibles");
+  agregarKpi(cont,"neutro",
+             prom===null?"—":(prom<24? Math.round(prom)+" h" : (prom/24).toFixed(1)+" d"),
+             "tiempo promedio de atención","",null);
+  agregarKpi(cont, vencidos? "bad":"ok", vencidos,"fuera de plazo ahora","",
+             vencidos? "requieren acción" : "ninguna atrasada");
+}
+
+function agregarKpi(cont,clase,valor,rotulo,deltaTxt,pie){
+  var d=crear("div","kpi "+clase);
+  var v=crear("div","valor");
+  v.appendChild(crear("span",null,valor));
+  if(deltaTxt) v.appendChild(crear("span","delta",deltaTxt));
+  d.appendChild(v);
+  d.appendChild(crear("div","rotulo",rotulo));
+  if(pie) d.appendChild(crear("div","pie",pie));
+  cont.appendChild(d);
+}
+
+function delta(actual,previo){
+  if(!previo) return "";
+  var p=Math.round((actual-previo)/previo*100);
+  if(p===0) return "= igual";
+  return (p>0? "▲ +" : "▼ −")+Math.abs(p)+"%";
+}
+
+/* ---------- Tendencia de 12 meses ---------- */
+function pintarTendencia(){
+  var hoy=new Date();
+  var claves=[], etiquetas={};
+  for(var i=11;i>=0;i--){
+    var d=new Date(hoy.getFullYear(),hoy.getMonth()-i,1);
+    var k=d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0");
+    claves.push(k);
+    etiquetas[k]=MESES_CORTOS[d.getMonth()]+(d.getMonth()===0? " "+String(d.getFullYear()).slice(2):"");
+  }
+  var ent={},sal={};
+  claves.forEach(function(k){ ent[k]=0; sal[k]=0; });
   estado.solicitudes.forEach(function(s){
+    var ki=mesClave(s.creada);
+    if(ent[ki]!==undefined) ent[ki]++;
+    var fin=finSla(s);
+    if(fin){ var kf=mesClave(fin); if(sal[kf]!==undefined) sal[kf]++; }
+  });
+
+  var serieA=claves.map(function(k){return ent[k];});
+  var serieB=claves.map(function(k){return sal[k];});
+  var max=Math.max(1,Math.max.apply(null,serieA.concat(serieB)));
+  // Redondear el techo para que las líneas de referencia queden limpias
+  var techo=Math.ceil(max/4)*4 || 4;
+
+  var W=720,H=250,L=38,R=12,T=16,B=30;
+  var ancho=W-L-R, alto=H-T-B;
+  var x=function(i){ return L + (claves.length===1?ancho/2: i*ancho/(claves.length-1)); };
+  var y=function(v){ return T + alto - (v/techo)*alto; };
+
+  var svg='<svg viewBox="0 0 '+W+' '+H+'" role="img" aria-label="Solicitudes ingresadas y cerradas por mes">';
+
+  // Referencias horizontales
+  for(var g=0; g<=4; g++){
+    var vy=T+alto-(g/4)*alto, val=Math.round(techo*g/4);
+    svg+='<line x1="'+L+'" y1="'+vy+'" x2="'+(W-R)+'" y2="'+vy+
+         '" stroke="var(--line-soft)" stroke-width="1"/>'+
+         '<text x="'+(L-8)+'" y="'+(vy+4)+'" text-anchor="end" font-size="11" '+
+         'fill="var(--ink-3)">'+val+'</text>';
+  }
+
+  var puntos=function(serie){
+    return serie.map(function(v,i){ return x(i)+","+y(v); }).join(" ");
+  };
+
+  // Área bajo las ingresadas
+  svg+='<polygon points="'+L+','+(T+alto)+' '+puntos(serieA)+' '+(W-R)+','+(T+alto)+
+       '" fill="var(--accent)" opacity="0.10"/>';
+  svg+='<polyline points="'+puntos(serieA)+'" fill="none" stroke="var(--accent)" '+
+       'stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round"/>';
+  svg+='<polyline points="'+puntos(serieB)+'" fill="none" stroke="var(--done)" '+
+       'stroke-width="2.2" stroke-dasharray="5 4" stroke-linejoin="round" stroke-linecap="round"/>';
+
+  serieA.forEach(function(v,i){
+    svg+='<circle cx="'+x(i)+'" cy="'+y(v)+'" r="3" fill="var(--accent)"/>';
+  });
+
+  claves.forEach(function(k,i){
+    if(claves.length>8 && i%2===1 && i!==claves.length-1) return;
+    svg+='<text x="'+x(i)+'" y="'+(H-10)+'" text-anchor="middle" font-size="11" '+
+         'fill="var(--ink-3)">'+etiquetas[k]+'</text>';
+  });
+
+  svg+='</svg>';
+  $("#r-tendencia").innerHTML=svg;
+}
+
+/* ---------- Anillo de cumplimiento ---------- */
+function pintarDonut(r){
+  var act=delPeriodo(r);
+  var cumplidas=0, incumplidas=0, vencidas=0, sinPlazo=0;
+  act.forEach(function(s){
+    var e=estadoSla(s);
+    if(e==="cumplido") cumplidas++;
+    else if(e==="incumplido") incumplidas++;
+    else if(e==="vencido") vencidas++;
+    else if(!e) sinPlazo++;
+  });
+
+  var cont=$("#r-donut");
+  var total=cumplidas+incumplidas+vencidas;
+  if(!total){
+    cont.innerHTML='<div class="sin-datos">Sin solicitudes con plazo definido en este período.</div>';
+    return;
+  }
+
+  var pct=Math.round(cumplidas/total*100);
+  var r0=54, circ=2*Math.PI*r0, off=0;
+  var partes=[[cumplidas,"var(--done)"],[incumplidas,"var(--urgent)"],[vencidas,"var(--warm)"]];
+
+  var svg='<svg viewBox="0 0 140 140" role="img" aria-label="Cumplimiento de plazos">'+
+          '<g transform="translate(70,70) rotate(-90)">';
+  partes.forEach(function(p){
+    if(!p[0]) return;
+    var largo=p[0]/total*circ;
+    svg+='<circle r="'+r0+'" fill="none" stroke="'+p[1]+'" stroke-width="17" '+
+         'stroke-dasharray="'+largo+' '+(circ-largo)+'" stroke-dashoffset="'+(-off)+'"/>';
+    off+=largo;
+  });
+  svg+='</g></svg>';
+
+  cont.innerHTML=svg+
+    '<div class="donut-centro"><b class="'+(pct>=90?"pct bien":pct>=70?"pct regular":"pct mal")+'">'+
+    pct+'%</b><span style="font-size:12px;color:var(--ink-2)">en plazo</span></div>'+
+    '<div class="donut-leyenda">'+
+      linea("var(--done)","Resueltas en plazo",cumplidas)+
+      linea("var(--urgent)","Resueltas fuera de plazo",incumplidas)+
+      linea("var(--warm)","Abiertas ya vencidas",vencidas)+
+      (sinPlazo? linea("var(--line)","Sin plazo definido",sinPlazo):"")+
+    '</div>';
+
+  function linea(color,texto,n){
+    return '<div><i style="background:'+color+'"></i><span>'+texto+'</span><span>'+n+'</span></div>';
+  }
+}
+
+/* ---------- Distribuciones ---------- */
+function conteo(campo,lista){
+  var m={};
+  lista.forEach(function(s){
     var k=s[campo]||"Sin definir"; m[k]=(m[k]||0)+1;
   });
   return Object.keys(m).map(function(k){return[k,m[k]];}).sort(function(a,b){return b[1]-a[1];});
 }
+
 function pintarBarras(sel,pares,etiquetar){
-  var cont=$(sel); cont.innerHTML="";
-  if(!pares.length){ cont.style.color="var(--ink-3)"; cont.textContent="Sin datos todavía."; return; }
-  cont.style.color="";
+  var cont=$(sel); if(!cont) return;
+  cont.innerHTML="";
+  if(!pares.length){
+    cont.innerHTML='<div class="sin-datos">Sin datos en este período.</div>';
+    return;
+  }
+  var total=pares.reduce(function(a,p){return a+p[1];},0);
   var max=pares[0][1];
-  pares.slice(0,8).forEach(function(p){
+  pares.slice(0,7).forEach(function(p){
     var row=crear("div","bar-row");
     var top=crear("div","bar-top");
     top.appendChild(crear("span",null, etiquetar?etiquetar(p[0]):p[0]));
-    top.appendChild(crear("span",null,p[1]));
+    top.appendChild(crear("span",null, p[1]+" · "+Math.round(p[1]/total*100)+"%"));
     row.appendChild(top);
     var tr=crear("div","bar-track"), fi=crear("div","bar-fill");
     fi.style.width=Math.round(p[1]/max*100)+"%";
@@ -1475,37 +1776,39 @@ function pintarBarras(sel,pares,etiquetar){
     cont.appendChild(row);
   });
 }
-function pintarTablaSla(){
+
+/* ---------- Desempeño por profesional ---------- */
+function pintarTablaSla(r){
   var tb=$("#tabla-sla"); if(!tb) return;
   tb.innerHTML="";
 
+  var act=delPeriodo(r);
   var porTecnico={};
-  estado.solicitudes.forEach(function(s){
+  act.forEach(function(s){
     var e=estadoSla(s);
-    if(!e) return;                       // categoría sin plazo definido
+    if(!e) return;
     var k=s.tecnico||"__sin__";
-    var r=porTecnico[k]=porTecnico[k]||{cumplidos:0,incumplidos:0,vencidos:0};
-    if(e==="cumplido")   r.cumplidos++;
-    if(e==="incumplido") r.incumplidos++;
-    if(e==="vencido")    r.vencidos++;
+    var x=porTecnico[k]=porTecnico[k]||{cumplidos:0,incumplidos:0,vencidos:0};
+    if(e==="cumplido")   x.cumplidos++;
+    if(e==="incumplido") x.incumplidos++;
+    if(e==="vencido")    x.vencidos++;
   });
 
   var filas=Object.keys(porTecnico).map(function(k){
-    var r=porTecnico[k];
-    var cerrados=r.cumplidos+r.incumplidos;
-    return {
-      nombre: k==="__sin__" ? "Sin asignar" : nombreDe(k),
-      cerrados:cerrados, cumplidos:r.cumplidos, incumplidos:r.incumplidos,
-      vencidos:r.vencidos,
-      pct: cerrados? Math.round(r.cumplidos/cerrados*100) : null
-    };
+    var x=porTecnico[k];
+    var cerrados=x.cumplidos+x.incumplidos;
+    return { nombre: k==="__sin__"? "Sin asignar" : nombreDe(k),
+             cerrados:cerrados, cumplidos:x.cumplidos, incumplidos:x.incumplidos,
+             vencidos:x.vencidos,
+             pct: cerrados? Math.round(x.cumplidos/cerrados*100) : null };
   }).sort(function(a,b){ return b.cerrados-a.cerrados; });
 
   if(!filas.length){
     var tr=document.createElement("tr");
     var td=document.createElement("td");
-    td.colSpan=6; td.style.color="var(--ink-3)";
-    td.textContent="Todavía no hay solicitudes con plazo definido. Configura las horas en Ajustes.";
+    td.colSpan=6;
+    td.innerHTML='<div class="sin-datos">Sin solicitudes con plazo definido en este período. '+
+                 'Configura las horas de cada tipo en Ajustes.</div>';
     tr.appendChild(td); tb.appendChild(tr);
     return;
   }
@@ -1517,60 +1820,56 @@ function pintarTablaSla(){
     tr.appendChild(crear("td","num",f.cumplidos));
     tr.appendChild(crear("td","num",f.incumplidos));
     tr.appendChild(crear("td","num",f.vencidos));
-    var td=crear("td","num");
+
+    var td=document.createElement("td");
     if(f.pct===null){ td.textContent="—"; }
-    else {
-      var sp=crear("span","pct "+(f.pct>=90?"bien":f.pct>=70?"regular":"mal"), f.pct+"%");
-      td.appendChild(sp);
+    else{
+      var clase=f.pct>=90?"bien":f.pct>=70?"regular":"mal";
+      var color=f.pct>=90?"var(--done)":f.pct>=70?"var(--warm)":"var(--urgent)";
+      var caja=crear("div");
+      caja.style.cssText="display:flex;align-items:center;gap:10px";
+      var barra=crear("div","barra-pct");
+      var relleno=crear("div");
+      relleno.style.cssText="width:"+f.pct+"%;background:"+color;
+      barra.appendChild(relleno);
+      caja.appendChild(barra);
+      caja.appendChild(crear("span","pct "+clase,f.pct+"%"));
+      td.appendChild(caja);
     }
     tr.appendChild(td);
     tb.appendChild(tr);
   });
 }
 
+/* ---------- Armado ---------- */
 function pintarResumen(){
-  var s=estado.solicitudes;
-  var res=s.filter(function(x){return x.estado==="Resuelta"&&x.resuelta;});
+  var r=rangoPeriodo(estado.periodo);
+  var act=delPeriodo(r);
 
-  // El promedio de soporte cuenta hasta la derivación, no hasta el cierre final
-  var propias=s.filter(function(x){ return x.derivada || (x.estado==="Resuelta"&&x.resuelta); });
-  var suma=0, n=0;
-  propias.forEach(function(x){
-    var fin = x.derivada || x.resuelta;
-    if(fin){ suma += dias(x.creada,fin); n++; }
-  });
-  var prom = n? suma/n : null;
-
-  var ahora=new Date();
-  var delMes=s.filter(function(x){
-    var d=new Date(x.creada);
-    return d.getMonth()===ahora.getMonth()&&d.getFullYear()===ahora.getFullYear();
-  }).length;
-
-  var strip=$("#resumen-strip"); strip.innerHTML="";
-  [[s.length,"solicitudes en total"],
-   [delMes,"ingresadas este mes"],
-   [res.length,"resueltas"],
-   [prom===null?"—":(prom<1?Math.max(1,Math.round(prom*24))+" h":prom.toFixed(1)+" d"),
-    "promedio de atención"]]
-  .forEach(function(t){
-    var d=crear("div","stat");
-    d.appendChild(crear("b",null,t[0]));
-    d.appendChild(crear("span",null,t[1]));
-    strip.appendChild(d);
+  $("#r-rango").textContent=etiquetaRango(r);
+  $("#r-periodo").querySelectorAll("button").forEach(function(b){
+    b.setAttribute("aria-pressed", b.dataset.p===estado.periodo);
   });
 
-  pintarTablaSla();
-  pintarBarras("#bars-canal",conteo("canal"),etiquetaCanal);
-  pintarBarras("#bars-categoria",conteo("categoria"));
-  pintarBarras("#bars-unidad",conteo("unidad"));
+  pintarKpis(r);
+  pintarTendencia();
+  pintarDonut(r);
+  pintarTablaSla(r);
 
-  var meses={};
-  s.forEach(function(x){
-    var k=new Date(x.creada).toLocaleDateString("es-CL",{month:"long",year:"numeric"});
-    meses[k]=(meses[k]||0)+1;
-  });
-  pintarBarras("#bars-mes",Object.keys(meses).map(function(k){return[k,meses[k]];}));
+  pintarBarras("#r-canal", conteo("canal",act), etiquetaCanal);
+  pintarBarras("#r-tipo",  conteo("categoria",act));
+  pintarBarras("#r-unidad",conteo("unidad",act));
+
+  var pn=$("#panel-nivel");
+  pn.classList.toggle("oculto", !esAdmin());
+  if(esAdmin()){
+    var m={};
+    act.forEach(function(s){
+      var k="Nivel "+s.nivel; m[k]=(m[k]||0)+1;
+    });
+    pintarBarras("#r-nivel", Object.keys(m).map(function(k){return [k,m[k]];})
+      .sort(function(a,b){return b[1]-a[1];}));
+  }
 }
 
 /* =====================================================================
@@ -1792,7 +2091,11 @@ function pintarTablaCategorias(){
   }).forEach(function(c){
     var tr=document.createElement("tr");
 
-    tr.appendChild(crear("td","nom",c.valor));
+    var tdN=document.createElement("td");
+    var inpN=document.createElement("input");
+    inpN.type="text"; inpN.value=c.valor; inpN.style.minWidth="150px";
+    inpN.onchange=function(){ renombrarCategoria(c,inpN); };
+    tdN.appendChild(inpN); tr.appendChild(tdN);
     tr.appendChild(crear("td",null,"N"+c.nivel));
 
     var tdH=document.createElement("td");
@@ -1822,6 +2125,43 @@ function pintarTablaCategorias(){
 
     tb.appendChild(tr);
   });
+}
+
+/**
+ * Renombrar arrastra las solicitudes que ya usaban ese nombre.
+ * Si solo se cambiara el catálogo, los tickets antiguos quedarían
+ * apuntando a un tipo inexistente.
+ */
+async function renombrarCategoria(c,input){
+  var nuevo=input.value.trim();
+  if(!nuevo || nuevo===c.valor){ input.value=c.valor; return; }
+
+  var choca=estado.cats.some(function(x){
+    return x.nivel===c.nivel && x.valor.toLowerCase()===nuevo.toLowerCase();
+  });
+  if(choca){ input.value=c.valor; return aviso("Ya existe un tipo con ese nombre en el nivel",true); }
+
+  var usados=estado.solicitudes.filter(function(s){
+    return s.categoria===c.valor && s.nivel===c.nivel;
+  }).length;
+
+  var msg="¿Renombrar «"+c.valor+"» a «"+nuevo+"»?";
+  if(usados) msg+="\n\nSe actualizarán también "+usados+" solicitud(es) que usan ese tipo.";
+  if(!confirm(msg)){ input.value=c.valor; return; }
+
+  var r1=await SB.from("catalogos").update({valor:nuevo})
+    .eq("tipo","categoria").eq("valor",c.valor).eq("nivel",c.nivel);
+  if(r1.error){ input.value=c.valor; return fallo(r1.error,"renombrar el tipo"); }
+
+  var r2=await SB.from("solicitudes").update({categoria:nuevo})
+    .eq("categoria",c.valor).eq("nivel",c.nivel);
+  if(r2.error) fallo(r2.error,"actualizar las solicitudes con el nombre nuevo");
+
+  await cargarCatalogos();
+  await cargarSolicitudes();
+  pintarTablaCategorias(); poblarSelects();
+  if(estado.abierto) pintarDetalle();
+  aviso("Tipo renombrado"+(usados? " en "+usados+" solicitud(es)" : ""));
 }
 
 async function actualizarCategoria(c,cambio){
@@ -1991,6 +2331,11 @@ $("#c-prioridad").onclick=function(e){
   var b=e.target.closest("button[data-p]"); if(!b) return;
   estado.prioridad=b.dataset.p;
   this.querySelectorAll("button").forEach(function(x){ x.setAttribute("aria-pressed", x===b); });
+};
+$("#r-periodo").onclick=function(e){
+  var b=e.target.closest("button[data-p]"); if(!b) return;
+  estado.periodo=b.dataset.p;
+  pintarResumen();
 };
 $("#c-nivel").onchange=function(){
   var n=parseInt(this.value,10);
