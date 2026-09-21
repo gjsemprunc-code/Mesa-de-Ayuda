@@ -270,6 +270,8 @@ main{max-width:1400px;margin:0 auto;padding:18px}
 .dash-grid3{display:grid;grid-template-columns:repeat(auto-fit,minmax(272px,1fr));gap:18px}
 .chart{padding:16px}
 .chart svg{display:block;width:100%;height:auto}
+#r-donut svg{max-width:200px;margin:4px auto 0}
+.tabla-sla th.num{text-align:right}
 .leyenda{float:right;font-weight:400;font-size:11.5px;color:var(--ink-3);
   display:inline-flex;align-items:center;gap:5px}
 .pt{width:9px;height:9px;border-radius:2px;display:inline-block;margin-left:7px}
@@ -306,6 +308,7 @@ main{max-width:1400px;margin:0 auto;padding:18px}
 .modal-card{background:var(--surface);border-radius:var(--radius);width:min(560px,100%);
   max-height:88vh;overflow:auto;padding:20px}
 .modal-card h2{margin:0 0 14px;font-size:16px;font-weight:600}
+#modal-ajustes .modal-card{width:min(860px,100%)}
 .modal-card textarea{width:100%;min-height:90px;background:var(--field);
   border:1px solid var(--line);border-radius:var(--radius);padding:8px;resize:vertical}
 .modal-card input[type=text],.modal-card input[type=month],.modal-card select{
@@ -347,6 +350,82 @@ main{max-width:1400px;margin:0 auto;padding:18px}
 .nuevo-usuario button{background:var(--ink);color:#fff;border:0;border-radius:var(--radius);
   padding:7px 13px;font-weight:500;font-size:12.5px}
 
+/* ---- Árbol de clasificación (Ajustes) ---- */
+.arbol-tipo{margin-bottom:18px}
+.arbol-tipo h3{font-size:13px;font-weight:600;margin:0 0 4px;display:flex;align-items:center;gap:8px}
+.arbol-tipo h3 small{font-weight:400;color:var(--ink-3);font-size:12px}
+.nodo-cat{border:1px solid var(--line);border-radius:var(--radius);margin-bottom:8px;background:var(--surface)}
+.nodo-cat > summary{list-style:none;cursor:pointer;padding:8px 10px;display:flex;align-items:center;gap:8px}
+.nodo-cat > summary::-webkit-details-marker{display:none}
+.nodo-cat > summary::before{content:"▸";color:var(--ink-3);font-size:11px;width:10px;transition:transform .15s}
+.nodo-cat[open] > summary::before{transform:rotate(90deg)}
+.nodo-fila{display:grid;grid-template-columns:minmax(150px,1fr) 78px 62px 86px 50px 76px;
+  gap:6px;align-items:center}
+.nodo-fila input[type=text],.nodo-fila select{background:var(--field);border:1px solid var(--line);
+  border-radius:var(--radius);padding:5px 7px;font-size:12.5px;width:100%}
+.nodo-fila input[type=text]:focus,.nodo-fila select:focus{background:#fff;border-color:var(--accent)}
+.nodo-fila .check{font-size:12px}
+.nodo-subs{padding:4px 10px 10px 28px;border-top:1px solid var(--line-soft)}
+.nodo-subs .nodo-fila{grid-template-columns:minmax(150px,1fr) 62px 86px 76px;padding:4px 0}
+.nodo-cab{font-size:11px;color:var(--ink-3);padding:6px 0 2px}
+.nodo-cab.de-cat{padding:0 63px 2px 29px}
+.nodo-nuevo{display:flex;gap:6px;margin-top:6px}
+.modal-card .nodo-nuevo input{flex:1;width:auto;min-width:0;background:var(--field);
+  border:1px dashed var(--line);border-radius:var(--radius);padding:5px 8px;font-size:12.5px}
+.modal-card .nodo-nuevo select{flex:none;width:auto}
+.nodo-nuevo button{background:var(--ink);color:#fff;border:0;border-radius:var(--radius);
+  padding:5px 12px;font-size:12px;font-weight:500;white-space:nowrap;flex:none}
+.nodo-cuenta{font-size:11px;color:var(--ink-3);white-space:nowrap;width:44px;text-align:right;flex:none}
+.nodo-fila .quitar{justify-self:start}
+.inactivo{opacity:.5}
+
+/* ---- Solo lectura (supervisor) ---- */
+body.solo-lectura .capture,body.solo-lectura .movil-abrir{display:none!important}
+body.solo-lectura .workspace{grid-template-columns:1fr}
+.lectura-aviso{background:var(--field);border:1px solid var(--line);border-radius:var(--radius);
+  padding:9px 12px;font-size:12.5px;color:var(--ink-2);margin-bottom:14px}
+
+/* ---- Portal de usuarios ---- */
+.portal-main{max-width:1120px;margin:0 auto;padding:22px 18px 40px;
+  display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,.9fr);gap:22px;align-items:start}
+.portal-intro{grid-column:1/-1;margin:0 0 2px}
+.portal-intro h2{font-size:21px;font-weight:600;margin:0 0 4px}
+.portal-intro p{margin:0;color:var(--ink-2);max-width:62ch}
+.portal-card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius)}
+.portal-card .panel-title{display:flex;align-items:center;justify-content:space-between}
+.portal-body{padding:16px 18px 18px}
+.eleccion{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px}
+.eleccion button{text-align:left;background:var(--field);border:1px solid var(--line);
+  border-radius:var(--radius);padding:12px 13px;display:flex;flex-direction:column;gap:3px}
+.eleccion button b{font-size:14px;font-weight:600}
+.eleccion button span{font-size:12px;color:var(--ink-2);line-height:1.35}
+.eleccion button:hover{border-color:var(--accent)}
+.eleccion button[aria-pressed="true"]{background:#EBF4F7;border-color:var(--accent);
+  box-shadow:inset 0 0 0 1px var(--accent)}
+.eleccion button[aria-pressed="true"] b{color:var(--accent)}
+.opcional{color:var(--ink-3);font-weight:400}
+.hecho{background:#EBF5EF;border:1px solid #A8CFBB;border-radius:var(--radius);
+  padding:14px;margin-bottom:14px;color:var(--done)}
+.hecho b{display:block;font-size:15px;margin-bottom:2px}
+.hecho span{color:var(--ink-2);font-size:13px}
+.mis{display:flex;flex-direction:column}
+.mia{padding:12px 18px;border-bottom:1px solid var(--line-soft)}
+.mia:last-child{border-bottom:0}
+.mia-top{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:3px}
+.mia-asunto{font-weight:600;font-size:13.5px}
+.mia-meta{font-size:12px;color:var(--ink-3);margin-top:2px}
+.mia-sol{margin-top:8px;background:#EBF5EF;border-left:3px solid var(--done);
+  padding:7px 10px;font-size:12.5px;white-space:pre-wrap;border-radius:0 3px 3px 0}
+.mia-sol b{display:block;font-size:11.5px;color:var(--done);margin-bottom:2px}
+.btn-mini{background:var(--field);border:1px solid var(--line);border-radius:var(--radius);
+  padding:4px 10px;font-size:12px;font-weight:500;color:var(--ink-2)}
+@media (max-width:860px){
+  .portal-main{grid-template-columns:1fr;padding:16px 12px 30px}
+  .eleccion{grid-template-columns:1fr}
+  .nodo-fila{grid-template-columns:1fr 1fr}
+  .nodo-subs .nodo-fila{grid-template-columns:1fr 1fr}
+}
+
 /* ---- Avisos ---- */
 #aviso{position:fixed;left:50%;bottom:22px;transform:translateX(-50%) translateY(16px);
   background:var(--ink);color:#fff;padding:10px 18px;border-radius:var(--radius);
@@ -385,9 +464,97 @@ main{max-width:1400px;margin:0 auto;padding:18px}
       Entrar con Google
     </button>
     <p style="margin:16px 0 0;font-size:12px;color:var(--ink-3)">
-      Acceso restringido al equipo autorizado
+      Entra con tu cuenta institucional para crear o revisar tus solicitudes
     </p>
   </div>
+</div>
+
+<!-- ================= PORTAL DE USUARIOS ================= -->
+<div id="portal" class="oculto">
+<header>
+  <h1>Mesa de ayuda <span>· Soporte Informático</span></h1>
+  <div class="head-right">
+    <span class="quien" id="p-quien"></span>
+    <button class="icon-btn" id="p-salir">Salir</button>
+  </div>
+</header>
+
+<main class="portal-main">
+  <div class="portal-intro">
+    <h2>¿En qué te podemos ayudar?</h2>
+    <p>Cuéntanos qué necesitas y te respondemos por correo. Aquí mismo puedes seguir el estado de tus solicitudes.</p>
+  </div>
+
+  <section class="portal-card">
+    <div class="panel-title">Nueva solicitud</div>
+    <div class="portal-body">
+      <div id="p-hecho"></div>
+
+      <div class="f">
+        <label>Área</label>
+        <div class="eleccion" id="p-nivel">
+          <button type="button" data-nivel="1" aria-pressed="false">
+            <b>Soporte técnico</b>
+            <span id="p-nivel1-ej">Equipos, impresoras, red, correo, cuentas y programas.</span>
+          </button>
+          <button type="button" data-nivel="2" aria-pressed="false">
+            <b>Desarrollo y sistemas</b>
+            <span id="p-nivel2-ej">Plataformas web, desarrollos, licencias y datos.</span>
+          </button>
+        </div>
+      </div>
+
+      <div class="f">
+        <label>Tipo de solicitud</label>
+        <div class="eleccion" id="p-tipo">
+          <button type="button" data-tipo="Incidencia" aria-pressed="false">
+            <b>Algo no funciona</b>
+            <span>Una falla: el equipo no enciende, no hay red, un sistema da error.</span>
+          </button>
+          <button type="button" data-tipo="Requerimiento" aria-pressed="false">
+            <b>Necesito algo</b>
+            <span>Un pedido: una cuenta, un programa, un equipo, un permiso.</span>
+          </button>
+        </div>
+      </div>
+
+      <div class="f duo">
+        <div><label for="p-categoria">Tema</label><select id="p-categoria" disabled>
+          <option value="">Elige el área y el tipo</option></select></div>
+        <div><label for="p-subcategoria">Detalle del tema <span class="opcional">(opcional)</span></label>
+          <select id="p-subcategoria" disabled><option value="">—</option></select></div>
+      </div>
+
+      <div class="f">
+        <label for="p-asunto">Qué necesitas</label>
+        <input type="text" id="p-asunto" maxlength="200" autocomplete="off"
+               placeholder="Ej: no puedo imprimir desde mi computador">
+      </div>
+
+      <div class="f">
+        <label for="p-detalle">Descripción <span class="opcional">(opcional)</span></label>
+        <textarea id="p-detalle" rows="4"
+          placeholder="Qué pasó, desde cuándo, qué mensaje aparece, número de inventario del equipo…"></textarea>
+      </div>
+
+      <div class="f duo">
+        <div><label for="p-unidad">Tu unidad</label><select id="p-unidad"></select></div>
+        <div><label for="p-anexo">Anexo o teléfono <span class="opcional">(opcional)</span></label>
+          <input type="text" id="p-anexo" maxlength="60" autocomplete="off"></div>
+      </div>
+
+      <button class="btn-primary" id="p-enviar">Enviar solicitud</button>
+      <p class="hint">Recibirás un correo con el número de tu solicitud</p>
+    </div>
+  </section>
+
+  <section class="portal-card">
+    <div class="panel-title">Mis solicitudes
+      <button class="btn-mini" id="p-actualizar">Actualizar</button>
+    </div>
+    <div class="mis" id="p-mis"><div class="cargando">Cargando…</div></div>
+  </section>
+</main>
 </div>
 
 <!-- ================= APLICACIÓN ================= -->
@@ -424,8 +591,15 @@ main{max-width:1400px;margin:0 auto;padding:18px}
             <input type="text" id="c-asunto" autocomplete="off" placeholder="Ej: no imprime la impresora del 3er piso">
           </div>
           <div class="f duo">
+            <div><label for="c-tipo">Tipo</label><select id="c-tipo">
+              <option value="Incidencia">Incidencia</option>
+              <option value="Requerimiento">Requerimiento</option>
+            </select></div>
             <div><label for="c-unidad">Unidad</label><select id="c-unidad"></select></div>
-            <div><label for="c-categoria">Tipo</label><select id="c-categoria"></select></div>
+          </div>
+          <div class="f duo">
+            <div><label for="c-categoria">Categoría</label><select id="c-categoria"></select></div>
+            <div><label for="c-subcategoria">Subcategoría</label><select id="c-subcategoria"></select></div>
           </div>
           <div class="f duo">
             <div><label for="c-nivel">Nivel</label><select id="c-nivel">
@@ -525,7 +699,8 @@ main{max-width:1400px;margin:0 auto;padding:18px}
 
     <div class="dash-grid3">
       <div class="panel"><div class="panel-title">Canal de ingreso</div><div class="bars" id="r-canal"></div></div>
-      <div class="panel"><div class="panel-title">Tipo de requerimiento</div><div class="bars" id="r-tipo"></div></div>
+      <div class="panel"><div class="panel-title">Incidencias y requerimientos</div><div class="bars" id="r-tipo"></div></div>
+      <div class="panel"><div class="panel-title">Categorías más frecuentes</div><div class="bars" id="r-categoria"></div></div>
       <div class="panel"><div class="panel-title">Unidad solicitante</div><div class="bars" id="r-unidad"></div></div>
       <div class="panel oculto" id="panel-nivel"><div class="panel-title">Distribución por nivel</div><div class="bars" id="r-nivel"></div></div>
     </div>
@@ -549,8 +724,12 @@ main{max-width:1400px;margin:0 auto;padding:18px}
 
     <h3 class="sec-h">Clasificación</h3>
     <div class="trio">
+      <div><label for="d-tipo">Tipo</label><select id="d-tipo">
+        <option value="Incidencia">Incidencia</option>
+        <option value="Requerimiento">Requerimiento</option></select></div>
+      <div><label for="d-categoria">Categoría</label><select id="d-categoria"></select></div>
+      <div><label for="d-subcategoria">Subcategoría</label><select id="d-subcategoria"></select></div>
       <div><label for="d-unidad">Unidad</label><select id="d-unidad"></select></div>
-      <div><label for="d-categoria">Tipo de requerimiento</label><select id="d-categoria"></select></div>
       <div><label for="d-prioridad">Prioridad</label><select id="d-prioridad">
         <option>Baja</option><option>Media</option><option>Alta</option></select></div>
       <div><label for="d-tecnico">Profesional asignado</label><select id="d-tecnico"></select></div>
@@ -594,34 +773,32 @@ main{max-width:1400px;margin:0 auto;padding:18px}
 <div class="modal" id="modal-ajustes">
   <div class="modal-card">
     <h2>Equipo autorizado</h2>
+    <p style="font-size:12px;color:var(--ink-3);margin:-6px 0 10px">
+      El <b>rol</b> define qué puede hacer cada persona. El <b>cargo</b> es solo descriptivo
+      (Analista, Programador…) y puedes escribir uno nuevo cuando quieras.
+      Quien no esté en esta lista entra al portal de solicitudes.
+    </p>
+    <datalist id="l-cargos"></datalist>
     <table class="tabla-usuarios">
-      <thead><tr><th>Persona</th><th>Rol</th><th>Nivel</th><th>Estado</th><th></th></tr></thead>
+      <thead><tr><th>Persona</th><th>Cargo</th><th>Rol</th><th>Nivel</th><th>Estado</th><th></th></tr></thead>
       <tbody id="tabla-usuarios"></tbody>
     </table>
-    <div class="nuevo-usuario">
+    <div class="nuevo-usuario" style="grid-template-columns:1fr 1fr 1fr auto auto auto">
       <input type="text" id="u-nombre" placeholder="Nombre">
       <input type="text" id="u-correo" placeholder="correo@minciencia.gob.cl">
-      <select id="u-rol"><option value="tecnico">Técnico</option><option value="admin">Admin</option></select>
+      <input type="text" id="u-cargo" placeholder="Cargo" list="l-cargos">
+      <select id="u-rol"></select>
       <select id="u-nivel"><option value="1">Nivel 1</option><option value="2">Nivel 2</option></select>
       <button id="u-agregar">Agregar</button>
     </div>
 
-    <h2 style="margin-top:22px">Tipos de requerimiento y plazos</h2>
-    <p style="font-size:12px;color:var(--ink-3);margin:0 0 10px">
-      El plazo se cuenta en horas hábiles (lun a vie, 8:30 a 17:30) salvo que marques horario corrido.
-      Déjalo vacío si esa categoría no tiene compromiso de tiempo.
+    <h2 style="margin-top:24px">Clasificación y plazos</h2>
+    <p style="font-size:12px;color:var(--ink-3);margin:-6px 0 12px">
+      Horas hábiles (lun a vie, 8:30 a 17:30) salvo que marques horario corrido.
+      Una subcategoría sin horas usa las de su categoría. Los cambios se guardan al salir de cada campo,
+      y renombrar actualiza también las solicitudes existentes.
     </p>
-    <table class="tabla-usuarios">
-      <thead><tr><th>Tipo</th><th>Nivel</th><th>Horas</th><th>Horario</th><th></th></tr></thead>
-      <tbody id="tabla-categorias"></tbody>
-    </table>
-    <div class="nuevo-usuario">
-      <input type="text" id="k-valor" placeholder="Nombre del tipo">
-      <select id="k-nivel"><option value="1">Nivel 1</option><option value="2">Nivel 2</option></select>
-      <input type="text" id="k-horas" placeholder="Horas" style="max-width:80px">
-      <select id="k-habil"><option value="1">Hábil</option><option value="0">Corrido</option></select>
-      <button id="k-agregar">Agregar</button>
-    </div>
+    <div id="arbol"></div>
 
     <h2 style="margin-top:22px">Unidades</h2>
     <div class="f">
@@ -631,7 +808,7 @@ main{max-width:1400px;margin:0 auto;padding:18px}
 
     <div class="modal-actions">
       <button class="btn-ghost" id="a-cancelar">Cerrar</button>
-      <button class="btn-primary" style="width:auto" id="a-guardar">Guardar listas</button>
+      <button class="btn-primary" style="width:auto" id="a-guardar">Guardar unidades</button>
     </div>
   </div>
 </div>
@@ -708,7 +885,7 @@ var CONFIG = {
   SUPABASE_URL: "https://xmmnjbusqfbglorxzpdg.supabase.co",
 
   // Supabase > Project Settings > API > anon public
-  SUPABASE_ANON_KEY: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhtbW5qYnVzcWZiZ2xvcnh6cGRnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODg4NzU2MjEsImV4cCI6MjEwNDQ1MTYyMX0.kcnV99OTosocpmreYC9zZ19agNNrdouFwwzJ-33H7Ms",
+  SUPABASE_ANON_KEY: "PEGA_AQUI_TU_ANON_KEY",
 
   DOMINIO: "minciencia.gob.cl"
 };
@@ -722,19 +899,73 @@ var ICONOS = {
   "Correo":'<svg viewBox="0 0 24 24"><rect x="2.5" y="5" width="19" height="14" rx="2"/><path d="M3 7l9 6 9-6"/></svg>',
   "Chat":'<svg viewBox="0 0 24 24"><path d="M20 4H4a1.5 1.5 0 0 0-1.5 1.5v9A1.5 1.5 0 0 0 4 16h3v4l4.5-4H20a1.5 1.5 0 0 0 1.5-1.5v-9A1.5 1.5 0 0 0 20 4z"/></svg>',
   "Presencial":'<svg viewBox="0 0 24 24"><circle cx="12" cy="7.5" r="3.5"/><path d="M4.5 21c0-4.2 3.4-6.5 7.5-6.5s7.5 2.3 7.5 6.5"/></svg>',
-  "Teléfono":'<svg viewBox="0 0 24 24"><path d="M6 3h3l2 5-2.5 1.5a12 12 0 0 0 6 6L16 13l5 2v3a2 2 0 0 1-2.2 2A16.5 16.5 0 0 1 4 5.2 2 2 0 0 1 6 3z"/></svg>'
+  "Teléfono":'<svg viewBox="0 0 24 24"><path d="M6 3h3l2 5-2.5 1.5a12 12 0 0 0 6 6L16 13l5 2v3a2 2 0 0 1-2.2 2A16.5 16.5 0 0 1 4 5.2 2 2 0 0 1 6 3z"/></svg>',
+  "Portal":'<svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="14" rx="2"/><path d="M3 8h18M8 21h8M12 18v3"/></svg>'
 };
 
+var TIPOS = ["Incidencia","Requerimiento"];
+var SIN_CLASIFICAR = "Por clasificar";
+var ROLES = [
+  ["tecnico","Técnico"],
+  ["coordinador","Coordinador"],
+  ["supervisor","Supervisor"],
+  ["admin","Administrador"]
+];
+var CARGOS_BASE = ["Analista","Programador","Técnico de soporte","Jefatura"];
+
 var estado = {
-  perfil:null, solicitudes:[], usuarios:[], unidades:[], categorias:{1:[],2:[]}, adjuntos:[],
+  perfil:null, solicitudes:[], usuarios:[], unidades:[], arbol:[], adjuntos:[],
   filtro:"abiertas", busqueda:"", canal:"Chat", prioridad:"Media",
-  periodo:"mes", abierto:null, vista:"bandeja"
+  periodo:"mes", abierto:null, vista:"bandeja",
+  portal:{ nivel:null, tipo:null }
 };
 
 /* ---------- Utilidades ---------- */
 function $(s){ return document.querySelector(s); }
 function crear(t,c,x){ var e=document.createElement(t); if(c)e.className=c; if(x!==undefined)e.textContent=x; return e; }
-function esAdmin(){ return estado.perfil && estado.perfil.rol==="admin"; }
+function rol(){ return estado.perfil ? estado.perfil.rol : null; }
+function esAdmin(){ return rol()==="admin"; }
+/** Ve ambos niveles: administrador y supervisor. */
+function veTodo(){ return rol()==="admin" || rol()==="supervisor"; }
+/** El supervisor solo mira: no registra, no edita, no deriva. */
+function puedeEditar(){ return rol()==="admin" || rol()==="coordinador" || rol()==="tecnico"; }
+/** Subir un ticket a Nivel 2. */
+function puedeDerivar(){ return rol()==="admin" || rol()==="coordinador"; }
+/** Asignar a otra persona. */
+function puedeAsignar(){ return rol()==="admin" || rol()==="coordinador"; }
+function etiquetaRol(r){
+  var x=ROLES.filter(function(o){return o[0]===r;})[0];
+  return x? x[1] : r;
+}
+
+/* ---------- Árbol de clasificación ---------- */
+function categoriasDe(tipo,nivel,soloPortal){
+  return estado.arbol.filter(function(n){
+    return !n.padre_id && n.activo && n.tipo===tipo &&
+           (nivel==null || n.nivel===nivel) && (!soloPortal || n.portal);
+  }).sort(function(a,b){ return a.orden-b.orden || a.nombre.localeCompare(b.nombre); });
+}
+function nodoCategoria(tipo,nombre){
+  return estado.arbol.filter(function(n){
+    return !n.padre_id && n.tipo===tipo && n.nombre===nombre;
+  })[0];
+}
+function subcategoriasDe(cat){
+  if(!cat) return [];
+  return estado.arbol.filter(function(n){ return n.padre_id===cat.id && n.activo; })
+    .sort(function(a,b){ return a.nombre.localeCompare(b.nombre); });
+}
+/** Una solicitud está clasificada cuando tiene tipo, categoría real y,
+    si la categoría tiene subcategorías, una elegida. */
+function clasificada(s){
+  if(!s.tipo || !s.categoria || s.categoria===SIN_CLASIFICAR) return false;
+  var cat=nodoCategoria(s.tipo,s.categoria);
+  if(cat && subcategoriasDe(cat).length && !s.subcategoria) return false;
+  return true;
+}
+function rutaClasificacion(s){
+  return [s.tipo, s.categoria, s.subcategoria].filter(Boolean).join(" › ");
+}
 function claseEstado(e){ return e==="En atención"?"e-atencion":e==="En espera"?"e-espera":"e-"+e; }
 function etiquetaCanal(c){ return c==="Presencial"?"En persona":c; }
 function fechaLarga(iso){
@@ -843,23 +1074,30 @@ async function revisarSesion(){
 
   var correo=(data.session.user.email||"").toLowerCase();
 
-  // La lista blanca manda: no basta con tener cuenta institucional
-  var { data: filas, error } = await SB.from("usuarios")
-    .select("*").eq("correo",correo).eq("activo",true).limit(1);
+  // La base decide quién es: integrante del equipo, solicitante o nadie
+  var { data: perfil, error } = await SB.rpc("mi_perfil");
 
-  if(error || !filas || !filas.length){
+  if(error || !perfil){
     await SB.auth.signOut();
     $("#acceso-error").innerHTML =
       '<div class="acceso-error"><b>Sin acceso.</b><br>La cuenta '+correo+
-      ' no está en la lista del equipo. Pídele al administrador de la mesa de ayuda que te agregue.</div>';
+      ' no pertenece al dominio institucional. Entra con tu correo @'+CONFIG.DOMINIO+'.</div>';
     return mostrarAcceso();
   }
 
-  estado.perfil = filas[0];
-  $("#quien").innerHTML = "<b>"+estado.perfil.nombre+"</b>"+
-    (esAdmin()? "Administrador" : "Nivel "+estado.perfil.nivel);
-  $("#btn-ajustes").classList.toggle("oculto", !esAdmin());
+  estado.perfil = perfil;
   $("#acceso").classList.add("oculto");
+
+  if(perfil.rol==="solicitante"){
+    $("#portal").classList.remove("oculto");
+    return iniciarPortal();
+  }
+
+  $("#quien").innerHTML = "<b>"+perfil.nombre+"</b>"+
+    etiquetaRol(perfil.rol)+(veTodo()? "" : " · Nivel "+perfil.nivel)+
+    (perfil.cargo? " · "+perfil.cargo : "");
+  $("#btn-ajustes").classList.toggle("oculto", !esAdmin());
+  document.body.classList.toggle("solo-lectura", !puedeEditar());
   $("#app").classList.remove("oculto");
   await arrancar();
 }
@@ -867,6 +1105,7 @@ async function revisarSesion(){
 function mostrarAcceso(){
   $("#acceso").classList.remove("oculto");
   $("#app").classList.add("oculto");
+  $("#portal").classList.add("oculto");
 }
 
 SB.auth.onAuthStateChange(function(evento){
@@ -884,14 +1123,16 @@ async function cargarUsuarios(){
 
 async function cargarCatalogos(){
   var { data, error } = await SB.from("catalogos")
-    .select("tipo,valor,nivel,sla_horas,sla_habil").eq("activo",true).order("valor");
-  if(error) return fallo(error,"cargar las listas");
-  estado.unidades = data.filter(function(c){return c.tipo==="unidad";}).map(function(c){return c.valor;});
-  estado.cats = data.filter(function(c){return c.tipo==="categoria";});
-  estado.categorias = {
-    1: estado.cats.filter(function(c){return c.nivel===1;}).map(function(c){return c.valor;}),
-    2: estado.cats.filter(function(c){return c.nivel===2;}).map(function(c){return c.valor;})
-  };
+    .select("valor").eq("tipo","unidad").eq("activo",true).order("valor");
+  if(error) return fallo(error,"cargar las unidades");
+  estado.unidades = data.map(function(c){return c.valor;});
+  await cargarArbol();
+}
+
+async function cargarArbol(){
+  var { data, error } = await SB.from("clasificacion").select("*").order("orden").order("nombre");
+  if(error) return fallo(error,"cargar la clasificación");
+  estado.arbol = data;
 }
 
 async function cargarSolicitudes(){
@@ -921,7 +1162,8 @@ function poblarSelects(){
     selNivel.disabled=true;
   }
   var nivelCaptura=parseInt(selNivel.value,10);
-  poblarCategorias("#c-categoria", nivelCaptura);
+  poblarCategorias("#c-categoria", $("#c-tipo").value, nivelCaptura);
+  poblarSubcategorias("#c-subcategoria", $("#c-tipo").value, $("#c-categoria").value);
   poblarTecnicos("#c-tecnico", nivelCaptura);
 
   var dl=$("#l-personas"); dl.innerHTML="";
@@ -931,21 +1173,46 @@ function poblarSelects(){
   });
 }
 
-function poblarCategorias(sel,nivel){
+function poblarCategorias(sel,tipo,nivel){
   var s=$(sel); if(!s) return;
   var previo=s.value;
   s.innerHTML="";
-  (estado.categorias[nivel]||[]).forEach(function(v){ s.appendChild(new Option(v,v)); });
-  if(previo) s.value=previo;
+  s.appendChild(new Option(SIN_CLASIFICAR,SIN_CLASIFICAR));
+  categoriasDe(tipo,nivel).forEach(function(c){ s.appendChild(new Option(c.nombre,c.nombre)); });
+  if(previo && Array.prototype.some.call(s.options,function(o){return o.value===previo;})) s.value=previo;
 }
 
-function poblarTecnicos(sel,nivel){
+function poblarSubcategorias(sel,tipo,categoria){
   var s=$(sel); if(!s) return;
   var previo=s.value;
+  var subs=subcategoriasDe(nodoCategoria(tipo,categoria));
+  s.innerHTML="";
+  s.appendChild(new Option(subs.length? "Elige una…" : "—",""));
+  subs.forEach(function(c){ s.appendChild(new Option(c.nombre,c.nombre)); });
+  s.disabled=!subs.length;
+  if(previo && Array.prototype.some.call(s.options,function(o){return o.value===previo;})) s.value=previo;
+}
+
+/**
+ * Administrador y coordinador asignan a cualquiera del nivel. Un técnico
+ * solo ve su propio nombre: puede tomar un ticket libre o soltar el suyo,
+ * pero no pasárselo a otra persona. La base aplica la misma regla.
+ */
+function poblarTecnicos(sel,nivel,actual){
+  var s=$(sel); if(!s) return;
+  var previo=s.value;
+  var yo=estado.perfil.correo;
+  var lista=tecnicosDe(nivel);
+  if(!puedeAsignar()) lista=lista.filter(function(u){ return u.correo===yo || u.correo===actual; });
   s.innerHTML="";
   s.appendChild(new Option("Sin asignar",""));
-  tecnicosDe(nivel).forEach(function(u){ s.appendChild(new Option(u.nombre,u.correo)); });
+  lista.forEach(function(u){
+    s.appendChild(new Option(u.correo===yo && !puedeAsignar()? u.nombre+" (tomarlo yo)" : u.nombre, u.correo));
+  });
   if(previo) s.value=previo;
+  var ajeno = !puedeAsignar() && !!actual && actual!==yo;
+  s.disabled = ajeno;
+  s.title = ajeno? "Solo el coordinador o el administrador pueden reasignar" : "";
 }
 
 function ponerValor(sel,valor){
@@ -962,13 +1229,14 @@ function escucharCambios(){
     .on("postgres_changes",{event:"*",schema:"public",table:"solicitudes"}, function(p){
       if(p.eventType==="INSERT"){
         var s=p.new;
-        if(!esAdmin() && s.nivel!==estado.perfil.nivel) return;
+        if(!veTodo() && s.nivel!==estado.perfil.nivel) return;
         if(!estado.solicitudes.some(function(x){return x.id===s.id;})){
           estado.solicitudes.unshift(s);
           if(s.origen==="correo") aviso("Nueva solicitud por correo: "+s.folio);
+          if(s.origen==="portal") aviso("Nueva solicitud desde el portal: "+s.folio);
         }
       } else if(p.eventType==="UPDATE"){
-        var visible = esAdmin() || p.new.nivel===estado.perfil.nivel;
+        var visible = veTodo() || p.new.nivel===estado.perfil.nivel;
         var estaba = estado.solicitudes.some(function(x){return x.id===p.new.id;});
         if(visible && estaba){
           estado.solicitudes=estado.solicitudes.map(function(x){ return x.id===p.new.id? p.new : x; });
@@ -1006,8 +1274,11 @@ async function registrar(){
     correo:$("#c-correo").value.trim().toLowerCase()||null,
     asunto:asunto,
     unidad:$("#c-unidad").value,
+    tipo:$("#c-tipo").value,
     categoria:$("#c-categoria").value,
+    subcategoria:$("#c-subcategoria").value||null,
     nivel:nivel,
+    nivel_ingreso:nivel,
     tecnico:$("#c-tecnico").value||null,
     canal:estado.canal,
     prioridad:estado.prioridad,
@@ -1052,9 +1323,12 @@ function filtradas(){
     if(estado.filtro==="porvencer" && estadoSla(s)!=="por_vencer") return false;
     if(estado.filtro==="n1" && s.nivel!==1) return false;
     if(estado.filtro==="n2" && s.nivel!==2) return false;
+    if(estado.filtro==="porclasificar" && (clasificada(s)||!abierta(s))) return false;
+    if(estado.filtro==="Incidencia" && s.tipo!=="Incidencia") return false;
+    if(estado.filtro==="Requerimiento" && s.tipo!=="Requerimiento") return false;
     if(q){
-      var blob=[s.folio,s.solicitante,s.correo,s.asunto,s.unidad,s.categoria,
-                s.detalle,nombreDe(s.tecnico)].join(" ").toLowerCase();
+      var blob=[s.folio,s.solicitante,s.correo,s.asunto,s.unidad,s.tipo,s.categoria,
+                s.subcategoria,s.detalle,nombreDe(s.tecnico)].join(" ").toLowerCase();
       if(blob.indexOf(q)<0) return false;
     }
     return true;
@@ -1077,7 +1351,8 @@ function pintarStats(){
     [s.filter(function(x){return abierta(x)&&!x.tecnico;}).length,"sin asignar",""],
     [s.filter(function(x){return new Date(x.creada).toDateString()===hoy;}).length,"ingresadas hoy",""]
   ];
-  if(esAdmin()){
+  vals.splice(3,0,[s.filter(function(x){return abierta(x)&&!clasificada(x);}).length,"por clasificar",""]);
+  if(veTodo()){
     vals.splice(3,0,[s.filter(function(x){return x.nivel===2&&abierta(x);}).length,"en nivel 2","is-n2"]);
   }
   var cont=$("#stats-strip"); cont.innerHTML="";
@@ -1092,23 +1367,22 @@ function pintarStats(){
 function pintarFiltros(){
   var cont=$("#filtros"); cont.innerHTML="";
   var ops=[["abiertas","Abiertas"],["vencidos","Fuera de plazo"],["porvencer","Por vencer"],
-           ["urgentes","Prioridad alta"],["mias","Asignadas a mí"],
-           ["sinasignar","Sin asignar"],["Nueva","Sin atender"],["En atención","En atención"],
-           ["En espera","En espera"],["Resuelta","Resueltas"],["todas","Todas"]];
-  ops.forEach(function(o){
+           ["urgentes","Prioridad alta"],["porclasificar","Por clasificar"]];
+  if(puedeEditar()) ops.push(["mias","Asignadas a mí"]);
+  ops=ops.concat([["sinasignar","Sin asignar"],["Nueva","Sin atender"],["En atención","En atención"],
+           ["En espera","En espera"],["Resuelta","Resueltas"],["todas","Todas"]]);
+  var boton=function(o){
     var b=crear("button",null,o[1]);
     b.setAttribute("aria-pressed", estado.filtro===o[0]);
     b.onclick=function(){ estado.filtro=o[0]; pintar(); };
     cont.appendChild(b);
-  });
-  if(esAdmin()){
+  };
+  ops.forEach(boton);
+  cont.appendChild(crear("div","sep"));
+  [["Incidencia","Incidencias"],["Requerimiento","Requerimientos"]].forEach(boton);
+  if(veTodo()){
     cont.appendChild(crear("div","sep"));
-    [["n1","Nivel 1"],["n2","Nivel 2"]].forEach(function(o){
-      var b=crear("button",null,o[1]);
-      b.setAttribute("aria-pressed", estado.filtro===o[0]);
-      b.onclick=function(){ estado.filtro=o[0]; pintar(); };
-      cont.appendChild(b);
-    });
+    [["n1","Nivel 1"],["n2","Nivel 2"]].forEach(boton);
   }
 }
 
@@ -1131,15 +1405,16 @@ function pintarLista(){
     var l1=crear("div","t-line1");
     l1.appendChild(crear("span","folio mono",s.folio));
     l1.appendChild(crear("span","chip "+claseEstado(s.estado),s.estado));
-    if(esAdmin() || s.nivel===2){
+    if(veTodo() || s.nivel===2){
       l1.appendChild(crear("span","nivel"+(s.nivel===2?" n2":""),"N"+s.nivel));
     }
     var canal=crear("span","canal");
-    canal.innerHTML=ICONOS[s.canal]+"<span>"+etiquetaCanal(s.canal)+"</span>";
+    canal.innerHTML=(ICONOS[s.canal]||ICONOS.Portal)+"<span>"+etiquetaCanal(s.canal)+"</span>";
     l1.appendChild(canal);
     var sla=estadoSla(s);
     if(sla) l1.appendChild(crear("span","sla sla-"+sla, textoSla(s)));
     if(s.origen==="correo") l1.appendChild(crear("span","auto","automática"));
+    if(abierta(s) && !clasificada(s)) l1.appendChild(crear("span","sla sla-por_vencer","por clasificar"));
     b.appendChild(l1);
 
     var e=crear("div","t-edad",abierta(s)?edad(s.creada):"resuelta");
@@ -1148,7 +1423,7 @@ function pintarLista(){
 
     b.appendChild(crear("div","t-asunto",s.asunto));
     b.appendChild(crear("div","t-meta",
-      s.solicitante+" · "+(s.unidad||"Por definir")+" · "+s.categoria+
+      s.solicitante+" · "+(s.unidad||"Por definir")+" · "+(rutaClasificacion(s)||SIN_CLASIFICAR)+
       (s.tecnico? " · "+nombreDe(s.tecnico) : "")));
 
     b.onclick=function(){ abrir(s.id); };
@@ -1163,6 +1438,7 @@ function buscar(id){ return estado.solicitudes.filter(function(s){return s.id===
 
 async function abrir(id){
   estado.abierto=id;
+  estado.pintadoId=null;
   estado.adjuntos=[];
   $("#d-adjuntos").value="";
   pintarDetalle();
@@ -1188,7 +1464,9 @@ function pintarDetalle(){
   var kv=$("#d-kv"); kv.innerHTML="";
   var filas=[["Solicitante",s.solicitante]];
   if(s.correo) filas.push(["Correo",s.correo]);
+  if(s.anexo) filas.push(["Anexo",s.anexo]);
   filas.push(["Canal",etiquetaCanal(s.canal)+(s.origen==="correo"?" (automática)":"")]);
+  filas.push(["Clasificación",rutaClasificacion(s)||SIN_CLASIFICAR]);
   filas.push(["Nivel",NIVELES[s.nivel]]);
   filas.push(["Ingreso",fechaLarga(s.creada)]);
   if(s.vence){
@@ -1217,13 +1495,23 @@ function pintarDetalle(){
   }
 
   ponerValor("#d-unidad", s.unidad);
-  poblarCategorias("#d-categoria", s.nivel);
-  ponerValor("#d-categoria", s.categoria);
+  $("#d-tipo").value = s.tipo || "Incidencia";
+  $("#d-categoria").value="";
+  poblarCategorias("#d-categoria", $("#d-tipo").value, s.nivel);
+  ponerValor("#d-categoria", s.categoria || SIN_CLASIFICAR);
+  $("#d-subcategoria").value="";
+  poblarSubcategorias("#d-subcategoria", $("#d-tipo").value, s.categoria);
+  if(s.subcategoria){ $("#d-subcategoria").disabled=false; ponerValor("#d-subcategoria", s.subcategoria); }
   $("#d-prioridad").value = s.prioridad;
-  poblarTecnicos("#d-tecnico", s.nivel);
+  poblarTecnicos("#d-tecnico", s.nivel, s.tecnico);
   ponerValor("#d-tecnico", s.tecnico || "");
-  $("#d-observacion").value = s.observacion || "";
-  $("#d-solucion-texto").value = s.solucion || "";
+  // Los textos solo se cargan al abrir: si el detalle se redibuja por otro
+  // cambio (clasificación, estado), no se pierde lo que se está escribiendo.
+  if(estado.pintadoId!==s.id){
+    $("#d-observacion").value = s.observacion || "";
+    $("#d-solucion-texto").value = s.solucion || "";
+    estado.pintadoId=s.id;
+  }
 
   pintarDerivacion(s);
   pintarDestinatarios(s);
@@ -1236,6 +1524,29 @@ function pintarDetalle(){
     b.onclick=function(){ cambiarEstado(s,e); };
     er.appendChild(b);
   });
+
+  aplicarPermisosDetalle();
+}
+
+/** El supervisor ve el detalle completo, pero sin poder tocar nada. */
+function aplicarPermisosDetalle(){
+  var soloVer=!puedeEditar();
+  document.querySelectorAll("#drawer .drawer-body select, #drawer .drawer-body textarea,"+
+    " #drawer .drawer-body input, #drawer .drawer-body button").forEach(function(el){
+    if(soloVer) el.disabled=true;
+  });
+  $("#d-responder").classList.toggle("oculto", soloVer);
+  document.querySelectorAll("#drawer .add-nota, #drawer .adj-fila, #drawer .resp-acciones")
+    .forEach(function(el){ el.classList.toggle("oculto", soloVer); });
+}
+
+/** Lo que falta para poder cerrar, o null si está todo. */
+function faltaParaCerrar(s){
+  if(!s.tipo) return "Indica si es incidencia o requerimiento antes de cerrar";
+  if(!s.categoria || s.categoria===SIN_CLASIFICAR) return "Elige la categoría antes de cerrar";
+  var cat=nodoCategoria(s.tipo,s.categoria);
+  if(cat && subcategoriasDe(cat).length && !s.subcategoria) return "Elige la subcategoría antes de cerrar";
+  return null;
 }
 
 /* ---------- Respuesta al solicitante ---------- */
@@ -1312,6 +1623,8 @@ async function enviarRespuesta(){
   if(!s.gmail_thread_id && !s.correo){
     return aviso("Esta solicitud no tiene correo al cual responder",true);
   }
+  var falta=faltaParaCerrar(s);
+  if(falta){ $("#d-categoria").focus(); return aviso(falta,true); }
 
   var pesoTotal=estado.adjuntos.reduce(function(a,f){return a+f.size;},0);
   if(pesoTotal > 20*1024*1024){
@@ -1371,7 +1684,7 @@ function pintarDerivacion(s){
   var cont=$("#d-derivacion"); cont.innerHTML="";
 
   if(s.nivel===1){
-    if(!esAdmin()) return;              // solo el admin sube un ticket de nivel
+    if(!puedeDerivar()) return;         // admin o coordinador suben un ticket de nivel
 
     var box=crear("div","deriv-box");
     box.appendChild(crear("p",null,"Derivar a Nivel 2"));
@@ -1382,7 +1695,7 @@ function pintarDerivacion(s){
     box.appendChild(inp);
 
     var selT=document.createElement("select");
-    selT.appendChild(new Option("Sin asignar · avisar a todo Nivel 2",""));
+    selT.appendChild(new Option("Sin asignar · avisar al coordinador de Nivel 2",""));
     tecnicosDe(2).forEach(function(u){ selT.appendChild(new Option(u.nombre,u.correo)); });
     box.appendChild(selT);
 
@@ -1407,7 +1720,7 @@ function pintarDerivacion(s){
   }
 
   // Ticket en Nivel 2: lo puede devolver el admin o quien trabaje en ese nivel
-  if(!esAdmin() && estado.perfil.nivel!==2) return;
+  if(!puedeEditar() || (!esAdmin() && estado.perfil.nivel!==2)) return;
 
   var box2=crear("div","deriv-box");
   box2.appendChild(crear("p",null,"Esta solicitud está en Nivel 2"));
@@ -1427,31 +1740,22 @@ function pintarDerivacion(s){
   cont.appendChild(box2);
 }
 
+/**
+ * Derivar y devolver pasan por una función de la base: quien cambia el
+ * nivel suele dejar de ver el ticket, y un cambio directo se rechazaría.
+ */
 async function derivar(s,nivel,motivo,tecnico){
-  var cambio={nivel:nivel};
-  if(nivel===2){
-    cambio.motivo_deriv=motivo;
-    cambio.tecnico=tecnico||null;
-  }
-
-  var { data, error } = await SB.from("solicitudes").update(cambio).eq("id",s.id).select().single();
-  if(error) return fallo(error,"cambiar el nivel de la solicitud");
-
-  var texto = nivel===2
-    ? "Derivada a Nivel 2. Motivo: "+motivo+
-      (tecnico? " Asignada a "+nombreDe(tecnico)+"." : " Sin asignar.")
-    : "Devuelta a Nivel 1."+(motivo? " Motivo: "+motivo : "");
-
-  await SB.from("bitacora").insert({
-    solicitud_id:s.id, texto:texto, autor:estado.perfil.correo, sistema:true
+  var { data, error } = await SB.rpc("cambiar_nivel",{
+    p_id:s.id, p_nivel:nivel, p_motivo:motivo||null, p_tecnico:tecnico||null
   });
+  if(error){ console.error(error); return aviso(error.message||"No se pudo cambiar el nivel",true); }
 
   // Si el cambio la saca de mi alcance, la lista se actualiza y se cierra el panel
-  var visible = esAdmin() || data.nivel===estado.perfil.nivel;
+  var visible = veTodo() || data.nivel===estado.perfil.nivel;
   if(!visible){
     estado.solicitudes=estado.solicitudes.filter(function(x){return x.id!==s.id;});
     cerrar(); pintar();
-    return aviso("Devuelta a Nivel 1");
+    return aviso(nivel===2? "Derivada a Nivel 2" : "Devuelta a Nivel 1");
   }
 
   Object.assign(s,data);
@@ -1482,8 +1786,7 @@ async function actualizarCampo(campo,valor){
   var { error } = await SB.from("solicitudes").update(cambio).eq("id",s.id);
   if(error) return fallo(error,"guardar el cambio");
   s[campo]=valor;
-  var etiquetas={unidad:"Unidad",categoria:"Tipo de requerimiento",
-                 prioridad:"Prioridad",tecnico:"Profesional asignado"};
+  var etiquetas={unidad:"Unidad",prioridad:"Prioridad",tecnico:"Profesional asignado"};
   await SB.from("bitacora").insert({
     solicitud_id:s.id,
     texto:(etiquetas[campo]||campo)+": "+
@@ -1494,11 +1797,34 @@ async function actualizarCampo(campo,valor){
   aviso(campo==="tecnico" && valor ? "Asignada. Se enviará el aviso por correo." : "Cambio guardado");
 }
 
+/**
+ * Tipo, categoría y subcategoría se guardan juntos: cambiar un nivel del
+ * árbol limpia los que dependen de él. El vencimiento lo recalcula la base.
+ */
+async function reclasificar(tipo,categoria,subcategoria){
+  var s=buscar(estado.abierto); if(!s) return;
+  var cambio={tipo:tipo, categoria:categoria||SIN_CLASIFICAR, subcategoria:subcategoria||null};
+  if(cambio.tipo===s.tipo && cambio.categoria===s.categoria && cambio.subcategoria===(s.subcategoria||null)) return;
+
+  var { data, error } = await SB.from("solicitudes").update(cambio).eq("id",s.id).select().single();
+  if(error) return fallo(error,"guardar la clasificación");
+  Object.assign(s,data);
+
+  await SB.from("bitacora").insert({
+    solicitud_id:s.id, texto:"Clasificación: "+rutaClasificacion(s)+".",
+    autor:estado.perfil.correo, sistema:true
+  });
+  pintarDetalle(); pintar(); cargarBitacora(s.id);
+  aviso(s.vence? "Clasificación guardada · vence "+fechaLarga(s.vence) : "Clasificación guardada");
+}
+
 async function cambiarEstado(s,nuevo){
   if(s.estado===nuevo) return;
 
-  // No se cierra un ticket sin dejar constancia de cómo se resolvió
+  // No se cierra un ticket sin clasificar ni sin decir cómo se resolvió
   if(nuevo==="Resuelta"){
+    var falta=faltaParaCerrar(s);
+    if(falta){ $("#d-categoria").focus(); return aviso(falta,true); }
     var texto=$("#d-solucion-texto").value.trim();
     if(!texto){
       $("#d-solucion-texto").focus();
@@ -1857,12 +2183,18 @@ function pintarResumen(){
   pintarTablaSla(r);
 
   pintarBarras("#r-canal", conteo("canal",act), etiquetaCanal);
-  pintarBarras("#r-tipo",  conteo("categoria",act));
+  pintarBarras("#r-tipo",  conteo("tipo",act));
+  pintarBarras("#r-categoria", act.reduce(function(acc,s){
+      var k=(s.tipo==="Requerimiento"? "Req. · " : s.tipo? "Inc. · " : "")+(s.categoria||SIN_CLASIFICAR);
+      var f=acc.filter(function(p){return p[0]===k;})[0];
+      if(f) f[1]++; else acc.push([k,1]);
+      return acc;
+    },[]).sort(function(a,b){return b[1]-a[1];}));
   pintarBarras("#r-unidad",conteo("unidad",act));
 
   var pn=$("#panel-nivel");
-  pn.classList.toggle("oculto", !esAdmin());
-  if(esAdmin()){
+  pn.classList.toggle("oculto", !veTodo());
+  if(veTodo()){
     var m={};
     act.forEach(function(s){
       var k="Nivel "+s.nivel; m[k]=(m[k]||0)+1;
@@ -1903,7 +2235,7 @@ function tramo(s,ambito){
 
 function abrirExportar(){
   var caja=$("#e-ambito-caja");
-  if(esAdmin()){
+  if(veTodo()){
     caja.classList.remove("oculto");
   } else {
     caja.classList.add("oculto");
@@ -1964,6 +2296,8 @@ function seleccionExportar(){
 
   return estado.solicitudes.filter(function(s){
     if(amb==="n2" && (s.nivel!==2 || !s.derivada)) return false;
+    // Lo que entró directo a Nivel 2 nunca pasó por soporte
+    if(amb==="n1" && s.nivel===2 && s.nivel_ingreso===2) return false;
 
     // En la planilla de Nivel 1, una derivada se informa como cerrada por
     // derivación, así que no se filtra por su estado actual.
@@ -2026,10 +2360,11 @@ async function exportar(){
   });
 
   var cab=["N° Ticket","Fecha Ingreso","Hora Inicio","Fecha de Término","Hora término",
-           "Usuario (solicitante)","Tipo de Requerimiento","Solicitud","Solución",
+           "Usuario (solicitante)","Tipo","Categoría","Subcategoría","Solicitud","Solución",
            "Observación","Estado de Ticket","Profesional/Técnico asignado",
            "Tiempo de Resolución (Horas/Minutos)"];
-  if(amb==="todo") cab.splice(11,0,"Nivel","Plazo comprometido","Cumplimiento SLA");
+  var COL_EXTRA=13;   // delante de "Profesional/Técnico asignado"
+  if(amb==="todo") cab.splice(COL_EXTRA,0,"Nivel","Canal","Plazo comprometido","Cumplimiento SLA");
 
   var filas=seleccion.map(function(s){
     var t=tramo(s,amb);
@@ -2044,7 +2379,8 @@ async function exportar(){
     var fila=[
       s.folio, soloFecha(t.ingreso), soloHora(t.ingreso),
       soloFecha(t.termino), soloHora(t.termino),
-      s.solicitante, s.categoria, solicitud, solucion, obs,
+      s.solicitante, s.tipo||"", s.categoria||SIN_CLASIFICAR, s.subcategoria||"",
+      solicitud, solucion, obs,
       t.estado, nombreDe(s.tecnico)||"Sin asignar",
       duracion(t.ingreso,t.termino)
     ];
@@ -2052,7 +2388,7 @@ async function exportar(){
       var etq={cumplido:"En plazo",incumplido:"Fuera de plazo",
                vencido:"Vencido (abierto)",por_vencer:"Por vencer",en_plazo:"En curso"};
       var e=estadoSla(s);
-      fila.splice(11,0,"Nivel "+s.nivel,
+      fila.splice(COL_EXTRA,0,"Nivel "+s.nivel, etiquetaCanal(s.canal),
                   s.vence? fechaLarga(s.vence) : "Sin plazo",
                   e? etq[e] : "Sin plazo");
     }
@@ -2080,128 +2416,224 @@ function abrirAjustes(){
   if(!esAdmin()) return;
   $("#a-unidades").value=estado.unidades.join("\n");
   pintarTablaUsuarios();
-  pintarTablaCategorias();
+  pintarArbol();
   $("#modal-ajustes").classList.add("open");
 }
 
-function pintarTablaCategorias(){
-  var tb=$("#tabla-categorias"); tb.innerHTML="";
-  estado.cats.slice().sort(function(a,b){
-    return a.nivel-b.nivel || a.valor.localeCompare(b.valor);
-  }).forEach(function(c){
-    var tr=document.createElement("tr");
-
-    var tdN=document.createElement("td");
-    var inpN=document.createElement("input");
-    inpN.type="text"; inpN.value=c.valor; inpN.style.minWidth="150px";
-    inpN.onchange=function(){ renombrarCategoria(c,inpN); };
-    tdN.appendChild(inpN); tr.appendChild(tdN);
-    tr.appendChild(crear("td",null,"N"+c.nivel));
-
-    var tdH=document.createElement("td");
-    var inpH=document.createElement("input");
-    inpH.type="text"; inpH.value=(c.sla_horas===null||c.sla_horas===undefined)?"":c.sla_horas;
-    inpH.placeholder="—"; inpH.style.width="62px";
-    inpH.onchange=function(){
-      var v=inpH.value.trim();
-      var n = v===""? null : parseFloat(v.replace(",","."));
-      if(v!=="" && (isNaN(n)||n<=0)){ inpH.value=c.sla_horas||""; return aviso("Las horas deben ser un número mayor que cero",true); }
-      actualizarCategoria(c,{sla_horas:n});
-    };
-    tdH.appendChild(inpH); tr.appendChild(tdH);
-
-    var tdHab=document.createElement("td");
-    var sel=document.createElement("select");
-    sel.appendChild(new Option("Hábil","1"));
-    sel.appendChild(new Option("Corrido","0"));
-    sel.value=c.sla_habil?"1":"0";
-    sel.onchange=function(){ actualizarCategoria(c,{sla_habil:sel.value==="1"}); };
-    tdHab.appendChild(sel); tr.appendChild(tdHab);
-
-    var tdX=document.createElement("td");
-    var q=crear("button","quitar","Quitar");
-    q.onclick=function(){ quitarCategoria(c); };
-    tdX.appendChild(q); tr.appendChild(tdX);
-
-    tb.appendChild(tr);
-  });
-}
-
-/**
- * Renombrar arrastra las solicitudes que ya usaban ese nombre.
- * Si solo se cambiara el catálogo, los tickets antiguos quedarían
- * apuntando a un tipo inexistente.
- */
-async function renombrarCategoria(c,input){
-  var nuevo=input.value.trim();
-  if(!nuevo || nuevo===c.valor){ input.value=c.valor; return; }
-
-  var choca=estado.cats.some(function(x){
-    return x.nivel===c.nivel && x.valor.toLowerCase()===nuevo.toLowerCase();
-  });
-  if(choca){ input.value=c.valor; return aviso("Ya existe un tipo con ese nombre en el nivel",true); }
-
-  var usados=estado.solicitudes.filter(function(s){
-    return s.categoria===c.valor && s.nivel===c.nivel;
+/* ---------- Editor del árbol de clasificación ---------- */
+function usosDe(nodo){
+  return estado.solicitudes.filter(function(s){
+    if(s.tipo!==nodo.tipo) return false;
+    if(!nodo.padre_id) return s.categoria===nodo.nombre;
+    var padre=estado.arbol.filter(function(n){return n.id===nodo.padre_id;})[0];
+    return padre && s.categoria===padre.nombre && s.subcategoria===nodo.nombre;
   }).length;
+}
 
-  var msg="¿Renombrar «"+c.valor+"» a «"+nuevo+"»?";
-  if(usados) msg+="\n\nSe actualizarán también "+usados+" solicitud(es) que usan ese tipo.";
-  if(!confirm(msg)){ input.value=c.valor; return; }
+function campoHoras(nodo,heredadas){
+  var i=document.createElement("input");
+  i.type="text";
+  i.value=(nodo.sla_horas===null||nodo.sla_horas===undefined)? "" : nodo.sla_horas;
+  i.placeholder = heredadas!=null ? "hereda "+heredadas : "sin plazo";
+  i.title="Horas comprometidas";
+  i.onchange=function(){
+    var v=i.value.trim();
+    var n = v===""? null : parseFloat(v.replace(",","."));
+    if(v!=="" && (isNaN(n)||n<=0)){ i.value=nodo.sla_horas||""; return aviso("Las horas deben ser un número mayor que cero",true); }
+    guardarNodo(nodo,{sla_horas:n});
+  };
+  return i;
+}
 
-  var r1=await SB.from("catalogos").update({valor:nuevo})
-    .eq("tipo","categoria").eq("valor",c.valor).eq("nivel",c.nivel);
-  if(r1.error){ input.value=c.valor; return fallo(r1.error,"renombrar el tipo"); }
+function campoHorario(nodo){
+  var s=document.createElement("select");
+  s.appendChild(new Option("Hábil","1"));
+  s.appendChild(new Option("Corrido","0"));
+  s.value=nodo.sla_habil?"1":"0";
+  s.onchange=function(){ guardarNodo(nodo,{sla_habil:s.value==="1"}); };
+  return s;
+}
 
-  var r2=await SB.from("solicitudes").update({categoria:nuevo})
-    .eq("categoria",c.valor).eq("nivel",c.nivel);
-  if(r2.error) fallo(r2.error,"actualizar las solicitudes con el nombre nuevo");
+function campoNombre(nodo){
+  var i=document.createElement("input");
+  i.type="text"; i.value=nodo.nombre;
+  i.onclick=function(e){ e.stopPropagation(); };
+  i.onkeydown=function(e){ if(e.key===" ") e.stopPropagation(); };
+  i.onchange=function(){
+    var nuevo=i.value.trim();
+    if(!nuevo || nuevo===nodo.nombre){ i.value=nodo.nombre; return; }
+    var hermanos=estado.arbol.filter(function(n){
+      return n.id!==nodo.id && n.tipo===nodo.tipo && (n.padre_id||0)===(nodo.padre_id||0);
+    });
+    if(hermanos.some(function(n){return n.nombre.toLowerCase()===nuevo.toLowerCase();})){
+      i.value=nodo.nombre; return aviso("Ya existe uno con ese nombre en el mismo lugar",true);
+    }
+    var usos=usosDe(nodo);
+    if(usos && !confirm("¿Renombrar «"+nodo.nombre+"» a «"+nuevo+"»?\n\nSe actualizarán también "+
+                        usos+" solicitud(es) que lo usan.")){ i.value=nodo.nombre; return; }
+    guardarNodo(nodo,{nombre:nuevo}, true);
+  };
+  return i;
+}
 
-  await cargarCatalogos();
-  await cargarSolicitudes();
-  pintarTablaCategorias(); poblarSelects();
+function botonQuitar(nodo){
+  var q=crear("button","quitar", nodo.activo? "Desactivar" : "Reactivar");
+  q.onclick=function(e){
+    e.preventDefault(); e.stopPropagation();
+    if(nodo.activo){
+      var usos=usosDe(nodo);
+      var msg="¿Desactivar «"+nodo.nombre+"»? Deja de aparecer en las listas.";
+      if(usos) msg+="\n\nLas "+usos+" solicitud(es) que ya lo usan no cambian.";
+      if(!confirm(msg)) return;
+    }
+    guardarNodo(nodo,{activo:!nodo.activo});
+  };
+  return q;
+}
+
+function pintarArbol(){
+  var cont=$("#arbol"); cont.innerHTML="";
+  var abiertos={};
+  document.querySelectorAll("#arbol details[open]").forEach(function(d){ abiertos[d.dataset.id]=1; });
+
+  TIPOS.forEach(function(tipo){
+    var bloque=crear("div","arbol-tipo");
+    var h=crear("h3",null,tipo==="Incidencia"? "Incidencias" : "Requerimientos");
+    h.appendChild(crear("small",null, tipo==="Incidencia"
+      ? "algo que funcionaba y dejó de funcionar"
+      : "algo que se pide y no está roto"));
+    bloque.appendChild(h);
+
+    var cab=crear("div","nodo-fila nodo-cab de-cat");
+    ["Categoría","Nivel","Horas","Horario","Portal",""].forEach(function(t){ cab.appendChild(crear("span",null,t)); });
+    bloque.appendChild(cab);
+
+    estado.arbol.filter(function(n){ return !n.padre_id && n.tipo===tipo; })
+      .sort(function(a,b){ return (b.activo-a.activo) || a.orden-b.orden || a.nombre.localeCompare(b.nombre); })
+      .forEach(function(cat){
+        var det=document.createElement("details");
+        det.className="nodo-cat"+(cat.activo?"":" inactivo");
+        det.dataset.id=cat.id;
+        if(abiertos[cat.id]) det.open=true;
+
+        var sum=document.createElement("summary");
+        var fila=crear("div","nodo-fila");
+        fila.style.flex="1";
+        fila.appendChild(campoNombre(cat));
+
+        var selN=document.createElement("select");
+        selN.appendChild(new Option("Nivel 1","1"));
+        selN.appendChild(new Option("Nivel 2","2"));
+        selN.value=String(cat.nivel||1);
+        selN.onclick=function(e){ e.stopPropagation(); };
+        selN.onchange=function(){ guardarNodo(cat,{nivel:parseInt(selN.value,10)}); };
+        fila.appendChild(selN);
+
+        fila.appendChild(campoHoras(cat,null));
+        fila.appendChild(campoHorario(cat));
+
+        var lab=crear("label","check");
+        var chk=document.createElement("input");
+        chk.type="checkbox"; chk.checked=!!cat.portal;
+        chk.title="Visible en el formulario de usuarios";
+        chk.onclick=function(e){ e.stopPropagation(); };
+        chk.onchange=function(){ guardarNodo(cat,{portal:chk.checked}); };
+        lab.appendChild(chk); lab.appendChild(document.createTextNode("sí"));
+        lab.onclick=function(e){ e.stopPropagation(); };
+        fila.appendChild(lab);
+
+        fila.appendChild(botonQuitar(cat));
+        sum.appendChild(fila);
+        var nsubs=estado.arbol.filter(function(n){return n.padre_id===cat.id && n.activo;}).length;
+        sum.appendChild(crear("span","nodo-cuenta", nsubs+" sub."));
+        det.appendChild(sum);
+
+        var subs=crear("div","nodo-subs");
+        var cab2=crear("div","nodo-fila nodo-cab");
+        ["Subcategoría","Horas","Horario",""].forEach(function(t){ cab2.appendChild(crear("span",null,t)); });
+        subs.appendChild(cab2);
+
+        estado.arbol.filter(function(n){ return n.padre_id===cat.id; })
+          .sort(function(a,b){ return (b.activo-a.activo) || a.nombre.localeCompare(b.nombre); })
+          .forEach(function(sub){
+            var f=crear("div","nodo-fila"+(sub.activo?"":" inactivo"));
+            f.appendChild(campoNombre(sub));
+            f.appendChild(campoHoras(sub, cat.sla_horas!=null? cat.sla_horas : "—"));
+            f.appendChild(campoHorario(sub));
+            f.appendChild(botonQuitar(sub));
+            subs.appendChild(f);
+          });
+
+        var nuevo=crear("div","nodo-nuevo");
+        var inp=document.createElement("input");
+        inp.type="text"; inp.placeholder="Nueva subcategoría de «"+cat.nombre+"»";
+        var btn=crear("button",null,"Agregar");
+        var agregar=function(){ agregarNodo(tipo, cat, inp.value); };
+        btn.onclick=agregar;
+        inp.onkeydown=function(e){ if(e.key==="Enter") agregar(); };
+        nuevo.appendChild(inp); nuevo.appendChild(btn);
+        subs.appendChild(nuevo);
+
+        det.appendChild(subs);
+        bloque.appendChild(det);
+      });
+
+    var nuevaCat=crear("div","nodo-nuevo");
+    var inpC=document.createElement("input");
+    inpC.type="text"; inpC.placeholder="Nueva categoría de "+(tipo==="Incidencia"?"incidencia":"requerimiento");
+    var selNC=document.createElement("select");
+    selNC.appendChild(new Option("Nivel 1","1"));
+    selNC.appendChild(new Option("Nivel 2","2"));
+    selNC.style.cssText="background:var(--field);border:1px solid var(--line);border-radius:var(--radius);font-size:12.5px;padding:5px";
+    var btnC=crear("button",null,"Agregar categoría");
+    var agregarC=function(){ agregarNodo(tipo, null, inpC.value, parseInt(selNC.value,10)); };
+    btnC.onclick=agregarC;
+    inpC.onkeydown=function(e){ if(e.key==="Enter") agregarC(); };
+    nuevaCat.appendChild(inpC); nuevaCat.appendChild(selNC); nuevaCat.appendChild(btnC);
+    bloque.appendChild(nuevaCat);
+
+    cont.appendChild(bloque);
+  });
+}
+
+async function guardarNodo(nodo,cambio,esRenombre){
+  var { error } = await SB.from("clasificacion").update(cambio).eq("id",nodo.id);
+  if(error){
+    pintarArbol();
+    return fallo(error, esRenombre? "renombrar" : "guardar el cambio");
+  }
+  await cargarArbol();
+  // Renombrar y cambiar horas actualiza tickets y plazos en la base
+  if(esRenombre || "sla_horas" in cambio || "sla_habil" in cambio || "activo" in cambio){
+    await cargarSolicitudes();
+  }
+  pintarArbol(); poblarSelects();
   if(estado.abierto) pintarDetalle();
-  aviso("Tipo renombrado"+(usados? " en "+usados+" solicitud(es)" : ""));
+  aviso(esRenombre? "Renombrado" : "Cambio guardado");
 }
 
-async function actualizarCategoria(c,cambio){
-  var { error } = await SB.from("catalogos").update(cambio)
-    .eq("tipo","categoria").eq("valor",c.valor).eq("nivel",c.nivel);
-  if(error) return fallo(error,"guardar el plazo");
-  await cargarCatalogos();
-  await cargarSolicitudes();     // el trigger recalculó los vencimientos
-  pintarTablaCategorias(); poblarSelects();
-  aviso("Plazo actualizado");
+async function agregarNodo(tipo,padre,nombre,nivel){
+  nombre=(nombre||"").trim();
+  if(!nombre) return aviso("Escribe el nombre",true);
+  var hermanos=estado.arbol.filter(function(n){
+    return n.tipo===tipo && (n.padre_id||0)===(padre? padre.id : 0);
+  });
+  if(hermanos.some(function(n){return n.nombre.toLowerCase()===nombre.toLowerCase();}))
+    return aviso("Ya existe uno con ese nombre en el mismo lugar",true);
+
+  var fila={ tipo:tipo, nombre:nombre, padre_id: padre? padre.id : null,
+             nivel: padre? null : (nivel||1),
+             orden: padre? 0 : hermanos.length+1 };
+  var { error } = await SB.from("clasificacion").insert(fila);
+  if(error) return fallo(error,"agregar");
+  await cargarArbol();
+  pintarArbol(); poblarSelects();
+  if(padre){
+    var d=document.querySelector('#arbol details[data-id="'+padre.id+'"]');
+    if(d) d.open=true;
+  }
+  aviso((padre? "Subcategoría" : "Categoría")+" agregada");
 }
-
-async function quitarCategoria(c){
-  if(!confirm("¿Quitar «"+c.valor+"» de Nivel "+c.nivel+"? Las solicitudes que ya lo usan no cambian.")) return;
-  var { error } = await SB.from("catalogos").update({activo:false})
-    .eq("tipo","categoria").eq("valor",c.valor).eq("nivel",c.nivel);
-  if(error) return fallo(error,"quitar el tipo");
-  await cargarCatalogos();
-  pintarTablaCategorias(); poblarSelects();
-  aviso("Tipo desactivado");
-}
-
-$("#k-agregar").onclick = async function(){
-  var valor=$("#k-valor").value.trim();
-  if(!valor){ $("#k-valor").focus(); return aviso("Falta el nombre del tipo",true); }
-  var hv=$("#k-horas").value.trim();
-  var horas = hv===""? null : parseFloat(hv.replace(",","."));
-  if(hv!=="" && (isNaN(horas)||horas<=0)) return aviso("Las horas deben ser un número mayor que cero",true);
-
-  var { error } = await SB.from("catalogos").upsert({
-    tipo:"categoria", valor:valor, nivel:parseInt($("#k-nivel").value,10),
-    sla_horas:horas, sla_habil:$("#k-habil").value==="1", activo:true
-  },{onConflict:"tipo,valor,nivel"});
-  if(error) return fallo(error,"agregar el tipo");
-
-  $("#k-valor").value=""; $("#k-horas").value="";
-  await cargarCatalogos();
-  pintarTablaCategorias(); poblarSelects();
-  aviso("Tipo agregado");
-};
 
 async function guardarListas(){
   var u=$("#a-unidades").value.split("\n").map(function(x){return x.trim();}).filter(Boolean);
@@ -2218,7 +2650,18 @@ async function guardarListas(){
   aviso("Unidades actualizadas");
 }
 
+function poblarCargos(){
+  var dl=$("#l-cargos"); dl.innerHTML="";
+  var vistos={};
+  CARGOS_BASE.concat(estado.usuarios.map(function(u){return u.cargo;})).forEach(function(c){
+    if(c && !vistos[c.toLowerCase()]){ vistos[c.toLowerCase()]=1; dl.appendChild(new Option(c)); }
+  });
+  var r=$("#u-rol");
+  if(!r.options.length) ROLES.forEach(function(o){ r.appendChild(new Option(o[1],o[0])); });
+}
+
 function pintarTablaUsuarios(){
+  poblarCargos();
   var tb=$("#tabla-usuarios"); tb.innerHTML="";
   estado.usuarios.forEach(function(u){
     var tr=document.createElement("tr");
@@ -2228,12 +2671,18 @@ function pintarTablaUsuarios(){
     td1.appendChild(crear("div","cor",u.correo));
     tr.appendChild(td1);
 
+    var tdC=document.createElement("td");
+    var inpC=document.createElement("input");
+    inpC.type="text"; inpC.value=u.cargo||""; inpC.placeholder="Cargo";
+    inpC.setAttribute("list","l-cargos"); inpC.style.minWidth="110px";
+    inpC.onchange=function(){ actualizarUsuario(u.correo,{cargo:inpC.value.trim()||null}); };
+    tdC.appendChild(inpC); tr.appendChild(tdC);
+
     var td2=document.createElement("td");
     var selRol=document.createElement("select");
-    [["tecnico","Técnico"],["admin","Admin"]].forEach(function(o){
-      selRol.appendChild(new Option(o[1],o[0]));
-    });
+    ROLES.forEach(function(o){ selRol.appendChild(new Option(o[1],o[0])); });
     selRol.value=u.rol;
+    if(u.correo===estado.perfil.correo) selRol.disabled=true;   // nadie se quita el acceso a sí mismo
     selRol.onchange=function(){ actualizarUsuario(u.correo,{rol:selRol.value}); };
     td2.appendChild(selRol); tr.appendChild(td2);
 
@@ -2250,6 +2699,7 @@ function pintarTablaUsuarios(){
     selAct.appendChild(new Option("Activo","1"));
     selAct.appendChild(new Option("Inactivo","0"));
     selAct.value=u.activo?"1":"0";
+    if(u.correo===estado.perfil.correo) selAct.disabled=true;
     selAct.onchange=function(){ actualizarUsuario(u.correo,{activo:selAct.value==="1"}); };
     td4.appendChild(selAct); tr.appendChild(td4);
 
@@ -2287,14 +2737,17 @@ $("#u-agregar").onclick = async function(){
   var correo=$("#u-correo").value.trim().toLowerCase();
   if(!nombre) { $("#u-nombre").focus(); return aviso("Falta el nombre",true); }
   if(correo.indexOf("@")<1) { $("#u-correo").focus(); return aviso("El correo no es válido",true); }
+  if(correo.slice(-(CONFIG.DOMINIO.length+1))!=="@"+CONFIG.DOMINIO){
+    $("#u-correo").focus(); return aviso("Debe ser un correo @"+CONFIG.DOMINIO,true);
+  }
 
   var { error } = await SB.from("usuarios").upsert({
-    correo:correo, nombre:nombre,
+    correo:correo, nombre:nombre, cargo:$("#u-cargo").value.trim()||null,
     rol:$("#u-rol").value, nivel:parseInt($("#u-nivel").value,10), activo:true
   },{onConflict:"correo"});
   if(error) return fallo(error,"agregar al usuario");
 
-  $("#u-nombre").value=""; $("#u-correo").value="";
+  $("#u-nombre").value=""; $("#u-correo").value=""; $("#u-cargo").value="";
   await cargarUsuarios();
   pintarTablaUsuarios(); poblarSelects();
   aviso(nombre+" ya puede entrar al panel");
@@ -2339,8 +2792,18 @@ $("#r-periodo").onclick=function(e){
 };
 $("#c-nivel").onchange=function(){
   var n=parseInt(this.value,10);
-  poblarCategorias("#c-categoria", n);
+  poblarCategorias("#c-categoria", $("#c-tipo").value, n);
+  poblarSubcategorias("#c-subcategoria", $("#c-tipo").value, $("#c-categoria").value);
   poblarTecnicos("#c-tecnico", n);
+};
+$("#c-tipo").onchange=function(){
+  $("#c-categoria").value="";
+  poblarCategorias("#c-categoria", this.value, parseInt($("#c-nivel").value,10));
+  poblarSubcategorias("#c-subcategoria", this.value, $("#c-categoria").value);
+};
+$("#c-categoria").onchange=function(){
+  $("#c-subcategoria").value="";
+  poblarSubcategorias("#c-subcategoria", $("#c-tipo").value, this.value);
 };
 $("#btn-registrar").onclick=registrar;
 $("#capture").addEventListener("keydown",function(e){
@@ -2380,7 +2843,12 @@ $("#scrim").onclick=cerrar;
 $("#d-agregar").onclick=agregarNota;
 $("#d-nota").onkeydown=function(e){ if(e.key==="Enter") agregarNota(); };
 $("#d-unidad").onchange=function(){ actualizarCampo("unidad",this.value); };
-$("#d-categoria").onchange=function(){ actualizarCampo("categoria",this.value); };
+// Cambiar un nivel del árbol limpia los que dependen de él
+$("#d-tipo").onchange=function(){ reclasificar(this.value, SIN_CLASIFICAR, null); };
+$("#d-categoria").onchange=function(){ reclasificar($("#d-tipo").value, this.value, null); };
+$("#d-subcategoria").onchange=function(){
+  reclasificar($("#d-tipo").value, $("#d-categoria").value, this.value||null);
+};
 $("#d-prioridad").onchange=function(){ actualizarCampo("prioridad",this.value); };
 $("#d-tecnico").onchange=function(){ actualizarCampo("tecnico",this.value||null); };
 $("#d-observacion").onchange=async function(){
@@ -2420,7 +2888,174 @@ async function arrancar(){
   await cargarSolicitudes();
   poblarSelects();
   escucharCambios();
+  if(!puedeEditar()){
+    var n=crear("div","lectura-aviso",
+      "Estás en modo consulta: puedes revisar solicitudes, el resumen y exportar planillas, pero no modificar.");
+    $("#vista-bandeja").insertBefore(n,$("#vista-bandeja").firstChild);
+  }
 }
+
+/* =====================================================================
+   PORTAL DE USUARIOS
+   Lo que ve cualquier cuenta institucional que no esté en el equipo.
+   Todo pasa por funciones de la base: el usuario no lee la tabla.
+   ===================================================================== */
+async function iniciarPortal(){
+  $("#p-quien").innerHTML="<b>"+estado.perfil.nombre+"</b>"+estado.perfil.correo;
+
+  var r1=await SB.from("clasificacion").select("*").eq("activo",true).order("orden").order("nombre");
+  if(!r1.error) estado.arbol=r1.data;
+
+  // Los ejemplos de cada área salen de las categorías reales, así se
+  // mantienen al día cuando se edita la clasificación
+  [1,2].forEach(function(n){
+    var nombres=estado.arbol.filter(function(c){ return !c.padre_id && c.portal && c.nivel===n; })
+      .map(function(c){ return c.nombre; })
+      .filter(function(v,i,a){ return a.indexOf(v)===i; });
+    if(nombres.length){
+      var txt=nombres.slice(0,5).join(", ")+(nombres.length>5? "…" : ".");
+      $("#p-nivel"+n+"-ej").textContent=txt;
+    }
+  });
+
+  var r2=await SB.from("catalogos").select("valor").eq("tipo","unidad").eq("activo",true).order("valor");
+  var su=$("#p-unidad"); su.innerHTML="";
+  su.appendChild(new Option("Elige tu unidad",""));
+  (r2.data||[]).forEach(function(c){ if(c.valor!=="Por definir") su.appendChild(new Option(c.valor,c.valor)); });
+
+  cargarMisSolicitudes();
+}
+
+function marcarEleccion(cont,atributo,valor){
+  $(cont).querySelectorAll("button").forEach(function(b){
+    b.setAttribute("aria-pressed", String(b.dataset[atributo])===String(valor));
+  });
+}
+
+/** Área y tipo juntos definen qué temas se ofrecen. */
+function poblarTemasPortal(){
+  var sc=$("#p-categoria"); sc.innerHTML="";
+  var n=estado.portal.nivel, t=estado.portal.tipo;
+  if(!n || !t){
+    sc.appendChild(new Option(!n? "Elige primero el área" : "Elige el tipo de solicitud",""));
+    sc.disabled=true;
+  } else {
+    sc.disabled=false;
+    sc.appendChild(new Option("Elige un tema",""));
+    categoriasDe(t,n,true).forEach(function(c){ sc.appendChild(new Option(c.nombre,c.nombre)); });
+    sc.appendChild(new Option("Otro / no estoy seguro",SIN_CLASIFICAR));
+  }
+  poblarSubPortal();
+}
+
+function poblarSubPortal(){
+  var ss=$("#p-subcategoria"); ss.innerHTML="";
+  var subs=subcategoriasDe(nodoCategoria(estado.portal.tipo,$("#p-categoria").value));
+  ss.appendChild(new Option(subs.length? "Elige una opción" : "—",""));
+  subs.forEach(function(c){ ss.appendChild(new Option(c.nombre,c.nombre)); });
+  ss.disabled=!subs.length;
+}
+
+function limpiarFormularioPortal(){
+  $("#p-asunto").value=""; $("#p-detalle").value="";
+  estado.portal.nivel=null; estado.portal.tipo=null;
+  marcarEleccion("#p-nivel","nivel",""); marcarEleccion("#p-tipo","tipo","");
+  poblarTemasPortal();
+}
+
+async function enviarSolicitudPortal(){
+  var asunto=$("#p-asunto").value.trim();
+  if(!estado.portal.nivel) return aviso("Elige el área de tu solicitud",true);
+  if(!estado.portal.tipo) return aviso("Indica si algo no funciona o si necesitas algo",true);
+  if(!$("#p-categoria").value){ $("#p-categoria").focus(); return aviso("Elige el tema de tu solicitud",true); }
+  if(asunto.length<5){ $("#p-asunto").focus(); return aviso("Cuéntanos brevemente qué necesitas",true); }
+  if(!$("#p-unidad").value){ $("#p-unidad").focus(); return aviso("Elige tu unidad",true); }
+
+  var btn=$("#p-enviar");
+  btn.disabled=true; btn.textContent="Enviando…";
+
+  var { data, error } = await SB.rpc("crear_solicitud",{
+    p_asunto:asunto,
+    p_detalle:$("#p-detalle").value.trim(),
+    p_nivel:estado.portal.nivel,
+    p_tipo:estado.portal.tipo,
+    p_categoria:$("#p-categoria").value,
+    p_subcategoria:$("#p-subcategoria").value,
+    p_unidad:$("#p-unidad").value,
+    p_anexo:$("#p-anexo").value.trim()
+  });
+
+  btn.disabled=false; btn.textContent="Enviar solicitud";
+  if(error){
+    console.error(error);
+    return aviso(error.message || "No se pudo enviar la solicitud",true);
+  }
+
+  $("#p-hecho").innerHTML="";
+  var ok=crear("div","hecho");
+  ok.appendChild(crear("b",null,"Solicitud "+data.folio+" enviada"));
+  ok.appendChild(crear("span",null,"La recibe el equipo de "+
+    (data.nivel===2? "Desarrollo y sistemas" : "Soporte técnico")+
+    ". Te llegará un correo de confirmación y te avisaremos cuando esté resuelta."));
+  $("#p-hecho").appendChild(ok);
+
+  limpiarFormularioPortal();
+  window.scrollTo({top:0,behavior:"smooth"});
+  cargarMisSolicitudes();
+}
+
+async function cargarMisSolicitudes(){
+  var cont=$("#p-mis");
+  var { data, error } = await SB.rpc("mis_solicitudes");
+  cont.innerHTML="";
+  if(error){
+    cont.appendChild(crear("div","cargando","No se pudieron cargar tus solicitudes."));
+    return;
+  }
+  if(!data.length){
+    var v=crear("div","cargando");
+    v.appendChild(crear("div",null,"Todavía no tienes solicitudes."));
+    v.appendChild(crear("div",null,"Las que envíes por aquí o por correo aparecerán en esta lista."));
+    cont.appendChild(v);
+    return;
+  }
+  data.forEach(function(s){
+    var d=crear("div","mia");
+    var top=crear("div","mia-top");
+    top.appendChild(crear("span","folio mono",s.folio));
+    var etq = s.estado==="Nueva"? "Recibida" : s.estado;
+    top.appendChild(crear("span","chip "+claseEstado(s.estado),etq));
+    d.appendChild(top);
+    d.appendChild(crear("div","mia-asunto",s.asunto));
+    d.appendChild(crear("div","mia-meta",
+      fechaLarga(s.creada)+" · "+[s.tipo, s.categoria!==SIN_CLASIFICAR? s.categoria : null]
+        .filter(Boolean).join(" › ")+(s.canal==="Correo"? " · por correo" : "")));
+    if(s.estado==="Resuelta" && s.solucion){
+      var sol=crear("div","mia-sol");
+      sol.appendChild(crear("b",null,"Respuesta · "+fechaLarga(s.resuelta)));
+      sol.appendChild(document.createTextNode(s.solucion));
+      d.appendChild(sol);
+    }
+    cont.appendChild(d);
+  });
+}
+
+$("#p-nivel").onclick=function(e){
+  var b=e.target.closest("button[data-nivel]"); if(!b) return;
+  estado.portal.nivel=parseInt(b.dataset.nivel,10);
+  marcarEleccion("#p-nivel","nivel",estado.portal.nivel);
+  poblarTemasPortal();
+};
+$("#p-tipo").onclick=function(e){
+  var b=e.target.closest("button[data-tipo]"); if(!b) return;
+  estado.portal.tipo=b.dataset.tipo;
+  marcarEleccion("#p-tipo","tipo",estado.portal.tipo);
+  poblarTemasPortal();
+};
+$("#p-categoria").onchange=poblarSubPortal;
+$("#p-enviar").onclick=enviarSolicitudPortal;
+$("#p-actualizar").onclick=cargarMisSolicitudes;
+$("#p-salir").onclick=async function(){ await SB.auth.signOut(); location.reload(); };
 
 revisarSesion();
 })();
