@@ -885,7 +885,7 @@ var CONFIG = {
   SUPABASE_URL: "https://xmmnjbusqfbglorxzpdg.supabase.co",
 
   // Supabase > Project Settings > API > anon public
-  SUPABASE_ANON_KEY: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhtbW5qYnVzcWZiZ2xvcnh6cGRnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODg4NzU2MjEsImV4cCI6MjEwNDQ1MTYyMX0.kcnV99OTosocpmreYC9zZ19agNNrdouFwwzJ-33H7Ms",
+  SUPABASE_ANON_KEY: "PEGA_AQUI_TU_ANON_KEY",
 
   DOMINIO: "minciencia.gob.cl"
 };
@@ -1077,7 +1077,22 @@ async function revisarSesion(){
   // La base decide quién es: integrante del equipo, solicitante o nadie
   var { data: perfil, error } = await SB.rpc("mi_perfil");
 
-  if(error || !perfil){
+  if(error){
+    // Un error aquí no es un problema de la cuenta: casi siempre falta
+    // ejecutar un script SQL en Supabase. Se muestra la causa real.
+    console.error("mi_perfil:", error);
+    await SB.auth.signOut();
+    var falta = /mi_perfil|function|does not exist|schema cache|PGRST202/i.test(error.message||"");
+    $("#acceso-error").innerHTML =
+      '<div class="acceso-error"><b>No se pudo verificar el acceso.</b><br>'+
+      (falta
+        ? 'La base de datos no tiene la función <code>mi_perfil</code>. Ejecuta <b>clasificacion-portal.sql</b> y luego <b>niveles-portal.sql</b> en el SQL Editor de Supabase.'
+        : 'Detalle: '+(error.message||"error desconocido"))+
+      '</div>';
+    return mostrarAcceso();
+  }
+
+  if(!perfil){
     await SB.auth.signOut();
     $("#acceso-error").innerHTML =
       '<div class="acceso-error"><b>Sin acceso.</b><br>La cuenta '+correo+
