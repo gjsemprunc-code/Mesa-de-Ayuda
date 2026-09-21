@@ -248,6 +248,13 @@ main{max-width:1400px;margin:0 auto;padding:18px}
 /* ---- Tablero ---- */
 .dash-head{display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-bottom:14px}
 .dash-rango{font-size:12.5px;color:var(--ink-3)}
+.sel-pro-caja{display:inline-flex;align-items:center;gap:7px;font-size:12px;color:var(--ink-2)}
+.sel-pro{background:var(--surface);border:1px solid var(--line);border-radius:99px;
+  padding:4px 10px;font-size:12.5px;max-width:260px}
+.sel-pro.activo{border-color:var(--ink);background:var(--ink);color:#fff}
+.tabla-sla tr.clic td:first-child{color:var(--accent);cursor:pointer;text-decoration:underline;
+  text-decoration-color:var(--line);text-underline-offset:3px}
+.tabla-sla tr.clic:hover td:first-child{text-decoration-color:var(--accent)}
 .kpis{display:grid;grid-template-columns:repeat(5,1fr);gap:0;background:var(--surface);
   border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;margin-bottom:18px}
 .kpi{padding:15px 18px 16px;border-right:1px solid var(--line-soft);position:relative}
@@ -663,6 +670,10 @@ body.solo-lectura .workspace{grid-template-columns:1fr}
         <button type="button" data-p="anio">Este año</button>
         <button type="button" data-p="todo">Todo</button>
       </div>
+      <label class="sel-pro-caja" for="r-pro">
+        <span>Profesional</span>
+        <select id="r-pro" class="sel-pro"></select>
+      </label>
       <span class="dash-rango" id="r-rango"></span>
     </div>
 
@@ -885,7 +896,7 @@ var CONFIG = {
   SUPABASE_URL: "https://xmmnjbusqfbglorxzpdg.supabase.co",
 
   // Supabase > Project Settings > API > anon public
-  SUPABASE_ANON_KEY: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhtbW5qYnVzcWZiZ2xvcnh6cGRnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODg4NzU2MjEsImV4cCI6MjEwNDQ1MTYyMX0.kcnV99OTosocpmreYC9zZ19agNNrdouFwwzJ-33H7Ms",
+  SUPABASE_ANON_KEY: "PEGA_AQUI_TU_ANON_KEY",
 
   DOMINIO: "minciencia.gob.cl"
 };
@@ -916,7 +927,7 @@ var CARGOS_BASE = ["Analista","Programador","Técnico de soporte","Jefatura"];
 var estado = {
   perfil:null, solicitudes:[], usuarios:[], unidades:[], arbol:[], adjuntos:[],
   filtro:"abiertas", busqueda:"", canal:"Chat", prioridad:"Media",
-  periodo:"mes", abierto:null, vista:"bandeja",
+  periodo:"mes", pro:null, abierto:null, vista:"bandeja",
   portal:{ nivel:null, tipo:null }
 };
 
@@ -1909,8 +1920,66 @@ function etiquetaRango(r){
   return f(r.desde)+" al "+f(new Date(r.hasta-86400000));
 }
 
+/* ---------- Filtro por profesional ----------
+   "" = todo el equipo · "p:correo" = una persona · "c:Cargo" = todos los
+   de ese cargo · "__sin__" = sin asignar */
+function coincidePro(s){
+  var f=estado.pro||"";
+  if(!f) return true;
+  if(f==="__sin__") return !s.tecnico;
+  if(f.indexOf("p:")===0) return s.tecnico===f.slice(2);
+  if(f.indexOf("c:")===0){
+    var u=estado.usuarios.filter(function(x){return x.correo===s.tecnico;})[0];
+    return !!u && (u.cargo||"")===f.slice(2);
+  }
+  return true;
+}
+function baseResumen(){ return estado.solicitudes.filter(coincidePro); }
+
+function etiquetaPro(){
+  var f=estado.pro||"";
+  if(!f) return "";
+  if(f==="__sin__") return "Sin asignar";
+  if(f.indexOf("p:")===0) return nombreDe(f.slice(2));
+  return "Cargo: "+f.slice(2);
+}
+
+function poblarProfesionales(){
+  var sel=$("#r-pro");
+  // Un técnico parte viendo su propio desempeño
+  if(estado.pro===null) estado.pro = rol()==="tecnico" ? "p:"+estado.perfil.correo : "";
+
+  // Solo aparecen quienes tienen o tuvieron tickets asignados, y el equipo activo
+  var conTickets={};
+  estado.solicitudes.forEach(function(s){ if(s.tecnico) conTickets[s.tecnico]=1; });
+  var personas=estado.usuarios.filter(function(u){ return conTickets[u.correo] || u.activo; });
+  Object.keys(conTickets).forEach(function(c){
+    if(!personas.some(function(u){return u.correo===c;})) personas.push({correo:c, nombre:c, cargo:""});
+  });
+
+  sel.innerHTML="";
+  sel.appendChild(new Option("Todo el equipo",""));
+
+  var cargos={};
+  personas.forEach(function(u){ var c=u.cargo||"Sin cargo"; (cargos[c]=cargos[c]||[]).push(u); });
+  Object.keys(cargos).sort().forEach(function(c){
+    var g=document.createElement("optgroup"); g.label=c;
+    if(c!=="Sin cargo" && cargos[c].length>1) g.appendChild(new Option("Todos · "+c,"c:"+c));
+    cargos[c].sort(function(a,b){return a.nombre.localeCompare(b.nombre);}).forEach(function(u){
+      g.appendChild(new Option(u.nombre+(u.correo===estado.perfil.correo? " (yo)" : ""),"p:"+u.correo));
+    });
+    sel.appendChild(g);
+  });
+  sel.appendChild(new Option("Sin asignar","__sin__"));
+
+  var existe=Array.prototype.some.call(sel.options,function(o){return o.value===estado.pro;});
+  if(!existe) estado.pro="";
+  sel.value=estado.pro;
+  sel.classList.toggle("activo", !!estado.pro);
+}
+
 function delPeriodo(r){
-  return estado.solicitudes.filter(function(s){ return enRango(s.creada,r); });
+  return baseResumen().filter(function(s){ return enRango(s.creada,r); });
 }
 
 /* ---------- Indicadores ---------- */
@@ -1935,7 +2004,7 @@ function pintarKpis(r){
   var prom = n? suma/n : null;
 
   // Los vencidos se miran siempre a hoy, no dentro del período
-  var vencidos=estado.solicitudes.filter(function(s){ return estadoSla(s)==="vencido"; }).length;
+  var vencidos=baseResumen().filter(function(s){ return estadoSla(s)==="vencido"; }).length;
 
   var cont=$("#r-kpis"); cont.innerHTML="";
 
@@ -1983,7 +2052,7 @@ function pintarTendencia(){
   }
   var ent={},sal={};
   claves.forEach(function(k){ ent[k]=0; sal[k]=0; });
-  estado.solicitudes.forEach(function(s){
+  baseResumen().forEach(function(s){
     var ki=mesClave(s.creada);
     if(ent[ki]!==undefined) ent[ki]++;
     var fin=finSla(s);
@@ -2138,7 +2207,8 @@ function pintarTablaSla(r){
   var filas=Object.keys(porTecnico).map(function(k){
     var x=porTecnico[k];
     var cerrados=x.cumplidos+x.incumplidos;
-    return { nombre: k==="__sin__"? "Sin asignar" : nombreDe(k),
+    return { clave: k==="__sin__"? "__sin__" : "p:"+k,
+             nombre: k==="__sin__"? "Sin asignar" : nombreDe(k),
              cerrados:cerrados, cumplidos:x.cumplidos, incumplidos:x.incumplidos,
              vencidos:x.vencidos,
              pct: cerrados? Math.round(x.cumplidos/cerrados*100) : null };
@@ -2156,6 +2226,12 @@ function pintarTablaSla(r){
 
   filas.forEach(function(f){
     var tr=document.createElement("tr");
+    // Con todo el equipo a la vista, el nombre filtra el tablero por esa persona
+    if(!estado.pro){
+      tr.className="clic";
+      tr.title="Ver el resumen de "+f.nombre;
+      tr.onclick=function(){ estado.pro=f.clave; pintarResumen(); window.scrollTo({top:0,behavior:"smooth"}); };
+    }
     tr.appendChild(crear("td",null,f.nombre));
     tr.appendChild(crear("td","num",f.cerrados));
     tr.appendChild(crear("td","num",f.cumplidos));
@@ -2184,10 +2260,11 @@ function pintarTablaSla(r){
 
 /* ---------- Armado ---------- */
 function pintarResumen(){
+  poblarProfesionales();
   var r=rangoPeriodo(estado.periodo);
   var act=delPeriodo(r);
 
-  $("#r-rango").textContent=etiquetaRango(r);
+  $("#r-rango").textContent=etiquetaRango(r)+(estado.pro? " · "+etiquetaPro() : "");
   $("#r-periodo").querySelectorAll("button").forEach(function(b){
     b.setAttribute("aria-pressed", b.dataset.p===estado.periodo);
   });
@@ -2800,6 +2877,7 @@ $("#c-prioridad").onclick=function(e){
   estado.prioridad=b.dataset.p;
   this.querySelectorAll("button").forEach(function(x){ x.setAttribute("aria-pressed", x===b); });
 };
+$("#r-pro").onchange=function(){ estado.pro=this.value; pintarResumen(); };
 $("#r-periodo").onclick=function(e){
   var b=e.target.closest("button[data-p]"); if(!b) return;
   estado.periodo=b.dataset.p;
