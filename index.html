@@ -217,6 +217,8 @@ main{max-width:1400px;margin:0 auto;padding:18px}
   border:1px solid var(--line);border-radius:var(--radius);padding:7px 12px;
   text-decoration:none;color:var(--accent);font-size:13px;font-weight:500;margin-bottom:18px}
 .responder:hover{border-color:var(--accent)}
+#d-responder{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.responder.alt{color:var(--ink-3);font-weight:400;padding:7px 10px}
 .bitacora{list-style:none;padding:0;margin:0 0 14px}
 .bitacora li{padding:9px 0;border-bottom:1px solid var(--line-soft);font-size:13px}
 .bitacora li:last-child{border-bottom:0}
@@ -245,7 +247,15 @@ main{max-width:1400px;margin:0 auto;padding:18px}
 .destinatarios{font-size:12px;color:var(--ink-2);margin:10px 0 0;
   background:var(--field);border-radius:var(--radius);padding:8px 10px;line-height:1.4}
 .destinatarios.alerta{background:#FBF3E4;color:var(--warm)}
-.resp-acciones{display:flex;gap:8px;justify-content:flex-end;margin-top:12px;flex-wrap:wrap}
+.resp-acciones{display:flex;gap:8px;justify-content:flex-end;margin-top:12px;flex-wrap:wrap;align-items:center}
+.msj-box textarea{min-height:66px}
+.espera-check{margin-right:auto;font-size:12.5px;color:var(--ink-2);
+  display:inline-flex;align-items:center;gap:6px}
+.adj-desc{display:flex;gap:7px;flex-wrap:wrap;margin:2px 0 0}
+.adj-desc a{font-size:12.5px;color:var(--accent);background:var(--field);
+  border:1px solid var(--line);border-radius:3px;padding:3px 8px;text-decoration:none}
+.adj-desc a:hover{border-color:var(--accent)}
+.adj-desc .etq-adj{font-size:12px;color:var(--ink-3);align-self:center}
 .previas{margin-top:14px;border-top:1px solid var(--line-soft);padding-top:10px}
 .previas h4{margin:0 0 7px;font-size:11.5px;color:var(--ink-3);font-weight:600}
 .previa{font-size:12.5px;padding:7px 0;border-bottom:1px solid var(--line-soft)}
@@ -571,6 +581,17 @@ body.solo-lectura .workspace{grid-template-columns:1fr}
           <input type="text" id="p-anexo" maxlength="60" autocomplete="off"></div>
       </div>
 
+      <div class="f">
+        <label>Archivos <span class="opcional">(opcional)</span></label>
+        <div class="adj-fila">
+          <label class="adj-btn" for="p-adjuntos">Adjuntar archivos</label>
+          <input type="file" id="p-adjuntos" multiple hidden>
+          <span class="adj-lista" id="p-adj-lista"></span>
+        </div>
+        <p class="hint" style="margin-top:6px">Una foto del error o del equipo ayuda a resolver más rápido.
+          Hasta 5 archivos, 20 MB en total.</p>
+      </div>
+
       <button class="btn-primary" id="p-enviar">Enviar solicitud</button>
       <p class="hint">Recibirás un correo con el número de tu solicitud</p>
     </div>
@@ -753,6 +774,7 @@ body.solo-lectura .workspace{grid-template-columns:1fr}
   </div>
   <div class="drawer-body">
     <dl class="kv" id="d-kv"></dl>
+    <div class="adj-desc" id="d-adj-solicitud"></div>
     <div id="d-responder"></div>
 
     <h3 class="sec-h">Clasificación</h3>
@@ -775,6 +797,22 @@ body.solo-lectura .workspace{grid-template-columns:1fr}
 
     <h3 class="sec-h">Estado</h3>
     <div class="estado-row" id="d-estados"></div>
+
+    <h3 class="sec-h" id="d-msj-h">Escribirle al solicitante</h3>
+    <div class="resp-box msj-box">
+      <textarea id="d-msj-texto" rows="3"
+        placeholder="Consulta o aviso para el solicitante. Le llega por correo en el mismo hilo del ticket y su respuesta vuelve a la bitácora."></textarea>
+      <div class="adj-fila">
+        <label class="adj-btn" for="d-msj-adjuntos">Adjuntar archivos</label>
+        <input type="file" id="d-msj-adjuntos" multiple hidden>
+        <span class="adj-lista" id="d-msj-lista"></span>
+      </div>
+      <div class="resp-acciones">
+        <label class="check espera-check"><input type="checkbox" id="d-msj-espera" checked>
+          Dejar el ticket "En espera" hasta que conteste</label>
+        <button class="btn-ghost" id="d-msj-enviar">Enviar mensaje</button>
+      </div>
+    </div>
 
     <h3 class="sec-h">Solución y respuesta al solicitante</h3>
     <div class="resp-box">
@@ -925,7 +963,7 @@ var CONFIG = {
   SUPABASE_URL: "https://xmmnjbusqfbglorxzpdg.supabase.co",
 
   // Supabase > Project Settings > API > anon public
-  SUPABASE_ANON_KEY: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhtbW5qYnVzcWZiZ2xvcnh6cGRnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODg4NzU2MjEsImV4cCI6MjEwNDQ1MTYyMX0.kcnV99OTosocpmreYC9zZ19agNNrdouFwwzJ-33H7Ms",
+  SUPABASE_ANON_KEY: "PEGA_AQUI_TU_ANON_KEY",
 
   DOMINIO: "minciencia.gob.cl"
 };
@@ -957,8 +995,12 @@ var ROLES = [
 ];
 var CARGOS_BASE = ["Analista","Programador","Técnico de soporte","Jefatura"];
 
+/* Tope de archivos, igual en el portal y en el ticket */
+var ADJ_MAX = 5, ADJ_PESO = 20*1024*1024;
+
 var estado = {
   perfil:null, solicitudes:[], usuarios:[], unidades:[], arbol:[], adjuntos:[],
+  adjMensaje:[], adjPortal:[],
   filtro:"abiertas", busqueda:"", canal:"Chat", prioridad:"Media",
   periodo:"mes", pro:null, abierto:null, vista:"bandeja",
   portal:{ nivel:null, tipo:null }
@@ -1533,8 +1575,9 @@ function buscar(id){ return estado.solicitudes.filter(function(s){return s.id===
 async function abrir(id){
   estado.abierto=id;
   estado.pintadoId=null;
-  estado.adjuntos=[];
-  $("#d-adjuntos").value="";
+  estado.adjuntos=[]; estado.adjMensaje=[];
+  $("#d-adjuntos").value=""; $("#d-msj-adjuntos").value="";
+  $("#d-msj-texto").value=""; $("#d-msj-espera").checked=true;
   pintarDetalle();
   $("#drawer").classList.add("open");
   $("#drawer").setAttribute("aria-hidden","false");
@@ -1581,10 +1624,18 @@ function pintarDetalle(){
 
   var resp=$("#d-responder"); resp.innerHTML="";
   if(s.correo){
+    // Escribir desde el ticket: el correo sale solo y queda registrado
+    var b=crear("button","responder","Escribirle al solicitante");
+    b.onclick=function(){
+      var t=$("#d-msj-texto");
+      t.scrollIntoView({block:"center",behavior:"smooth"}); t.focus();
+    };
+    resp.appendChild(b);
     var a=document.createElement("a");
-    a.className="responder";
+    a.className="responder alt";
     a.href="mailto:"+s.correo+"?subject="+encodeURIComponent("["+s.folio+"] "+s.asunto);
-    a.textContent="Responder por correo";
+    a.textContent="Abrir en el correo";
+    a.title="Solo si necesitas escribirle desde Gmail; así no queda registro en el ticket.";
     resp.appendChild(a);
   }
 
@@ -1610,6 +1661,8 @@ function pintarDetalle(){
   pintarDerivacion(s);
   pintarDestinatarios(s);
   pintarAdjuntos();
+  pintarArchivos("#d-msj-lista", estado.adjMensaje);
+  pintarAdjuntosSolicitud(s);
 
   var er=$("#d-estados"); er.innerHTML="";
   ESTADOS.forEach(function(e){
@@ -1632,6 +1685,9 @@ function aplicarPermisosDetalle(){
   $("#d-responder").classList.toggle("oculto", soloVer);
   document.querySelectorAll("#drawer .add-nota, #drawer .adj-fila, #drawer .resp-acciones")
     .forEach(function(el){ el.classList.toggle("oculto", soloVer); });
+  // El supervisor solo mira: el bloque para escribirle al solicitante no le sirve
+  $("#d-msj-h").classList.toggle("oculto", soloVer);
+  document.querySelector("#drawer .msj-box").classList.toggle("oculto", soloVer);
 }
 
 /** Lo que falta para poder cerrar, o null si está todo. */
@@ -1660,17 +1716,44 @@ function pintarDestinatarios(s){
   }
 }
 
-function pintarAdjuntos(){
-  var cont=$("#d-adj-lista"); cont.innerHTML="";
-  estado.adjuntos.forEach(function(f,i){
+/**
+ * Lista de archivos elegidos, con botón para quitar cada uno.
+ * La usan el portal, la respuesta de cierre y el mensaje al solicitante.
+ */
+function pintarArchivos(sel, lista){
+  var cont=$(sel); if(!cont) return;
+  cont.innerHTML="";
+  lista.forEach(function(f,i){
     var it=crear("span","adj-item");
     it.appendChild(document.createTextNode(f.name+" ("+Math.round(f.size/1024)+" KB)"));
     var x=crear("button",null,"×");
     x.title="Quitar";
-    x.onclick=function(){ estado.adjuntos.splice(i,1); pintarAdjuntos(); };
+    x.onclick=function(){ lista.splice(i,1); pintarArchivos(sel,lista); };
     it.appendChild(x);
     cont.appendChild(it);
   });
+}
+function pintarAdjuntos(){ pintarArchivos("#d-adj-lista", estado.adjuntos); }
+
+/** Devuelve el reparo si los archivos no pasan, o null si están bien. */
+function revisarArchivos(lista){
+  if(lista.length > ADJ_MAX) return "Puedes adjuntar hasta "+ADJ_MAX+" archivos";
+  var peso=lista.reduce(function(a,f){ return a+f.size; },0);
+  if(peso > ADJ_PESO) return "Los archivos superan los 20 MB. Reduce el tamaño o comparte un enlace.";
+  return null;
+}
+
+/** Sube los archivos al bucket privado y devuelve dónde quedó cada uno. */
+async function subirArchivos(lista, carpeta){
+  var subidos=[];
+  for(var i=0;i<lista.length;i++){
+    var f=lista[i];
+    var ruta=carpeta+"/"+Date.now()+"-"+i+"-"+f.name.replace(/[^\w.\-]/g,"_");
+    var up=await SB.storage.from("adjuntos").upload(ruta,f,{upsert:false});
+    if(up.error) throw up.error;
+    subidos.push({path:ruta, nombre:f.name, tipo:f.type||"application/octet-stream"});
+  }
+  return subidos;
 }
 
 async function cargarRespuestas(id){
@@ -1680,11 +1763,12 @@ async function cargarRespuestas(id){
   if(!data || !data.length || estado.abierto!==id) return;
 
   var box=crear("div","previas");
-  box.appendChild(crear("h4",null,"Respuestas enviadas"));
+  box.appendChild(crear("h4",null,"Correos enviados al solicitante"));
   data.forEach(function(r){
     var d=crear("div","previa");
     var adj=(r.adjuntos||[]).map(function(a){return a.nombre;}).join(", ");
     d.appendChild(crear("div","meta"+(r.enviada?"":" pend"),
+      (r.tipo==="mensaje"? "Mensaje · " : "Respuesta de cierre · ")+
       (r.enviada? "Enviada "+fechaLarga(r.enviada) : "En cola de envío")+
       (r.autor? " · "+nombreDe(r.autor) : "")+
       (adj? " · adjuntos: "+adj : "")+
@@ -1693,6 +1777,84 @@ async function cargarRespuestas(id){
     box.appendChild(d);
   });
   cont.appendChild(box);
+}
+
+/**
+ * Archivos que mandó el solicitante. El bucket es privado, así que cada
+ * enlace se firma en el momento y dura una hora.
+ */
+async function pintarAdjuntosSolicitud(s){
+  var cont=$("#d-adj-solicitud"); cont.innerHTML="";
+  var lista=s.adjuntos||[];
+  if(!lista.length) return;
+  cont.appendChild(crear("span","etq-adj","Archivos del solicitante:"));
+  for(var i=0;i<lista.length;i++){
+    var a=lista[i];
+    var link=document.createElement("a");
+    link.textContent=a.nombre||"archivo";
+    link.target="_blank"; link.rel="noopener"; link.href="#";
+    cont.appendChild(link);
+    (function(ruta,el){
+      SB.storage.from("adjuntos").createSignedUrl(ruta,3600).then(function(r){
+        if(r.data && r.data.signedUrl) el.href=r.data.signedUrl;
+        else { el.textContent+=" (no disponible)"; el.style.color="var(--ink-3)"; }
+      });
+    })(a.path, link);
+  }
+}
+
+/**
+ * Mensaje al solicitante sin cerrar el ticket: una consulta, un aviso de
+ * avance. Sale por la misma cola de correo que la respuesta final, así que
+ * llega en el hilo del ticket y lo que conteste vuelve a la bitácora.
+ */
+async function enviarMensaje(){
+  var s=buscar(estado.abierto); if(!s) return;
+  var texto=$("#d-msj-texto").value.trim();
+
+  if(texto.length<3){ $("#d-msj-texto").focus(); return aviso("Escribe el mensaje que le quieres enviar",true); }
+  if(!s.gmail_thread_id && !s.correo)
+    return aviso("Esta solicitud no tiene correo al cual escribir",true);
+
+  var reparo=revisarArchivos(estado.adjMensaje);
+  if(reparo) return aviso(reparo,true);
+
+  var btn=$("#d-msj-enviar");
+  btn.disabled=true; btn.textContent="Enviando…";
+
+  try{
+    var subidos=await subirArchivos(estado.adjMensaje, s.id);
+
+    var ins=await SB.from("respuestas").insert({
+      solicitud_id:s.id, texto:texto, adjuntos:subidos, tipo:"mensaje",
+      destinatarios:s.correo||null, autor:estado.perfil.correo
+    });
+    if(ins.error) throw ins.error;
+
+    await SB.from("bitacora").insert({
+      solicitud_id:s.id,
+      texto:"Mensaje al solicitante: "+texto+
+            (subidos.length? " (adjuntos: "+subidos.map(function(a){return a.nombre;}).join(", ")+")" : ""),
+      autor:estado.perfil.correo, sistema:false
+    });
+
+    // Queda en espera: el reloj del plazo se detiene mientras contesta
+    if($("#d-msj-espera").checked && s.estado!=="Resuelta" && s.estado!=="En espera"){
+      var upd=await SB.from("solicitudes").update({estado:"En espera"}).eq("id",s.id).select().single();
+      if(!upd.error) Object.assign(s,upd.data);
+    }
+
+    $("#d-msj-texto").value="";
+    estado.adjMensaje=[]; $("#d-msj-adjuntos").value="";
+    pintarArchivos("#d-msj-lista", estado.adjMensaje);
+    pintarDetalle(); pintar();
+    cargarBitacora(s.id); cargarRespuestas(s.id);
+    aviso("Mensaje en cola. Sale por correo en menos de un minuto.");
+  } catch(err){
+    fallo(err,"enviar el mensaje");
+  } finally {
+    btn.disabled=false; btn.textContent="Enviar mensaje";
+  }
 }
 
 async function guardarSolucion(avisar){
@@ -3046,6 +3208,11 @@ $("#d-adjuntos").onchange=function(){
   Array.prototype.forEach.call(this.files,function(f){ estado.adjuntos.push(f); });
   pintarAdjuntos();
 };
+$("#d-msj-adjuntos").onchange=function(){
+  Array.prototype.forEach.call(this.files,function(f){ estado.adjMensaje.push(f); });
+  pintarArchivos("#d-msj-lista", estado.adjMensaje);
+};
+$("#d-msj-enviar").onclick=enviarMensaje;
 $("#d-guardar-sol").onclick=function(){ guardarSolucion(true); };
 $("#d-enviar").onclick=enviarRespuesta;
 $("#movil-abrir").onclick=function(){
@@ -3144,6 +3311,7 @@ function poblarSubPortal(){
 
 function limpiarFormularioPortal(){
   $("#p-asunto").value=""; $("#p-detalle").value="";
+  estado.adjPortal=[]; $("#p-adjuntos").value=""; pintarArchivos("#p-adj-lista", estado.adjPortal);
   estado.portal.nivel=null; estado.portal.tipo=null;
   marcarEleccion("#p-nivel","nivel",""); marcarEleccion("#p-tipo","tipo","");
   poblarTemasPortal();
@@ -3157,8 +3325,26 @@ async function enviarSolicitudPortal(){
   if(asunto.length<5){ $("#p-asunto").focus(); return aviso("Cuéntanos brevemente qué necesitas",true); }
   if(!$("#p-unidad").value){ $("#p-unidad").focus(); return aviso("Elige tu unidad",true); }
 
+  var reparo=revisarArchivos(estado.adjPortal);
+  if(reparo) return aviso(reparo,true);
+
   var btn=$("#p-enviar");
   btn.disabled=true; btn.textContent="Enviando…";
+
+  // Los archivos suben primero: si alguno falla, no se crea el ticket a medias
+  var subidos=[];
+  if(estado.adjPortal.length){
+    btn.textContent="Subiendo archivos…";
+    try{
+      subidos=await subirArchivos(estado.adjPortal,
+        "portal/"+Date.now().toString(36)+Math.random().toString(36).slice(2,8));
+    } catch(err){
+      console.error(err);
+      btn.disabled=false; btn.textContent="Enviar solicitud";
+      return aviso("No se pudieron subir los archivos: "+(err.message||"intenta de nuevo"),true);
+    }
+    btn.textContent="Enviando…";
+  }
 
   var { data, error } = await SB.rpc("crear_solicitud",{
     p_asunto:asunto,
@@ -3168,7 +3354,8 @@ async function enviarSolicitudPortal(){
     p_categoria:$("#p-categoria").value,
     p_subcategoria:$("#p-subcategoria").value,
     p_unidad:$("#p-unidad").value,
-    p_anexo:$("#p-anexo").value.trim()
+    p_anexo:$("#p-anexo").value.trim(),
+    p_adjuntos:subidos
   });
 
   btn.disabled=false; btn.textContent="Enviar solicitud";
@@ -3239,6 +3426,10 @@ $("#p-tipo").onclick=function(e){
   poblarTemasPortal();
 };
 $("#p-categoria").onchange=poblarSubPortal;
+$("#p-adjuntos").onchange=function(){
+  Array.prototype.forEach.call(this.files,function(f){ estado.adjPortal.push(f); });
+  pintarArchivos("#p-adj-lista", estado.adjPortal);
+};
 $("#p-enviar").onclick=enviarSolicitudPortal;
 $("#p-actualizar").onclick=cargarMisSolicitudes;
 $("#p-salir").onclick=async function(){ await SB.auth.signOut(); location.reload(); };
