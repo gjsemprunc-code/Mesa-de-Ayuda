@@ -453,7 +453,8 @@ body.solo-lectura .workspace{grid-template-columns:1fr}
 /* ---- Avisos ---- */
 #aviso{position:fixed;left:50%;bottom:22px;transform:translateX(-50%) translateY(16px);
   background:var(--ink);color:#fff;padding:10px 18px;border-radius:var(--radius);
-  font-size:13px;opacity:0;pointer-events:none;transition:opacity .18s,transform .18s;z-index:80}
+  font-size:13px;opacity:0;pointer-events:none;transition:opacity .18s,transform .18s;z-index:80;
+  max-width:min(560px,calc(100vw - 32px));text-align:center;line-height:1.4}
 #aviso.show{opacity:1;transform:translateX(-50%) translateY(0)}
 #aviso.malo{background:var(--urgent)}
 .movil-abrir{display:none}
@@ -924,7 +925,7 @@ var CONFIG = {
   SUPABASE_URL: "https://xmmnjbusqfbglorxzpdg.supabase.co",
 
   // Supabase > Project Settings > API > anon public
-  SUPABASE_ANON_KEY: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhtbW5qYnVzcWZiZ2xvcnh6cGRnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODg4NzU2MjEsImV4cCI6MjEwNDQ1MTYyMX0.kcnV99OTosocpmreYC9zZ19agNNrdouFwwzJ-33H7Ms",
+  SUPABASE_ANON_KEY: "PEGA_AQUI_TU_ANON_KEY",
 
   DOMINIO: "minciencia.gob.cl"
 };
@@ -1082,11 +1083,19 @@ function textoSla(s){
 function aviso(txt,malo){
   var a=$("#aviso"); a.textContent=txt;
   a.className = malo?"show malo":"show";
-  clearTimeout(a._t); a._t=setTimeout(function(){ a.className=""; },2600);
+  // Los errores quedan más rato en pantalla: hay que alcanzar a leerlos
+  clearTimeout(a._t); a._t=setTimeout(function(){ a.className=""; }, malo?9000:2600);
 }
+/**
+ * Muestra el motivo real que devuelve la base de datos, no solo "no se pudo".
+ * Sin esto, un permiso faltante y una columna inexistente se ven igual.
+ */
 function fallo(err,contexto){
   console.error(contexto,err);
-  aviso("No se pudo "+contexto+".",true);
+  var detalle = err && (err.message || err.hint || err.details || err.code);
+  if(detalle && /row-level security|violates row-level/i.test(detalle))
+    detalle = "tu cuenta no tiene permiso para esta acción";
+  aviso("No se pudo "+contexto+(detalle? ": "+detalle : "."),true);
 }
 function nombreDe(correo){
   if(!correo) return "";
