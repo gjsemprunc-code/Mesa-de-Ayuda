@@ -112,6 +112,7 @@ main{max-width:1400px;margin:0 auto;padding:18px}
 .stat span{font-size:12px;color:var(--ink-2)}
 .stat.is-urgent b{color:var(--urgent)}
 .stat.is-n2 b{color:var(--n2)}
+.stat.is-warm b{color:var(--warm)}
 .filters{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px}
 .filters button{background:var(--surface);border:1px solid var(--line);border-radius:99px;
   padding:5px 13px;font-size:12.5px;color:var(--ink-2);font-weight:500}
@@ -151,6 +152,10 @@ main{max-width:1400px;margin:0 auto;padding:18px}
 .sla-vencido{color:#fff;border-color:var(--urgent);background:var(--urgent)}
 .sla-cumplido{color:var(--done);border-color:#A8CFBB;background:#EBF5EF}
 .sla-incumplido{color:var(--urgent);border-color:#E0AFA9;background:#FAE9E7}
+/* El solicitante contestó y nadie ha abierto el ticket todavía */
+.novedad{font-size:10.5px;font-weight:700;border-radius:3px;padding:1px 7px;
+  color:#fff;background:var(--warm);border:1px solid var(--warm)}
+.ticket:has(.novedad){border-left-color:var(--warm);background:#FFFDF8}
 /* Quién tiene el ticket, visible de un vistazo en la lista */
 .asig{font-size:10.5px;font-weight:600;border-radius:99px;padding:1px 8px 1px 5px;
   border:1px solid var(--line);color:var(--ink-2);background:var(--field);
@@ -158,6 +163,28 @@ main{max-width:1400px;margin:0 auto;padding:18px}
 .asig svg{width:12px;height:12px;stroke:currentColor;fill:none;stroke-width:1.8}
 .asig.yo{color:var(--accent);border-color:#A8CBD8;background:#EBF4F7}
 .asig.libre{color:var(--ink-3);border-style:dashed;background:transparent;font-weight:500}
+.tabla-jornada{width:100%;border-collapse:collapse;font-size:13px;max-width:560px}
+.tabla-jornada th{text-align:left;font-size:11.5px;color:var(--ink-3);font-weight:500;
+  padding:0 8px 7px 0;border-bottom:1px solid var(--line-soft)}
+.tabla-jornada td{padding:6px 8px 6px 0;border-bottom:1px solid var(--line-soft)}
+.tabla-jornada tfoot td{border-bottom:0;padding-top:9px;color:var(--ink-2)}
+.tabla-jornada input[type=time]{padding:4px 7px;font-size:12.5px;
+  border:1px solid var(--line);border-radius:var(--radius);background:var(--surface)}
+.tabla-jornada input[type=time]:disabled{opacity:.45}
+.tabla-jornada .marca{text-align:center;width:74px}
+.tabla-jornada tr.apagado td:not(.marca){color:var(--ink-3)}
+#a-feriados{min-height:92px;font-family:"IBM Plex Mono",monospace;font-size:12.5px}
+.tabla-perfiles-caja{overflow-x:auto;border:1px solid var(--line-soft);border-radius:var(--radius)}
+.tabla-perfiles{width:100%;border-collapse:collapse;font-size:12.5px;min-width:720px}
+.tabla-perfiles th{text-align:left;font-size:11px;color:var(--ink-3);font-weight:500;
+  padding:8px 6px;border-bottom:1px solid var(--line-soft);white-space:nowrap}
+.tabla-perfiles td{padding:6px;border-bottom:1px solid var(--line-soft);vertical-align:middle}
+.tabla-perfiles tr:last-child td{border-bottom:0}
+.tabla-perfiles select{padding:4px 6px;font-size:12px}
+.tabla-perfiles input[type=text]{padding:4px 7px;font-size:12.5px;width:100%;min-width:110px}
+.tabla-perfiles .marca{text-align:center}
+.tabla-perfiles .fijo{color:var(--ink-3);font-style:italic}
+.tabla-perfiles .usando{font-size:11px;color:var(--ink-3);display:block}
 .tabla-sla{width:100%;border-collapse:collapse;font-size:13px}
 .tabla-sla th{text-align:left;font-size:11.5px;color:var(--ink-3);font-weight:500;
   padding:0 8px 7px 0;border-bottom:1px solid var(--line-soft)}
@@ -293,6 +320,19 @@ main{max-width:1400px;margin:0 auto;padding:18px}
 .kpi .rotulo{font-size:12px;color:var(--ink-2);margin-top:5px}
 .kpi .delta{font-size:12px;font-weight:500;color:var(--ink-3);white-space:nowrap}
 .kpi .pie{font-size:11.5px;color:var(--ink-3);margin-top:3px}
+.kpi-ayuda{position:absolute;top:9px;right:9px;width:18px;height:18px;border-radius:50%;
+  border:1px solid var(--line);background:var(--field);color:var(--ink-3);
+  font-size:11px;font-weight:600;line-height:1;padding:0;display:flex;
+  align-items:center;justify-content:center}
+.kpi-ayuda:hover{border-color:var(--accent);color:var(--accent)}
+/* Va flotando sobre la página: el bloque de indicadores recorta lo que sobresale */
+.kpi-detalle{display:none;position:fixed;z-index:70;width:300px;max-width:calc(100vw - 24px);
+  background:var(--ink);color:#fff;border-radius:var(--radius);padding:12px 14px;
+  font-size:12px;line-height:1.45;box-shadow:0 10px 28px rgba(20,33,46,.32);text-align:left}
+.kpi-detalle.abierta{display:block}
+.kpi-detalle b{display:block;margin-bottom:5px;font-size:12px}
+.kpi-detalle p{margin:0 0 7px;color:#D6E0E6}
+.kpi-detalle p:last-child{margin-bottom:0}
 
 .dash-grid{display:grid;grid-template-columns:2fr 1fr;gap:18px;margin-bottom:18px}
 .dash-grid3{display:grid;grid-template-columns:repeat(auto-fit,minmax(272px,1fr));gap:18px}
@@ -845,15 +885,13 @@ body.solo-lectura .workspace{grid-template-columns:1fr}
   <div class="modal-card">
     <h2>Equipo autorizado</h2>
     <p style="font-size:12px;color:var(--ink-3);margin:-6px 0 10px">
-      El <b>rol</b> define qué puede hacer cada persona. El <b>cargo</b> es solo descriptivo
-      (Analista, Programador…) y puedes escribir uno nuevo cuando quieras.
+      A cada persona se le elige un <b>perfil</b>, que define qué puede hacer, y un <b>nivel</b>,
+      que define en qué área trabaja. El <b>cargo</b> es solo descriptivo.
       Quien no esté en esta lista entra al portal de solicitudes.
     </p>
     <datalist id="l-cargos"></datalist>
     <table class="tabla-usuarios">
-      <thead><tr><th>Persona</th><th>Cargo</th><th>Rol</th><th>Nivel</th>
-        <th title="Puede crear solicitudes desde el panel" style="text-align:center">Registra</th>
-        <th title="Ve solo los tickets que tiene asignados (aplica a técnicos)" style="text-align:center">Solo sus<br>tickets</th>
+      <thead><tr><th>Persona</th><th>Cargo</th><th>Perfil</th><th>Nivel</th>
         <th>Estado</th><th></th></tr></thead>
       <tbody id="tabla-usuarios"></tbody>
     </table>
@@ -861,22 +899,71 @@ body.solo-lectura .workspace{grid-template-columns:1fr}
       <input type="text" id="u-nombre" placeholder="Nombre">
       <input type="text" id="u-correo" placeholder="correo@minciencia.gob.cl">
       <input type="text" id="u-cargo" placeholder="Cargo" list="l-cargos">
-      <select id="u-rol"></select>
+      <select id="u-perfil"></select>
       <select id="u-nivel"><option value="1">Nivel 1</option><option value="2">Nivel 2</option></select>
       <button id="u-agregar">Agregar</button>
-      <div class="nuevo-permisos">
-        <label class="check"><input type="checkbox" id="u-registra" checked> Puede registrar solicitudes</label>
-        <label class="check"><input type="checkbox" id="u-solo"> Ve solo sus tickets asignados</label>
-      </div>
+    </div>
+
+    <h2 style="margin-top:24px">Perfiles y permisos</h2>
+    <p style="font-size:12px;color:var(--ink-3);margin:-6px 0 12px">
+      Cada fila es un perfil. Lo que cambies aquí se aplica de inmediato a todas las personas
+      que lo tengan. El perfil <b>Administrador</b> no se puede modificar ni eliminar, y siempre
+      debe quedar al menos una persona con él.
+    </p>
+    <div class="tabla-perfiles-caja">
+      <table class="tabla-perfiles">
+        <thead><tr>
+          <th>Perfil</th>
+          <th title="Qué tickets ve en la bandeja">Qué ve</th>
+          <th title="Puede crear solicitudes desde el panel">Registra</th>
+          <th title="Puede cambiar estado, clasificar y responder">Trabaja</th>
+          <th title="Puede asignarle tickets a otras personas">Asigna</th>
+          <th title="Puede derivar a Nivel 2 y devolver a Nivel 1">Deriva</th>
+          <th title="Qué indicadores ve en el resumen">Resumen</th>
+          <th title="Puede descargar la planilla institucional">Exporta</th>
+          <th title="Puede entrar a Ajustes y editar todo esto">Administra</th>
+          <th></th>
+        </tr></thead>
+        <tbody id="tabla-perfiles"></tbody>
+      </table>
+    </div>
+    <div class="nuevo-usuario" style="grid-template-columns:1fr auto auto">
+      <input type="text" id="p-nombre" placeholder="Nombre del perfil nuevo (ej: Mesa de entrada)">
+      <select id="p-base"></select>
+      <button id="p-agregar">Agregar perfil</button>
     </div>
 
     <h2 style="margin-top:24px">Clasificación y plazos</h2>
     <p style="font-size:12px;color:var(--ink-3);margin:-6px 0 12px">
-      Horas hábiles (lun a vie, 8:30 a 17:30) salvo que marques horario corrido.
+      Horas hábiles <span id="txt-horario">según el horario de atención</span> salvo que marques horario corrido.
       Una subcategoría sin horas usa las de su categoría. Los cambios se guardan al salir de cada campo,
       y renombrar actualiza también las solicitudes existentes.
     </p>
     <div id="arbol"></div>
+
+    <h2 style="margin-top:24px">Horario de atención</h2>
+    <p style="font-size:12px;color:var(--ink-3);margin:-6px 0 12px">
+      Define las horas hábiles con que se calculan los plazos. Los días desmarcados no
+      suman tiempo, igual que los feriados. Los cambios se aplican a los tickets nuevos:
+      los que ya tienen plazo comprometido conservan el suyo.
+    </p>
+    <table class="tabla-jornada">
+      <thead><tr><th style="text-align:center">Se atiende</th><th>Día</th>
+        <th>Entrada</th><th>Salida</th><th>Horas</th></tr></thead>
+      <tbody id="tabla-jornada"></tbody>
+      <tfoot><tr><td></td><td colspan="3">Total semanal</td>
+        <td id="jornada-total" style="font-weight:600"></td></tr></tfoot>
+    </table>
+
+    <div class="f" style="margin-top:16px">
+      <label for="a-feriados">Feriados <span class="opcional">(uno por línea: fecha y nombre)</span></label>
+      <textarea id="a-feriados" spellcheck="false"
+        placeholder="2026-12-25 Navidad"></textarea>
+      <p style="font-size:11.5px;color:var(--ink-3);margin:6px 0 0">
+        Vienen cargados los de fecha fija hasta 2027. Agrega los que cambian cada año:
+        Viernes Santo, 29 de junio, 12 de octubre, 31 de octubre y las elecciones.
+      </p>
+    </div>
 
     <h2 style="margin-top:22px">Unidades</h2>
     <div class="f">
@@ -886,7 +973,7 @@ body.solo-lectura .workspace{grid-template-columns:1fr}
 
     <div class="modal-actions">
       <button class="btn-ghost" id="a-cancelar">Cerrar</button>
-      <button class="btn-primary" style="width:auto" id="a-guardar">Guardar unidades</button>
+      <button class="btn-primary" style="width:auto" id="a-guardar">Guardar horario y unidades</button>
     </div>
   </div>
 </div>
@@ -963,7 +1050,7 @@ var CONFIG = {
   SUPABASE_URL: "https://xmmnjbusqfbglorxzpdg.supabase.co",
 
   // Supabase > Project Settings > API > anon public
-  SUPABASE_ANON_KEY: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhtbW5qYnVzcWZiZ2xvcnh6cGRnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODg4NzU2MjEsImV4cCI6MjEwNDQ1MTYyMX0.kcnV99OTosocpmreYC9zZ19agNNrdouFwwzJ-33H7Ms",
+  SUPABASE_ANON_KEY: "PEGA_AQUI_TU_ANON_KEY",
 
   DOMINIO: "minciencia.gob.cl"
 };
@@ -999,7 +1086,8 @@ var CARGOS_BASE = ["Analista","Programador","Técnico de soporte","Jefatura"];
 var ADJ_MAX = 5, ADJ_PESO = 20*1024*1024;
 
 var estado = {
-  perfil:null, solicitudes:[], usuarios:[], unidades:[], arbol:[], adjuntos:[],
+  perfil:null, solicitudes:[], usuarios:[], perfiles:[], unidades:[], arbol:[],
+  jornada:[], feriados:[], adjuntos:[],
   adjMensaje:[], adjPortal:[],
   filtro:"abiertas", busqueda:"", canal:"Chat", prioridad:"Media",
   periodo:"mes", pro:null, abierto:null, vista:"bandeja",
@@ -1009,28 +1097,40 @@ var estado = {
 /* ---------- Utilidades ---------- */
 function $(s){ return document.querySelector(s); }
 function crear(t,c,x){ var e=document.createElement(t); if(c)e.className=c; if(x!==undefined)e.textContent=x; return e; }
+/* ---------- Permisos ----------
+   Todo lo que la pantalla decide mostrar u ocultar sale del perfil de la
+   persona, que llega desde la base. La base aplica las mismas reglas por
+   su cuenta: esto es comodidad, no seguridad.                          */
 function rol(){ return estado.perfil ? estado.perfil.rol : null; }
-function esAdmin(){ return rol()==="admin"; }
-/** Ve ambos niveles: administrador y supervisor. */
-function veTodo(){ return rol()==="admin" || rol()==="supervisor"; }
-/** El supervisor solo mira: no registra, no edita, no deriva. */
-function puedeEditar(){ return rol()==="admin" || rol()==="coordinador" || rol()==="tecnico"; }
-/** Subir un ticket a Nivel 2. */
-function puedeDerivar(){ return rol()==="admin" || rol()==="coordinador"; }
-/** Asignar a otra persona. */
-function puedeAsignar(){ return rol()==="admin" || rol()==="coordinador"; }
-/** Permisos por persona, definidos en Ajustes (la base los aplica igual). */
+function permiso(clave){ return !!(estado.perfil && estado.perfil[clave]); }
+/** todos | nivel | asignados */
+function alcance(){ return estado.perfil ? (estado.perfil.ve||"asignados") : null; }
+
+function esAdmin(){ return permiso("administrar"); }
+/** Ve los dos niveles. */
+function veTodo(){ return alcance()==="todos"; }
+/** Puede trabajar tickets: cambiar estado, responder, clasificar. */
+function puedeEditar(){ return permiso("trabajar"); }
+/** Subir un ticket a Nivel 2 o devolverlo. */
+function puedeDerivar(){ return permiso("derivar"); }
+/** Asignar a otra persona (tomar uno libre lo puede cualquiera que trabaje). */
+function puedeAsignar(){ return permiso("asignar"); }
+function puedeRegistrar(){ return permiso("registrar"); }
+function puedeExportar(){ return permiso("exportar"); }
+function soloAsignados(){ return alcance()==="asignados"; }
+/** completo | propio | no */
+function alcanceResumen(){ return estado.perfil ? (estado.perfil.resumen||"no") : "no"; }
+
 /** ¿Esta solicitud debe estar en mi bandeja? (mismo criterio que la base) */
 function meCorresponde(s){
   if(!veTodo() && s.nivel!==estado.perfil.nivel) return false;
   if(soloAsignados() && s.tecnico!==estado.perfil.correo) return false;
   return true;
 }
-function puedeRegistrar(){ return puedeEditar() && estado.perfil.puede_registrar!==false; }
-function soloAsignados(){ return rol()==="tecnico" && !!estado.perfil.solo_asignados; }
 function etiquetaRol(r){
+  if(estado.perfil && estado.perfil.perfil) return " · "+estado.perfil.perfil;
   var x=ROLES.filter(function(o){return o[0]===r;})[0];
-  return x? x[1] : r;
+  return x? " · "+x[1] : " · "+r;
 }
 
 /* ---------- Árbol de clasificación ---------- */
@@ -1220,8 +1320,13 @@ async function revisarSesion(){
 
   $("#quien").innerHTML = "<b>"+perfil.nombre+"</b>"+
     etiquetaRol(perfil.rol)+(veTodo()? "" : " · Nivel "+perfil.nivel)+
-    (perfil.cargo? " · "+perfil.cargo : "");
+    // el cargo solo agrega información si dice algo distinto del perfil
+    (perfil.cargo && perfil.cargo!==perfil.perfil? " · "+perfil.cargo : "");
   $("#btn-ajustes").classList.toggle("oculto", !esAdmin());
+  $("#btn-exportar").classList.toggle("oculto", !puedeExportar());
+  // Sin acceso al resumen, la pestaña no aparece
+  document.querySelector('.tabs button[data-vista="resumen"]')
+    .classList.toggle("oculto", alcanceResumen()==="no");
   document.body.classList.toggle("solo-lectura", !puedeEditar());
   document.body.classList.toggle("sin-registro", !puedeRegistrar());
   $("#app").classList.remove("oculto");
@@ -1365,6 +1470,12 @@ function escucharCambios(){
         var visible = meCorresponde(p.new);
         var estaba = estado.solicitudes.some(function(x){return x.id===p.new.id;});
         if(visible && estaba){
+          var antes=estado.solicitudes.filter(function(x){return x.id===p.new.id;})[0];
+          // El solicitante acaba de contestar: avisar a quien tiene el ticket
+          if(p.new.respuesta_nueva && !(antes && antes.respuesta_nueva) &&
+             estado.abierto!==p.new.id &&
+             (!p.new.tecnico || p.new.tecnico===estado.perfil.correo))
+            aviso("Respondió el solicitante en "+p.new.folio);
           estado.solicitudes=estado.solicitudes.map(function(x){ return x.id===p.new.id? p.new : x; });
         } else if(visible && !estaba){
           estado.solicitudes.unshift(p.new);
@@ -1444,6 +1555,7 @@ function filtradas(){
     if(ESTADOS.indexOf(estado.filtro)>=0 && s.estado!==estado.filtro) return false;
     if(estado.filtro==="urgentes" && (s.prioridad!=="Alta"||!abierta(s))) return false;
     if(estado.filtro==="sinasignar" && (s.tecnico||!abierta(s))) return false;
+    if(estado.filtro==="respondieron" && !s.respuesta_nueva) return false;
     if(estado.filtro==="mias" && s.tecnico!==estado.perfil.correo) return false;
     if(estado.filtro==="vencidos" && estadoSla(s)!=="vencido") return false;
     if(estado.filtro==="porvencer" && estadoSla(s)!=="por_vencer") return false;
@@ -1474,6 +1586,7 @@ function pintarStats(){
     [s.filter(abierta).length,"abiertas",""],
     [s.filter(function(x){return estadoSla(x)==="vencido";}).length,"fuera de plazo","is-urgent"],
     [s.filter(function(x){return estadoSla(x)==="por_vencer";}).length,"vencen en 24 h",""],
+    [s.filter(function(x){return !!x.respuesta_nueva;}).length,"con respuesta","is-warm"],
     [s.filter(function(x){return abierta(x)&&!x.tecnico;}).length,"sin asignar",""],
     [s.filter(function(x){return new Date(x.creada).toDateString()===hoy;}).length,"ingresadas hoy",""]
   ];
@@ -1496,6 +1609,7 @@ function pintarFiltros(){
            ["urgentes","Prioridad alta"],["porclasificar","Por clasificar"]];
   if(puedeEditar() && !soloAsignados()) ops.push(["mias","Asignadas a mí"]);
   if(!soloAsignados()) ops.push(["sinasignar","Sin asignar"]);
+  ops.push(["respondieron","Con respuesta del usuario"]);
   ops=ops.concat([["Nueva","Sin atender"],["En atención","En atención"],
            ["En espera","En espera"],["Resuelta","Resueltas"],["todas","Todas"]]);
   var boton=function(o){
@@ -1544,6 +1658,7 @@ function pintarLista(){
     if(sla) l1.appendChild(crear("span","sla sla-"+sla, textoSla(s)));
     if(s.origen==="correo") l1.appendChild(crear("span","auto","automática"));
     if(abierta(s) && !clasificada(s)) l1.appendChild(crear("span","sla sla-por_vencer","por clasificar"));
+    if(s.respuesta_nueva) l1.appendChild(crear("span","novedad","respondió"));
 
     // Quién lo tiene: etiqueta con nombre, o "sin asignar" mientras esté libre
     var mio=s.tecnico===estado.perfil.correo;
@@ -1574,6 +1689,7 @@ function buscar(id){ return estado.solicitudes.filter(function(s){return s.id===
 
 async function abrir(id){
   estado.abierto=id;
+  marcarLeida(id);
   estado.pintadoId=null;
   estado.adjuntos=[]; estado.adjMensaje=[];
   $("#d-adjuntos").value=""; $("#d-msj-adjuntos").value="";
@@ -1584,6 +1700,16 @@ async function abrir(id){
   $("#scrim").classList.add("open");
   await cargarBitacora(id);
   await cargarRespuestas(id);
+}
+
+/** Al abrir el ticket, la respuesta del usuario deja de estar sin leer. */
+async function marcarLeida(id){
+  var s=buscar(id);
+  if(!s || !s.respuesta_nueva || !puedeEditar()) return;
+  var { error } = await SB.rpc("marcar_leida",{p_id:id});
+  if(error){ console.error(error); return; }
+  s.respuesta_nueva=null;
+  pintar();
 }
 
 function cerrar(){
@@ -1940,7 +2066,7 @@ function pintarDerivacion(s){
   var cont=$("#d-derivacion"); cont.innerHTML="";
 
   if(s.nivel===1){
-    if(!puedeDerivar()) return;         // admin o coordinador suben un ticket de nivel
+    if(!puedeDerivar()) return;         // solo quien tenga el permiso sube un ticket de nivel
 
     var box=crear("div","deriv-box");
     box.appendChild(crear("p",null,"Derivar a Nivel 2"));
@@ -1951,7 +2077,7 @@ function pintarDerivacion(s){
     box.appendChild(inp);
 
     var selT=document.createElement("select");
-    selT.appendChild(new Option("Sin asignar · avisar al coordinador de Nivel 2",""));
+    selT.appendChild(new Option("Sin asignar · avisar a quien reparte Nivel 2",""));
     tecnicosDe(2).forEach(function(u){ selT.appendChild(new Option(u.nombre,u.correo)); });
     box.appendChild(selT);
 
@@ -1975,8 +2101,8 @@ function pintarDerivacion(s){
     return;
   }
 
-  // Ticket en Nivel 2: lo puede devolver el admin o quien trabaje en ese nivel
-  if(!puedeEditar() || (!esAdmin() && estado.perfil.nivel!==2)) return;
+  // Ticket en Nivel 2: solo lo devuelve quien tenga el permiso de derivar
+  if(!puedeDerivar()) return;
 
   var box2=crear("div","deriv-box");
   box2.appendChild(crear("p",null,"Esta solicitud está en Nivel 2"));
@@ -2176,8 +2302,16 @@ function etiquetaPro(){
 
 function poblarProfesionales(){
   var sel=$("#r-pro");
-  // Un técnico parte viendo su propio desempeño
-  if(estado.pro===null) estado.pro = rol()==="tecnico" ? "p:"+estado.perfil.correo : "";
+  // Quien solo ve su desempeño queda fijo en sí misma; el resto parte en "todo el equipo"
+  if(alcanceResumen()==="propio"){
+    estado.pro="p:"+estado.perfil.correo;
+    sel.innerHTML=""; sel.appendChild(new Option(estado.perfil.nombre,estado.pro));
+    sel.value=estado.pro; sel.disabled=true;
+    sel.parentNode.title="Tu perfil muestra solo tu propio desempeño";
+    return;
+  }
+  sel.disabled=false;
+  if(estado.pro===null) estado.pro="";
 
   // Solo aparecen quienes tienen o tuvieron tickets asignados, y el equipo activo
   var conTickets={};
@@ -2238,21 +2372,55 @@ function pintarKpis(r){
 
   var cont=$("#r-kpis"); cont.innerHTML="";
 
-  agregarKpi(cont,"neutro",act.length,"solicitudes ingresadas",
-             r? delta(act.length,ant.length) : "", null);
-  agregarKpi(cont,"neutro",cerradas.length,"cerradas en el período","",
-             act.length? Math.round(cerradas.length/act.length*100)+"% de lo ingresado" : null);
+  var sinPlazo = cerradas.length - conPlazo.length;
+
+  agregarKpi(cont,"neutro",act.length,"solicitudes recibidas",
+             r? delta(act.length,ant.length) : "", "ingresadas en el período",
+             "Cuenta los tickets que ingresaron dentro del período elegido, por cualquier vía: "+
+             "correo, portal, chat, teléfono o mostrador. La comparación que aparece al lado "+
+             "es contra el período anterior de la misma duración.");
+
+  agregarKpi(cont,"neutro",cerradas.length,"ya resueltas",
+             "", act.length? cerradas.length+" de las "+act.length+" recibidas" : null,
+             "De las solicitudes recibidas en el período, cuántas ya están cerradas. "+
+             "Las que siguen abiertas no se cuentan aquí aunque se resuelvan mañana.");
+
   agregarKpi(cont, pct===null?"neutro":(pct>=90?"ok":pct>=70?"warn":"bad"),
-             pct===null?"—":pct+"%","cumplimiento de plazos","",
-             conPlazo.length? "sobre "+conPlazo.length+" con plazo definido" : "sin casos medibles");
+             pct===null?"—":pct+"%","resueltas dentro del plazo","",
+             conPlazo.length
+               ? cumplidas+" de "+conPlazo.length+" con plazo comprometido"
+               : "todavía no hay casos con plazo",
+             "De las solicitudes ya cerradas que tenían un plazo comprometido, qué porcentaje "+
+             "se cerró antes de vencerlo.\n\n"+
+             "El plazo sale de la categoría del ticket (Ajustes > Clasificación y plazos) y se "+
+             "cuenta en horas hábiles: "+textoHorario()+", sin contar feriados. En Nivel 1 el "+
+             "reloj se detiene al resolver o al derivar a Nivel 2; en Nivel 2, al resolver.\n\n"+
+             (sinPlazo>0
+               ? "Quedan fuera del cálculo "+sinPlazo+" solicitud"+(sinPlazo>1?"es":"")+" cerrada"+
+                 (sinPlazo>1?"s":"")+" sin plazo: las que están sin clasificar o en una categoría "+
+                 "a la que no se le fijaron horas."
+               : "Las solicitudes sin clasificar o sin horas definidas no entran en el cálculo."));
+
   agregarKpi(cont,"neutro",
              prom===null?"—":(prom<24? Math.round(prom)+" h" : (prom/24).toFixed(1)+" d"),
-             "tiempo promedio de atención","",null);
-  agregarKpi(cont, vencidos? "bad":"ok", vencidos,"fuera de plazo ahora","",
-             vencidos? "requieren acción" : "ninguna atrasada");
+             "tiempo promedio de atención","", "desde que ingresa hasta que se cierra",
+             "Promedio de horas corridas (no hábiles) entre el ingreso de la solicitud y su "+
+             "cierre. En Nivel 1, una solicitud derivada se cuenta hasta el momento de la "+
+             "derivación. Las solicitudes todavía abiertas no entran en el promedio.");
+
+  agregarKpi(cont, vencidos? "bad":"ok", vencidos,"atrasadas hoy","",
+             vencidos? "abiertas y ya vencidas" : "ninguna atrasada",
+             "Solicitudes que siguen abiertas y cuyo plazo ya venció, contadas a hoy y sin "+
+             "importar el período elegido arriba. Es el único indicador que mira el presente: "+
+             "los demás describen el período.");
 }
 
-function agregarKpi(cont,clase,valor,rotulo,deltaTxt,pie){
+/**
+ * Una tarjeta del resumen. "ayuda" es la explicación de cómo se calcula:
+ * aparece al tocar el signo de pregunta, para que el número no haya que
+ * interpretarlo de memoria en una reunión.
+ */
+function agregarKpi(cont,clase,valor,rotulo,deltaTxt,pie,ayuda){
   var d=crear("div","kpi "+clase);
   var v=crear("div","valor");
   v.appendChild(crear("span",null,valor));
@@ -2260,6 +2428,30 @@ function agregarKpi(cont,clase,valor,rotulo,deltaTxt,pie){
   d.appendChild(v);
   d.appendChild(crear("div","rotulo",rotulo));
   if(pie) d.appendChild(crear("div","pie",pie));
+
+  if(ayuda){
+    var b=crear("button","kpi-ayuda","?");
+    b.type="button";
+    b.setAttribute("aria-label","Cómo se calcula "+rotulo);
+    b.title="Cómo se calcula";
+    var caja=crear("div","kpi-detalle");
+    caja.appendChild(crear("b",null,rotulo));
+    ayuda.split("\n\n").forEach(function(p){ caja.appendChild(crear("p",null,p)); });
+    b.onclick=function(ev){
+      ev.stopPropagation();
+      var abierta=caja.classList.contains("abierta");
+      document.querySelectorAll(".kpi-detalle.abierta")
+        .forEach(function(x){ x.classList.remove("abierta"); });
+      if(abierta) return;
+      // Se ubica bajo el signo de pregunta, sin salirse de la pantalla
+      var r=b.getBoundingClientRect();
+      caja.classList.add("abierta");
+      var ancho=caja.offsetWidth;
+      caja.style.top=(r.bottom+6)+"px";
+      caja.style.left=Math.max(12, Math.min(r.right-ancho, window.innerWidth-ancho-12))+"px";
+    };
+    d.appendChild(b); d.appendChild(caja);
+  }
   cont.appendChild(d);
 }
 
@@ -2734,9 +2926,14 @@ async function exportar(){
 /* =====================================================================
    AJUSTES (solo admin)
    ===================================================================== */
-function abrirAjustes(){
+async function abrirAjustes(){
   if(!esAdmin()) return;
   $("#a-unidades").value=estado.unidades.join("\n");
+  await cargarPerfiles();
+  await cargarJornada();
+  pintarTablaPerfiles();
+  pintarJornada();
+  $("#txt-horario").textContent = "("+textoHorario()+")";
   pintarTablaUsuarios();
   pintarArbol();
   $("#modal-ajustes").classList.add("open");
@@ -2957,9 +3154,120 @@ async function agregarNodo(tipo,padre,nombre,nivel){
   aviso((padre? "Subcategoría" : "Categoría")+" agregada");
 }
 
+/* ---------- Horario de atención y feriados ---------- */
+var DIAS=["lunes","martes","miércoles","jueves","viernes","sábado","domingo"];
+
+async function cargarJornada(){
+  var j=await SB.from("jornada").select("*").order("dia");
+  if(j.error){ fallo(j.error,"cargar el horario"); return; }
+  estado.jornada=j.data||[];
+  var f=await SB.from("feriados").select("*").order("fecha");
+  estado.feriados=f.error? [] : (f.data||[]);
+}
+
+/** "lunes a jueves de 08:30 a 17:30; viernes de 08:30 a 16:30" */
+function textoHorario(){
+  var act=(estado.jornada||[]).filter(function(d){ return d.activo; });
+  if(!act.length) return "sin horario definido";
+  var tramos=[], ini=null, prev=null;
+  act.forEach(function(d){
+    var mismo = prev && prev.inicio===d.inicio && prev.fin===d.fin && d.dia===prev.dia+1;
+    if(!mismo){ if(ini) tramos.push([ini,prev]); ini=d; }
+    prev=d;
+  });
+  tramos.push([ini,prev]);
+  return tramos.map(function(t){
+    var nom = t[0].dia===t[1].dia ? DIAS[t[0].dia-1] : DIAS[t[0].dia-1]+" a "+DIAS[t[1].dia-1];
+    return nom+" de "+hhmm(t[0].inicio)+" a "+hhmm(t[0].fin);
+  }).join("; ");
+}
+function hhmm(t){ return (t||"").slice(0,5); }
+function horasDia(d){
+  var a=hhmm(d.inicio).split(":"), b=hhmm(d.fin).split(":");
+  return ((+b[0]*60 + +b[1]) - (+a[0]*60 + +a[1]))/60;
+}
+
+function pintarJornada(){
+  var tb=$("#tabla-jornada"); if(!tb) return;
+  tb.innerHTML="";
+  var total=0;
+
+  (estado.jornada||[]).forEach(function(d){
+    var tr=document.createElement("tr");
+    if(!d.activo) tr.className="apagado";
+
+    var tdM=crear("td","marca");
+    var chk=document.createElement("input");
+    chk.type="checkbox"; chk.checked=!!d.activo;
+    chk.onchange=function(){ d.activo=chk.checked; pintarJornada(); };
+    tdM.appendChild(chk); tr.appendChild(tdM);
+
+    tr.appendChild(crear("td",null,DIAS[d.dia-1]));
+
+    [["inicio","Entrada"],["fin","Salida"]].forEach(function(c){
+      var td=document.createElement("td");
+      var inp=document.createElement("input");
+      inp.type="time"; inp.step=300; inp.value=hhmm(d[c[0]]); inp.disabled=!d.activo;
+      inp.onchange=function(){ d[c[0]]=inp.value||d[c[0]]; pintarJornada(); };
+      td.appendChild(inp); tr.appendChild(td);
+    });
+
+    var h=d.activo? horasDia(d) : 0;
+    if(h>0) total+=h;
+    tr.appendChild(crear("td",null, d.activo? (h>0? h.toFixed(1).replace(".0","")+" h" : "revisar") : "—"));
+    tb.appendChild(tr);
+  });
+
+  $("#jornada-total").textContent = total.toFixed(1).replace(".0","")+" h semanales";
+  $("#a-feriados").value = (estado.feriados||[])
+    .map(function(f){ return f.fecha+(f.nombre? " "+f.nombre : ""); }).join("\n");
+}
+
+/** Guarda horario y feriados junto con las unidades. */
+async function guardarJornada(){
+  var malos=(estado.jornada||[]).filter(function(d){ return d.activo && horasDia(d)<=0; });
+  if(malos.length){
+    aviso("La salida debe ser posterior a la entrada en "+DIAS[malos[0].dia-1],true);
+    return false;
+  }
+
+  var r=await SB.from("jornada").upsert((estado.jornada||[]).map(function(d){
+    return {dia:d.dia, inicio:hhmm(d.inicio), fin:hhmm(d.fin), activo:!!d.activo};
+  }),{onConflict:"dia"});
+  if(r.error){ fallo(r.error,"guardar el horario"); return false; }
+
+  // Feriados: se leen las líneas y se reemplaza la lista completa
+  var lineas=$("#a-feriados").value.split("\n").map(function(x){return x.trim();}).filter(Boolean);
+  var nuevos=[], malas=[];
+  lineas.forEach(function(l){
+    var m=l.match(/^(\d{4})-(\d{2})-(\d{2})\s*(.*)$/);
+    if(!m){ malas.push(l); return; }
+    nuevos.push({fecha:m[1]+"-"+m[2]+"-"+m[3], nombre:(m[4]||"").trim()||null});
+  });
+  if(malas.length){
+    aviso("Revisa esta línea de feriados: "+malas[0]+" (debe empezar con AAAA-MM-DD)",true);
+    return false;
+  }
+
+  var fuera=(estado.feriados||[]).filter(function(f){
+    return !nuevos.some(function(n){ return n.fecha===f.fecha; });
+  }).map(function(f){ return f.fecha; });
+  if(fuera.length) await SB.from("feriados").delete().in("fecha",fuera);
+  if(nuevos.length){
+    var rf=await SB.from("feriados").upsert(nuevos,{onConflict:"fecha"});
+    if(rf.error){ fallo(rf.error,"guardar los feriados"); return false; }
+  }
+
+  await cargarJornada();
+  pintarJornada();
+  return true;
+}
+
 async function guardarListas(){
   var u=$("#a-unidades").value.split("\n").map(function(x){return x.trim();}).filter(Boolean);
   if(!u.length) return aviso("La lista de unidades no puede quedar vacía",true);
+
+  if(!await guardarJornada()) return;
 
   await SB.from("catalogos").update({activo:false}).eq("tipo","unidad");
   var { error } = await SB.from("catalogos").upsert(
@@ -2969,7 +3277,7 @@ async function guardarListas(){
 
   await cargarCatalogos();
   poblarSelects();
-  aviso("Unidades actualizadas");
+  aviso("Horario y unidades actualizados");
 }
 
 function poblarCargos(){
@@ -2978,8 +3286,114 @@ function poblarCargos(){
   CARGOS_BASE.concat(estado.usuarios.map(function(u){return u.cargo;})).forEach(function(c){
     if(c && !vistos[c.toLowerCase()]){ vistos[c.toLowerCase()]=1; dl.appendChild(new Option(c)); }
   });
-  var r=$("#u-rol");
-  if(!r.options.length) ROLES.forEach(function(o){ r.appendChild(new Option(o[1],o[0])); });
+  var r=$("#u-perfil"), prev=r.value;
+  r.innerHTML="";
+  estado.perfiles.forEach(function(p){ r.appendChild(new Option(p.nombre,p.id)); });
+  r.value = prev || "tecnico";
+  if(!r.value && r.options.length) r.selectedIndex=0;
+
+  // "Copiar de" al crear un perfil nuevo
+  var b=$("#p-base"), prevB=b.value;
+  b.innerHTML=""; b.appendChild(new Option("Partir en blanco",""));
+  estado.perfiles.forEach(function(p){ b.appendChild(new Option("Copiar de "+p.nombre,p.id)); });
+  b.value=prevB||"";
+}
+
+/* ---------- Perfiles ---------- */
+var CAMPOS_PERFIL=[
+  ["ve",       "lista", [["todos","Los dos niveles"],["nivel","Todo su nivel"],["asignados","Solo asignados"]]],
+  ["registrar","si"],
+  ["trabajar", "si"],
+  ["asignar",  "si"],
+  ["derivar",  "si"],
+  ["resumen",  "lista", [["completo","Completo"],["propio","Solo el suyo"],["no","Sin acceso"]]],
+  ["exportar", "si"],
+  ["administrar","si"]
+];
+
+async function cargarPerfiles(){
+  var { data, error } = await SB.from("perfiles").select("*").order("orden").order("nombre");
+  if(error){ fallo(error,"cargar los perfiles"); return; }
+  estado.perfiles = (data||[]).filter(function(p){ return p.activo!==false; });
+}
+
+function nombrePerfil(id){
+  var p=estado.perfiles.filter(function(x){return x.id===id;})[0];
+  return p? p.nombre : (id||"—");
+}
+
+function pintarTablaPerfiles(){
+  var tb=$("#tabla-perfiles"); if(!tb) return;
+  tb.innerHTML="";
+  var enUso={};
+  estado.usuarios.forEach(function(u){ if(u.activo) enUso[u.perfil_id]=(enUso[u.perfil_id]||0)+1; });
+
+  estado.perfiles.forEach(function(p){
+    var tr=document.createElement("tr");
+
+    // Nombre (el perfil fijo no se renombra)
+    var tdN=document.createElement("td");
+    if(p.fijo){
+      tdN.appendChild(crear("span","fijo",p.nombre));
+    } else {
+      var inp=document.createElement("input");
+      inp.type="text"; inp.value=p.nombre;
+      inp.onchange=function(){ guardarPerfil(p,{nombre:inp.value.trim()||p.nombre}); };
+      tdN.appendChild(inp);
+    }
+    var n=enUso[p.id]||0;
+    tdN.appendChild(crear("span","usando", n? (n===1? "1 persona" : n+" personas") : "sin personas"));
+    tr.appendChild(tdN);
+
+    CAMPOS_PERFIL.forEach(function(c){
+      var td=crear("td", c[1]==="si"? "marca" : null);
+      if(c[1]==="lista"){
+        var sel=document.createElement("select");
+        c[2].forEach(function(o){ sel.appendChild(new Option(o[1],o[0])); });
+        sel.value=p[c[0]];
+        sel.disabled=p.fijo;
+        sel.onchange=function(){ var x={}; x[c[0]]=sel.value; guardarPerfil(p,x); };
+        td.appendChild(sel);
+      } else {
+        var chk=document.createElement("input");
+        chk.type="checkbox"; chk.checked=!!p[c[0]];
+        chk.disabled=p.fijo;
+        chk.onchange=function(){ var x={}; x[c[0]]=chk.checked; guardarPerfil(p,x); };
+        td.appendChild(chk);
+      }
+      tr.appendChild(td);
+    });
+
+    var tdX=document.createElement("td");
+    if(!p.fijo && !n){
+      var q=crear("button","quitar","Eliminar");
+      q.onclick=function(){ eliminarPerfil(p); };
+      tdX.appendChild(q);
+    }
+    tr.appendChild(tdX);
+    tb.appendChild(tr);
+  });
+}
+
+async function guardarPerfil(p,cambio){
+  var n=estado.usuarios.filter(function(u){ return u.activo && u.perfil_id===p.id; }).length;
+  if(n>1 && !confirm("Este cambio afecta a "+n+" personas con el perfil "+p.nombre+". ¿Continuar?")){
+    pintarTablaPerfiles(); return;
+  }
+  var { error } = await SB.from("perfiles").update(cambio).eq("id",p.id);
+  if(error){ fallo(error,"guardar el perfil"); pintarTablaPerfiles(); return; }
+  await cargarPerfiles(); await cargarUsuarios();
+  pintarTablaPerfiles(); pintarTablaUsuarios();
+  aviso("Perfil actualizado"+(n? " · afecta a "+n+" persona"+(n>1?"s":"") : ""));
+}
+
+async function eliminarPerfil(p){
+  if(!confirm("¿Eliminar el perfil "+p.nombre+"?")) return;
+  var { error } = await SB.from("perfiles").delete().eq("id",p.id);
+  if(error) return fallo(error,"eliminar el perfil");
+  await cargarPerfiles();
+  pintarTablaPerfiles(); poblarCargos();
+  aviso("Perfil eliminado");
 }
 
 function pintarTablaUsuarios(){
@@ -3001,12 +3415,12 @@ function pintarTablaUsuarios(){
     tdC.appendChild(inpC); tr.appendChild(tdC);
 
     var td2=document.createElement("td");
-    var selRol=document.createElement("select");
-    ROLES.forEach(function(o){ selRol.appendChild(new Option(o[1],o[0])); });
-    selRol.value=u.rol;
-    if(u.correo===estado.perfil.correo) selRol.disabled=true;   // nadie se quita el acceso a sí mismo
-    selRol.onchange=function(){ actualizarUsuario(u.correo,{rol:selRol.value}); };
-    td2.appendChild(selRol); tr.appendChild(td2);
+    var selPerf=document.createElement("select");
+    estado.perfiles.forEach(function(p){ selPerf.appendChild(new Option(p.nombre,p.id)); });
+    selPerf.value=u.perfil_id||"";
+    if(u.correo===estado.perfil.correo) selPerf.disabled=true;   // nadie se quita el acceso a sí mismo
+    selPerf.onchange=function(){ actualizarUsuario(u.correo,{perfil_id:selPerf.value}); };
+    td2.appendChild(selPerf); tr.appendChild(td2);
 
     var td3=document.createElement("td");
     var selNiv=document.createElement("select");
@@ -3015,25 +3429,6 @@ function pintarTablaUsuarios(){
     selNiv.value=String(u.nivel);
     selNiv.onchange=function(){ actualizarUsuario(u.correo,{nivel:parseInt(selNiv.value,10)}); };
     td3.appendChild(selNiv); tr.appendChild(td3);
-
-    // Permisos: el admin siempre registra; el supervisor nunca;
-    // "solo sus tickets" tiene efecto únicamente en técnicos
-    var celda=function(marcado,habilitado,titulo,campo){
-      var td=crear("td","permiso");
-      var c=document.createElement("input");
-      c.type="checkbox"; c.checked=marcado; c.disabled=!habilitado; c.title=titulo;
-      c.onchange=function(){ var x={}; x[campo]=c.checked; actualizarUsuario(u.correo,x); };
-      td.appendChild(c); return td;
-    };
-    var esAdm=u.rol==="admin", esSup=u.rol==="supervisor";
-    tr.appendChild(celda(esAdm? true : esSup? false : u.puede_registrar!==false,
-      !esAdm && !esSup,
-      esAdm? "El administrador siempre puede registrar" : esSup? "El supervisor no registra" : "Puede crear solicitudes desde el panel",
-      "puede_registrar"));
-    tr.appendChild(celda(u.rol==="tecnico" && !!u.solo_asignados,
-      u.rol==="tecnico",
-      u.rol==="tecnico"? "Ve solo los tickets asignados a su nombre" : "Solo aplica a técnicos",
-      "solo_asignados"));
 
     var td4=document.createElement("td");
     var selAct=document.createElement("select");
@@ -3084,16 +3479,46 @@ $("#u-agregar").onclick = async function(){
 
   var { error } = await SB.from("usuarios").upsert({
     correo:correo, nombre:nombre, cargo:$("#u-cargo").value.trim()||null,
-    rol:$("#u-rol").value, nivel:parseInt($("#u-nivel").value,10), activo:true,
-    puede_registrar:$("#u-registra").checked, solo_asignados:$("#u-solo").checked
+    perfil_id:$("#u-perfil").value, nivel:parseInt($("#u-nivel").value,10), activo:true
   },{onConflict:"correo"});
   if(error) return fallo(error,"agregar al usuario");
 
   $("#u-nombre").value=""; $("#u-correo").value=""; $("#u-cargo").value="";
-  $("#u-registra").checked=true; $("#u-solo").checked=false;
+
   await cargarUsuarios();
   pintarTablaUsuarios(); poblarSelects();
   aviso(nombre+" ya puede entrar al panel");
+};
+
+$("#p-agregar").onclick = async function(){
+  var nombre=$("#p-nombre").value.trim();
+  if(nombre.length<3){ $("#p-nombre").focus(); return aviso("Escribe el nombre del perfil",true); }
+
+  // El identificador sale del nombre: sin acentos, sin espacios
+  var id=nombre.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"")
+           .replace(/[^a-z0-9]+/g,"_").replace(/^_|_$/g,"").slice(0,30);
+  if(!id) return aviso("Ese nombre no sirve como perfil",true);
+  if(estado.perfiles.some(function(p){ return p.id===id || p.nombre.toLowerCase()===nombre.toLowerCase(); }))
+    return aviso("Ya existe un perfil con ese nombre",true);
+
+  var base=estado.perfiles.filter(function(p){ return p.id===$("#p-base").value; })[0];
+  var fila={ id:id, nombre:nombre, orden:100,
+    ve: base? base.ve : "asignados",
+    registrar: base? base.registrar : false,
+    trabajar:  base? base.trabajar  : true,
+    asignar:   base? base.asignar   : false,
+    derivar:   base? base.derivar   : false,
+    resumen:   base? base.resumen   : "propio",
+    exportar:  base? base.exportar  : false,
+    administrar: false };      // el permiso de administrar se marca después, a propósito
+
+  var { error } = await SB.from("perfiles").insert(fila);
+  if(error) return fallo(error,"crear el perfil");
+
+  $("#p-nombre").value="";
+  await cargarPerfiles();
+  pintarTablaPerfiles(); poblarCargos();
+  aviso("Perfil "+nombre+" creado");
 };
 
 /* =====================================================================
@@ -3220,6 +3645,10 @@ $("#movil-abrir").onclick=function(){
   this.textContent=c.classList.contains("abierta")?"Ocultar formulario":"Registrar solicitud";
   if(c.classList.contains("abierta")) $("#c-solicitante").focus();
 };
+document.addEventListener("click",function(){
+  document.querySelectorAll(".kpi-detalle.abierta")
+    .forEach(function(x){ x.classList.remove("abierta"); });
+});
 document.addEventListener("keydown",function(e){
   if(e.key==="Escape"){
     if($("#modal-exportar").classList.contains("open")) $("#modal-exportar").classList.remove("open");
@@ -3232,15 +3661,19 @@ document.addEventListener("keydown",function(e){
    ARRANQUE
    ===================================================================== */
 async function arrancar(){
+  await cargarPerfiles();
+  await cargarJornada();
   await cargarUsuarios();
   await cargarCatalogos();
   await cargarSolicitudes();
   poblarSelects();
   escucharCambios();
   var avisoTxt = !puedeEditar()
-    ? "Estás en modo consulta: puedes revisar solicitudes, el resumen y exportar planillas, pero no modificar."
+    ? "Estás en modo consulta: puedes revisar solicitudes"+
+      (alcanceResumen()==="no"? "" : ", el resumen")+
+      (puedeExportar()? " y exportar planillas" : "")+", pero no modificar."
     : soloAsignados()
-      ? "Ves solo los tickets asignados a ti."+(puedeRegistrar()? "" : " El registro de solicitudes lo hace el coordinador.")
+      ? "Ves solo los tickets asignados a ti."+(puedeRegistrar()? "" : " El registro de solicitudes lo hace el administrador.")
       : !puedeRegistrar() ? "Tu perfil no registra solicitudes: trabajas los tickets que llegan a tu nivel." : "";
   if(avisoTxt){
     var n=crear("div","lectura-aviso",avisoTxt);
