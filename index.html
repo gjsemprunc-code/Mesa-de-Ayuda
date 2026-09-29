@@ -29,9 +29,18 @@ button{cursor:pointer}
 .oculto{display:none!important}
 
 /* ---- Acceso ---- */
-#acceso{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px}
-.acceso-card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);
-  padding:34px 32px;width:min(420px,100%);text-align:center}
+#acceso{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px;
+  position:relative;overflow:hidden;
+  background:
+    radial-gradient(1200px 700px at 8% -5%, rgba(0,99,175,.95) 0%, rgba(0,99,175,0) 62%),
+    radial-gradient(1000px 680px at 96% 104%, rgba(231,44,53,.82) 0%, rgba(231,44,53,0) 58%),
+    linear-gradient(145deg, #05416F 0%, #0A3355 42%, #14212E 100%)}
+/* Franja tricolor sutil al pie, como el pie del logo */
+#acceso::after{content:"";position:absolute;left:0;right:0;bottom:0;height:4px;
+  background:linear-gradient(90deg, #0063AF 0%, #0063AF 44%, #E72C35 44%, #E72C35 100%)}
+.acceso-card{background:var(--surface);border:1px solid rgba(255,255,255,.22);
+  border-radius:8px;padding:34px 32px;width:min(420px,100%);text-align:center;
+  position:relative;z-index:1;box-shadow:0 18px 50px rgba(3,24,44,.38)}
 .acceso-card h1{font-size:20px;font-weight:600;margin:0 0 6px}
 .acceso-card p{color:var(--ink-2);margin:0 0 22px;font-size:13.5px}
 .btn-google{width:100%;background:var(--accent);color:#fff;border:0;border-radius:var(--radius);
