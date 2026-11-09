@@ -56,11 +56,17 @@ button{cursor:pointer}
 #escena .es-fig{fill:none;stroke:rgba(188,220,244,.5);stroke-width:1.4;
   stroke-linecap:round;stroke-linejoin:round;transition:stroke .5s}
 #escena .es-fig.encendido{stroke:#8FD3F4}
-#es-monitor rect{transition:fill .5s;fill:rgba(143,211,244,0)}
-#es-monitor.encendido rect{fill:rgba(143,211,244,.14)}
+#escena .es-fig.apagado{opacity:.35}
+#escena .es-rot{stroke:none;fill:rgba(170,205,235,.55);font-size:7.5px;letter-spacing:.4px;
+  text-anchor:middle;font-family:"IBM Plex Sans",system-ui,sans-serif}
+#escena .es-fig.encendido .es-rot{fill:rgba(143,211,244,.95)}
+#es-camino2{opacity:.45;transition:opacity .5s}
+#es-camino2.activo{opacity:1}
+#es-n1 rect,#es-n2 rect{transition:fill .5s;fill:rgba(143,211,244,0)}
+#es-n1.encendido rect,#es-n2.encendido rect{fill:rgba(143,211,244,.14)}
 #es-sobre{fill:none;stroke:#CDE6FA;stroke-width:1.4;stroke-linecap:round;stroke-linejoin:round;
-  opacity:0;transform:translate(60px,37px)}
-#es-sobre.viaja{transition:transform 2.4s cubic-bezier(.4,0,.3,1),opacity .45s .35s}
+  opacity:0;transform:translate(60px,29px)}
+#es-sobre.viaja{transition:transform 3s cubic-bezier(.45,0,.35,1),opacity .4s}
 #es-sobre.vuelve{stroke:#8FE0B4}
 #es-visto{fill:none;stroke:#6FD39B;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;
   opacity:0;transition:opacity .5s}
@@ -81,6 +87,12 @@ button{cursor:pointer}
 .cons-orden  .cons-texto{color:#D9EAF8}
 .cons-dato   .cons-signo{color:rgba(150,195,230,.5)}
 .cons-dato   .cons-texto{color:rgba(196,222,244,.82)}
+.cons-tec    .cons-signo{color:#8FD3F4}
+.cons-tec    .cons-texto{color:rgba(205,230,250,.9)}
+#es-n1.trabajando rect,#es-n2.trabajando rect{fill:rgba(143,211,244,.26)}
+#es-n1.trabajando,#es-n2.trabajando{animation:es-trabaja 1.6s ease-in-out infinite}
+@keyframes es-trabaja{50%{opacity:.62}}
+@media (prefers-reduced-motion: reduce){ #es-n1.trabajando,#es-n2.trabajando{animation:none} }
 .cons-marca  .cons-signo{color:#6FD39B}
 .cons-marca  .cons-texto{color:#BFEBD3}
 /* Cursor en la última línea escrita */
@@ -598,25 +610,33 @@ body.solo-lectura .workspace{grid-template-columns:1fr}
   <canvas id="fondo-red" aria-hidden="true"></canvas>
   <div id="consola" aria-hidden="true">
     <svg id="escena" viewBox="0 0 400 74" preserveAspectRatio="xMidYMid meet">
-      <!-- El camino que recorre el correo -->
-      <path class="es-camino" d="M78 37 H322"/>
+      <!-- Caminos: del solicitante a Nivel 1, y de Nivel 1 a Nivel 2 -->
+      <path class="es-camino" d="M76 29 H156"/>
+      <path class="es-camino" id="es-camino2" d="M228 29 H296"/>
       <!-- Quien pide ayuda -->
       <g class="es-fig" id="es-persona">
-        <circle cx="46" cy="26" r="7.5"/>
-        <path d="M32 50c0-8 6.5-13 14-13s14 5 14 13"/>
+        <circle cx="46" cy="22" r="7"/>
+        <path d="M33 44c0-7.5 6-12 13-12s13 4.5 13 12"/>
       </g>
-      <!-- La mesa de ayuda -->
-      <g class="es-fig" id="es-monitor">
-        <rect x="334" y="16" width="44" height="30" rx="3"/>
-        <path d="M356 46v8M344 54h24"/>
+      <!-- Nivel 1: la mesa de ayuda -->
+      <g class="es-fig" id="es-n1">
+        <rect x="164" y="12" width="48" height="31" rx="3"/>
+        <path d="M188 43v6M177 49h22"/>
+        <text class="es-rot" x="188" y="66">Nivel 1</text>
+      </g>
+      <!-- Nivel 2: desarrollo -->
+      <g class="es-fig" id="es-n2">
+        <rect x="304" y="12" width="48" height="31" rx="3"/>
+        <path d="M319 22l-5 5 5 5M337 22l5 5-5 5M331 20l-6 14"/>
+        <text class="es-rot" x="328" y="66">Nivel 2</text>
       </g>
       <!-- El sobre que viaja -->
       <g id="es-sobre">
         <rect x="-13" y="-9" width="26" height="18" rx="2.5"/>
         <path d="M-13 -7l13 9 13-9"/>
       </g>
-      <!-- La marca de resuelto -->
-      <path id="es-visto" d="M62 18l5 5 10-11"/>
+      <!-- La marca de resuelto, junto al solicitante -->
+      <path id="es-visto" d="M62 12l5 5 10-11"/>
     </svg>
     <div id="cons-lineas"></div>
   </div>
@@ -4238,68 +4258,133 @@ revisarSesion();
   var suave = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
   // tipo: orden · dato · marca (lo resuelto) · aviso (lo que corre riesgo)
-  var GUION = [
-    { t:"orden", x:"mesa --escuchar soporte@minciencia.gob.cl", e:"parte" },
-    { t:"dato",  x:"correo recibido · \"No puedo imprimir desde mi equipo\"", e:"llega" },
-    { t:"dato",  x:"clasificando → Incidencia › Impresoras y escáneres" },
-    { t:"dato",  x:"plazo 8 h hábiles → vence mañana 15:30" },
-    { t:"dato",  x:"TKT-0412 creado · Nivel 1 · acuse enviado" },
-    { t:"dato",  x:"asignado a profesional de turno" },
-    { t:"dato",  x:"consulta al solicitante · ticket en espera" },
-    { t:"dato",  x:"respondió · el reloj se reanuda", e:"responde" },
-    { t:"marca", x:"TKT-0412 resuelto dentro de plazo", e:"cierra" }
+  var HISTORIAS = [
+    // Una incidencia que Nivel 1 resuelve sin derivar
+    [
+      { t:"orden", x:"mesa --escuchar soporte@minciencia.gob.cl", e:"reinicia" },
+      { t:"dato",  x:"correo recibido · \"No puedo imprimir desde mi equipo\"", e:"a-n1" },
+      { t:"dato",  x:"clasificando → Incidencia › Impresoras y escáneres" },
+      { t:"dato",  x:"plazo 8 h hábiles → vence mañana 15:30" },
+      { t:"dato",  x:"TKT-0412 creado · Nivel 1 · acuse enviado al solicitante" },
+      { t:"dato",  x:"asignado a profesional de turno" },
+      { t:"tec",   x:"revisando la cola de impresión del equipo", e:"trabaja-n1" },
+      { t:"tec",   x:"controlador reinstalado · impresión de prueba correcta" },
+      { t:"marca", x:"TKT-0412 resuelto en Nivel 1 · respuesta enviada", e:"cierra-n1" }
+    ],
+    // Una que Nivel 1 no puede resolver y sube a Nivel 2
+    [
+      { t:"orden", x:"mesa --escuchar soporte@minciencia.gob.cl", e:"reinicia" },
+      { t:"dato",  x:"correo recibido · \"La intranet no carga, error 500\"", e:"a-n1" },
+      { t:"dato",  x:"clasificando → Incidencia › Sistemas y plataformas web", e:"trabaja-n1" },
+      { t:"dato",  x:"prioridad Alta · plazo 4 h hábiles → vence hoy 17:30" },
+      { t:"dato",  x:"TKT-0413 creado · Nivel 1 · acuse enviado al solicitante" },
+      { t:"dato",  x:"excede Nivel 1 → derivando a Nivel 2 · desarrollo", e:"a-n2" },
+      { t:"tec",   x:"revisando los registros del servidor", e:"trabaja-n2" },
+      { t:"tec",   x:"servicio reiniciado · intranet operativa" },
+      { t:"marca", x:"TKT-0413 resuelto en Nivel 2 · respuesta enviada", e:"cierra-n2" }
+    ]
   ];
+  var cual = 0;                       // historia en curso
+  var GUION = HISTORIAS[0];
 
   /* ---------- La escena, al ritmo de lo que dice la consola ----------
      El sobre llega al computador en la línea del correo recibido, el
      computador se enciende cuando nace el ticket, y la respuesta vuelve
      al solicitante cuando queda resuelto.                              */
   var sobre   = document.getElementById("es-sobre"),
-      monitor = document.getElementById("es-monitor"),
       persona = document.getElementById("es-persona"),
       visto   = document.getElementById("es-visto");
 
-  function mover(x, y, mostrar){
+  var n1 = document.getElementById("es-n1"),
+      n2 = document.getElementById("es-n2"),
+      camino2 = document.getElementById("es-camino2");
+
+  // Puntos del recorrido, en el sistema de coordenadas del dibujo
+  var P_PERSONA = 72, P_N1_ENT = 160, P_N1_SAL = 226, P_N2 = 300;
+
+  /* El viaje manda sobre el relato: el sobre no se desvanece por tiempo,
+     sino cuando termina de recorrer el tramo. Así siempre llega entero. */
+  function viajar(desde, hasta, alLlegar){
     if(!sobre) return;
-    if(suave){                       // sin recorrido: aparece donde corresponde
-      sobre.style.transition = "opacity .5s";
-      sobre.style.transform = "translate(" + x + "px," + y + "px)";
-    } else {
-      sobre.classList.add("viaja");
-      sobre.style.transform = "translate(" + x + "px," + y + "px)";
+    sobre.classList.remove("viaja");
+    sobre.style.transform = "translate(" + desde + "px,29px)";
+    sobre.style.opacity = 1;
+
+    if(suave){                       // sin recorrido: aparece en el destino
+      sobre.style.transform = "translate(" + hasta + "px,29px)";
+      setTimeout(function(){ sobre.style.opacity = 0; if(alLlegar) alLlegar(); }, 700);
+      return;
     }
-    sobre.style.opacity = mostrar ? 1 : 0;
+
+    void sobre.getBoundingClientRect();   // fija el punto de partida
+    sobre.classList.add("viaja");
+    requestAnimationFrame(function(){
+      sobre.style.transform = "translate(" + hasta + "px,29px)";
+    });
+
+    var listo = false;
+    function llegada(){
+      if(listo) return;
+      listo = true;
+      sobre.removeEventListener("transitionend", llegada);
+      sobre.style.opacity = 0;
+      if(alLlegar) alLlegar();
+    }
+    sobre.addEventListener("transitionend", llegada);
+    setTimeout(llegada, 3600);       // respaldo si el navegador no avisa
   }
 
   function escena(paso){
     if(!sobre) return;
     switch(paso){
-      case "parte":                  // el sobre sale del solicitante
+      case "reinicia":
         sobre.classList.remove("viaja","vuelve");
-        sobre.style.transform = "translate(60px,37px)";
         sobre.style.opacity = 0;
-        monitor.classList.remove("encendido");
-        persona.classList.remove("encendido");
+        sobre.style.transform = "translate(" + P_PERSONA + "px,29px)";
+        [n1, n2, persona].forEach(function(g){ g.classList.remove("encendido","trabajando","apagado"); });
+        camino2.classList.remove("activo");
+        n2.classList.add("apagado");   // Nivel 2 en reposo hasta que haga falta
         visto.classList.remove("marcado");
-        // un respiro antes de arrancar, para que se vea el salto
-        setTimeout(function(){ mover(78, 37, 1); setTimeout(function(){ mover(320, 37, 1); }, 60); }, 40);
         break;
-      case "llega":                  // entra al computador
-        mover(344, 37, 0);
-        monitor.classList.add("encendido");
+
+      case "a-n1":                     // el correo entra a la mesa
+        sobre.classList.remove("vuelve");
+        viajar(P_PERSONA, P_N1_ENT, function(){ n1.classList.add("encendido"); });
         break;
-      case "responde":               // la respuesta vuelve al solicitante
-        sobre.classList.remove("viaja");
-        sobre.style.transform = "translate(330px,37px)";
+
+      case "trabaja-n1":
+        n1.classList.add("encendido","trabajando");
+        break;
+
+      case "a-n2":                     // se deriva a desarrollo
+        n1.classList.remove("trabajando");
+        n2.classList.remove("apagado");
+        camino2.classList.add("activo");
         sobre.classList.add("vuelve");
-        setTimeout(function(){ mover(322, 37, 1); setTimeout(function(){ mover(74, 37, 1); }, 60); }, 40);
+        viajar(P_N1_SAL, P_N2, function(){ n2.classList.add("encendido"); });
         break;
-      case "cierra":                 // queda resuelto
-        mover(52, 37, 0);
-        persona.classList.add("encendido");
-        visto.classList.add("marcado");
+
+      case "trabaja-n2":
+        n2.classList.add("encendido","trabajando");
+        break;
+
+      case "cierra-n1":                // la solución vuelve desde Nivel 1
+        n1.classList.remove("trabajando");
+        sobre.classList.add("vuelve");
+        viajar(P_N1_ENT, P_PERSONA, cerrar);
+        break;
+
+      case "cierra-n2":                // la solución vuelve desde Nivel 2
+        n2.classList.remove("trabajando");
+        sobre.classList.add("vuelve");
+        viajar(P_N2, P_PERSONA, cerrar);
         break;
     }
+  }
+
+  function cerrar(){
+    persona.classList.add("encendido");
+    visto.classList.add("marcado");
   }
 
   var linea = 0, letra = 0, temporizador = null;
@@ -4309,7 +4394,9 @@ revisarSesion();
     fila.className = "cons-linea cons-" + paso.t;
     var signo = document.createElement("span");
     signo.className = "cons-signo";
-    signo.textContent = paso.t === "orden" ? "$" : paso.t === "marca" ? "✓" : "·";
+    signo.textContent = paso.t === "orden" ? "$"
+                      : paso.t === "marca" ? "✓"
+                      : paso.t === "tec"   ? "›" : "·";
     var texto = document.createElement("span");
     texto.className = "cons-texto";
     fila.appendChild(signo); fila.appendChild(texto);
@@ -4324,6 +4411,8 @@ revisarSesion();
         caja.parentNode.classList.add("cons-apaga");
         temporizador = setTimeout(function(){
           caja.innerHTML = ""; caja.parentNode.classList.remove("cons-apaga");
+          cual = (cual + 1) % HISTORIAS.length;   // se alterna el caso
+          GUION = HISTORIAS[cual];
           linea = 0; letra = 0; escribir();
         }, 900);
       }, 4200);
