@@ -4304,8 +4304,16 @@ revisarSesion();
 
   /* El viaje manda sobre el relato: el sobre no se desvanece por tiempo,
      sino cuando termina de recorrer el tramo. Así siempre llega entero. */
+  var viajeReloj = null, viajeAviso = null;
+
   function viajar(desde, hasta, alLlegar){
     if(!sobre) return;
+
+    // Cancelar lo que quedara pendiente del viaje anterior: si no, su
+    // respaldo por tiempo apaga el sobre a mitad del viaje nuevo.
+    if(viajeReloj){ clearTimeout(viajeReloj); viajeReloj = null; }
+    if(viajeAviso){ sobre.removeEventListener("transitionend", viajeAviso); viajeAviso = null; }
+
     sobre.classList.remove("viaja");
     sobre.style.transform = "translate(" + desde + "px,29px)";
     sobre.style.opacity = 1;
@@ -4323,21 +4331,26 @@ revisarSesion();
     });
 
     var listo = false;
-    function llegada(){
-      if(listo) return;
+    function llegada(ev){
+      // Solo cuenta el fin del recorrido, no el del cambio de opacidad
+      if(listo || (ev && ev.propertyName !== "transform")) return;
       listo = true;
-      sobre.removeEventListener("transitionend", llegada);
+      clearTimeout(viajeReloj); viajeReloj = null;
+      sobre.removeEventListener("transitionend", llegada); viajeAviso = null;
       sobre.style.opacity = 0;
       if(alLlegar) alLlegar();
     }
+    viajeAviso = llegada;
     sobre.addEventListener("transitionend", llegada);
-    setTimeout(llegada, 3600);       // respaldo si el navegador no avisa
+    viajeReloj = setTimeout(llegada, 3400);   // respaldo si el navegador no avisa
   }
 
   function escena(paso){
     if(!sobre) return;
     switch(paso){
       case "reinicia":
+        if(viajeReloj){ clearTimeout(viajeReloj); viajeReloj = null; }
+        if(viajeAviso){ sobre.removeEventListener("transitionend", viajeAviso); viajeAviso = null; }
         sobre.classList.remove("viaja","vuelve");
         sobre.style.opacity = 0;
         sobre.style.transform = "translate(" + P_PERSONA + "px,29px)";
