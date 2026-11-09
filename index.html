@@ -48,8 +48,26 @@ button{cursor:pointer}
 /* Velo suave al centro: la tarjeta se lee sin competir con el cielo */
 #acceso::before{content:"";position:absolute;inset:0;z-index:1;pointer-events:none;
   background:radial-gradient(620px 460px at 50% 50%, rgba(3,14,28,.5) 0%, rgba(3,14,28,0) 70%)}
+/* Escena del correo viajando, dentro del panel de la consola */
+#escena{display:block;width:100%;height:74px;margin:-2px 0 8px;overflow:visible;flex:none}
+/* Altura fija: el panel no cambia de tamaño mientras se escribe el relato */
+#cons-lineas{flex:1;min-height:190px}
+#escena .es-camino{fill:none;stroke:rgba(150,195,230,.26);stroke-width:1;stroke-dasharray:3 7}
+#escena .es-fig{fill:none;stroke:rgba(188,220,244,.5);stroke-width:1.4;
+  stroke-linecap:round;stroke-linejoin:round;transition:stroke .5s}
+#escena .es-fig.encendido{stroke:#8FD3F4}
+#es-monitor rect{transition:fill .5s;fill:rgba(143,211,244,0)}
+#es-monitor.encendido rect{fill:rgba(143,211,244,.14)}
+#es-sobre{fill:none;stroke:#CDE6FA;stroke-width:1.4;stroke-linecap:round;stroke-linejoin:round;
+  opacity:0;transform:translate(60px,37px)}
+#es-sobre.viaja{transition:transform 2.4s cubic-bezier(.4,0,.3,1),opacity .45s .35s}
+#es-sobre.vuelve{stroke:#8FE0B4}
+#es-visto{fill:none;stroke:#6FD39B;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;
+  opacity:0;transition:opacity .5s}
+#es-visto.marcado{opacity:1}
 /* Consola del acceso: vidrio oscuro abajo a la izquierda */
 #consola{position:absolute;left:34px;bottom:46px;z-index:2;width:min(430px,38vw);
+  display:flex;flex-direction:column;
   font-family:"IBM Plex Mono",ui-monospace,monospace;font-size:11.5px;line-height:1.75;
   padding:14px 16px;border-radius:7px;pointer-events:none;
   background:rgba(4,16,30,.42);border:1px solid rgba(150,200,240,.16);
@@ -69,8 +87,11 @@ button{cursor:pointer}
 .cons-linea:last-child .cons-texto::after{content:"";display:inline-block;width:6px;height:12px;
   margin-left:3px;vertical-align:-2px;background:rgba(190,222,245,.85);animation:cons-late 1s steps(2) infinite}
 @keyframes cons-late{50%{opacity:0}}
+.cons-aparece{animation:cons-entra .55s ease-out both}
+@keyframes cons-entra{from{opacity:0}to{opacity:1}}
 @media (prefers-reduced-motion: reduce){
-  .cons-linea:last-child .cons-texto::after{animation:none}
+  /* Sin tipeo no corresponde el cursor, pero el relato sigue avanzando */
+  .cons-linea:last-child .cons-texto::after{display:none}
 }
 /* En pantallas angostas la tarjeta manda: la consola no aparece */
 @media (max-width:900px){ #consola{display:none} }
@@ -575,7 +596,30 @@ body.solo-lectura .workspace{grid-template-columns:1fr}
 <!-- ================= ACCESO ================= -->
 <div id="acceso">
   <canvas id="fondo-red" aria-hidden="true"></canvas>
-  <div id="consola" aria-hidden="true"></div>
+  <div id="consola" aria-hidden="true">
+    <svg id="escena" viewBox="0 0 400 74" preserveAspectRatio="xMidYMid meet">
+      <!-- El camino que recorre el correo -->
+      <path class="es-camino" d="M78 37 H322"/>
+      <!-- Quien pide ayuda -->
+      <g class="es-fig" id="es-persona">
+        <circle cx="46" cy="26" r="7.5"/>
+        <path d="M32 50c0-8 6.5-13 14-13s14 5 14 13"/>
+      </g>
+      <!-- La mesa de ayuda -->
+      <g class="es-fig" id="es-monitor">
+        <rect x="334" y="16" width="44" height="30" rx="3"/>
+        <path d="M356 46v8M344 54h24"/>
+      </g>
+      <!-- El sobre que viaja -->
+      <g id="es-sobre">
+        <rect x="-13" y="-9" width="26" height="18" rx="2.5"/>
+        <path d="M-13 -7l13 9 13-9"/>
+      </g>
+      <!-- La marca de resuelto -->
+      <path id="es-visto" d="M62 18l5 5 10-11"/>
+    </svg>
+    <div id="cons-lineas"></div>
+  </div>
   <div class="acceso-card">
     <img class="logo" alt="Ministerio de Ciencia, Tecnología, Conocimiento e Innovación · Gobierno de Chile">
     <h1>Mesa de ayuda</h1>
@@ -3932,7 +3976,10 @@ revisarSesion();
   var estrellas = [], nodos = [], pulsos = [], meteoros = [];
   var animacion = null, inicio = 0;
 
-  var quieto = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  /* Si el equipo pide reducir movimiento no se apaga todo: se pasa a modo
+     suave. Lo que molesta es el desplazamiento (deriva, meteoros, puntos
+     viajando); los cambios de brillo no, así que el cielo sigue vivo.    */
+  var suave = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
   /* ---- La Cruz del Sur, en proporciones aproximadas a las reales ----
      x,y van de 0 a 1 dentro del recuadro que ocupa la constelación;
@@ -4007,12 +4054,12 @@ revisarSesion();
   function pintarEstrellas(t){
     for(var i = 0; i < estrellas.length; i++){
       var e = estrellas[i];
-      var parpadeo = quieto ? 1 : .6 + Math.sin(t / e.ritmo + e.fase) * .4;
+      var parpadeo = .6 + Math.sin(t / e.ritmo + e.fase) * .4;
       var a = e.brillo * parpadeo;
       if(e.r > 1.4) halo(e.x, e.y, e.r * 5, CLARO, a * .18);
       ctx.fillStyle = "rgba(" + CLARO + "," + a.toFixed(3) + ")";
       ctx.beginPath(); ctx.arc(e.x, e.y, e.r, 0, 6.2832); ctx.fill();
-      if(quieto) continue;
+      if(suave) continue;            // sin deriva lateral
       e.x += e.vx;
       if(e.x < -2){ e.x = ancho + 2; e.y = Math.random() * alto; }
     }
@@ -4020,7 +4067,7 @@ revisarSesion();
 
   /* La constelación aparece, se traza, se sostiene y se apaga. */
   function pintarCruz(t){
-    var fase = quieto ? .45 : (t % cruz.ciclo) / cruz.ciclo;
+    var fase = (t % cruz.ciclo) / cruz.ciclo;
     var vis, trazo;
     if(fase < .10){ vis = fase / .10; trazo = 0; }          // encienden las estrellas
     else if(fase < .34){ vis = 1; trazo = (fase - .10) / .24; }  // se dibujan los trazos
@@ -4036,7 +4083,7 @@ revisarSesion();
     ctx.lineCap = "round";
     for(var i = 0; i < TRAZOS.length; i++){
       var a = P[TRAZOS[i][0]], b = P[TRAZOS[i][1]];
-      var avance = Math.max(0, Math.min(1, trazo * 1.6 - i * .35));
+      var avance = suave ? 1 : Math.max(0, Math.min(1, trazo * 1.6 - i * .35));
       if(avance <= 0) continue;
       ctx.strokeStyle = "rgba(" + CLARO + "," + (vis * .34).toFixed(3) + ")";
       ctx.lineWidth = 1;
@@ -4048,7 +4095,7 @@ revisarSesion();
     // Estrellas de la constelación: más grandes y cálidas que el resto
     for(var k = 0; k < P.length; k++){
       var s = P[k], f = vis * s.b;
-      var latir = quieto ? 1 : .85 + Math.sin(t / 900 + k) * .15;
+      var latir = .85 + Math.sin(t / 900 + k) * .15;
       halo(s.x, s.y, 26 + s.b * 18, ORO, f * .16 * latir);   // resplandor amplio y tenue
       halo(s.x, s.y, 5 + s.b * 5, ORO, f * .55 * latir);     // corona ceñida
       ctx.fillStyle = "rgba(255,252,246," + (f * latir).toFixed(3) + ")";
@@ -4088,12 +4135,12 @@ revisarSesion();
 
     for(var k = 0; k < nodos.length; k++){
       var n = nodos[k];
-      var latido = quieto ? 1 : .75 + Math.sin(t / 1400 + n.fase) * .25;
+      var latido = .75 + Math.sin(t / 1400 + n.fase) * .25;
       var color = n.rojo ? ROJO : CLARO;
       halo(n.x, n.y, n.r * 5, color, latido * .55);
       ctx.fillStyle = "rgba(" + color + "," + (latido * .9).toFixed(3) + ")";
       ctx.beginPath(); ctx.arc(n.x, n.y, n.r, 0, 6.2832); ctx.fill();
-      if(quieto) continue;
+      if(suave) continue;            // sin traslado
       n.x += n.vx; n.y += n.vy;
       if(n.x < 0 || n.x > ancho) n.vx *= -1;
       if(n.y < 0 || n.y > alto)  n.vy *= -1;
@@ -4150,25 +4197,21 @@ revisarSesion();
     pintarCruz(t);
     pintarRed(t);
     pintarMeteoros();
-    if(Math.random() < .03) nuevoPulso();
-    if(Math.random() < .0018) nuevoMeteoro();
+    if(!suave && Math.random() < .03) nuevoPulso();
+    if(!suave && Math.random() < .0018) nuevoMeteoro();
     animacion = requestAnimationFrame(cuadro);
   }
 
-  function arrancar(){ if(!animacion && !quieto) animacion = requestAnimationFrame(cuadro); }
+  function arrancar(){ if(!animacion) animacion = requestAnimationFrame(cuadro); }
   function detener(){ if(animacion){ cancelAnimationFrame(animacion); animacion = null; } }
 
   medir();
-  if(quieto){ ctx.clearRect(0,0,ancho,alto); pintarEstrellas(0); pintarCruz(0); pintarRed(0); }
-  else arrancar();
+  arrancar();
 
   var temporizador;
   window.addEventListener("resize", function(){
     clearTimeout(temporizador);
-    temporizador = setTimeout(function(){
-      medir();
-      if(quieto){ ctx.clearRect(0,0,ancho,alto); pintarEstrellas(0); pintarCruz(0); pintarRed(0); }
-    }, 180);
+    temporizador = setTimeout(medir, 180);
   });
 
   // No gastar batería dibujando una pantalla que nadie mira
@@ -4187,23 +4230,77 @@ revisarSesion();
    escrito para que se entienda de un vistazo.
    ===================================================================== */
 (function(){
-  var caja = document.getElementById("consola");
+  var caja = document.getElementById("cons-lineas");
   if(!caja) return;
 
-  var quieto = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  /* Modo suave: en vez de escribir letra por letra, cada línea aparece
+     completa con un fundido. Sigue avanzando el relato, sin tipeo.      */
+  var suave = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
   // tipo: orden · dato · marca (lo resuelto) · aviso (lo que corre riesgo)
   var GUION = [
-    { t:"orden", x:"mesa --escuchar soporte@minciencia.gob.cl" },
-    { t:"dato",  x:"correo recibido · \"No puedo imprimir desde mi equipo\"" },
+    { t:"orden", x:"mesa --escuchar soporte@minciencia.gob.cl", e:"parte" },
+    { t:"dato",  x:"correo recibido · \"No puedo imprimir desde mi equipo\"", e:"llega" },
     { t:"dato",  x:"clasificando → Incidencia › Impresoras y escáneres" },
     { t:"dato",  x:"plazo 8 h hábiles → vence mañana 15:30" },
     { t:"dato",  x:"TKT-0412 creado · Nivel 1 · acuse enviado" },
     { t:"dato",  x:"asignado a profesional de turno" },
     { t:"dato",  x:"consulta al solicitante · ticket en espera" },
-    { t:"dato",  x:"respondió · el reloj se reanuda" },
-    { t:"marca", x:"TKT-0412 resuelto dentro de plazo" }
+    { t:"dato",  x:"respondió · el reloj se reanuda", e:"responde" },
+    { t:"marca", x:"TKT-0412 resuelto dentro de plazo", e:"cierra" }
   ];
+
+  /* ---------- La escena, al ritmo de lo que dice la consola ----------
+     El sobre llega al computador en la línea del correo recibido, el
+     computador se enciende cuando nace el ticket, y la respuesta vuelve
+     al solicitante cuando queda resuelto.                              */
+  var sobre   = document.getElementById("es-sobre"),
+      monitor = document.getElementById("es-monitor"),
+      persona = document.getElementById("es-persona"),
+      visto   = document.getElementById("es-visto");
+
+  function mover(x, y, mostrar){
+    if(!sobre) return;
+    if(suave){                       // sin recorrido: aparece donde corresponde
+      sobre.style.transition = "opacity .5s";
+      sobre.style.transform = "translate(" + x + "px," + y + "px)";
+    } else {
+      sobre.classList.add("viaja");
+      sobre.style.transform = "translate(" + x + "px," + y + "px)";
+    }
+    sobre.style.opacity = mostrar ? 1 : 0;
+  }
+
+  function escena(paso){
+    if(!sobre) return;
+    switch(paso){
+      case "parte":                  // el sobre sale del solicitante
+        sobre.classList.remove("viaja","vuelve");
+        sobre.style.transform = "translate(60px,37px)";
+        sobre.style.opacity = 0;
+        monitor.classList.remove("encendido");
+        persona.classList.remove("encendido");
+        visto.classList.remove("marcado");
+        // un respiro antes de arrancar, para que se vea el salto
+        setTimeout(function(){ mover(78, 37, 1); setTimeout(function(){ mover(320, 37, 1); }, 60); }, 40);
+        break;
+      case "llega":                  // entra al computador
+        mover(344, 37, 0);
+        monitor.classList.add("encendido");
+        break;
+      case "responde":               // la respuesta vuelve al solicitante
+        sobre.classList.remove("viaja");
+        sobre.style.transform = "translate(330px,37px)";
+        sobre.classList.add("vuelve");
+        setTimeout(function(){ mover(322, 37, 1); setTimeout(function(){ mover(74, 37, 1); }, 60); }, 40);
+        break;
+      case "cierra":                 // queda resuelto
+        mover(52, 37, 0);
+        persona.classList.add("encendido");
+        visto.classList.add("marcado");
+        break;
+    }
+  }
 
   var linea = 0, letra = 0, temporizador = null;
 
@@ -4224,9 +4321,9 @@ revisarSesion();
     if(linea >= GUION.length){
       // Se sostiene un momento y vuelve a empezar
       temporizador = setTimeout(function(){
-        caja.classList.add("cons-apaga");
+        caja.parentNode.classList.add("cons-apaga");
         temporizador = setTimeout(function(){
-          caja.innerHTML = ""; caja.classList.remove("cons-apaga");
+          caja.innerHTML = ""; caja.parentNode.classList.remove("cons-apaga");
           linea = 0; letra = 0; escribir();
         }, 900);
       }, 4200);
@@ -4234,6 +4331,18 @@ revisarSesion();
     }
 
     var paso = GUION[linea];
+    if(paso.e) escena(paso.e);
+
+    if(suave){
+      // La línea entera, con un fundido suave
+      var nodo = nuevaLinea(paso);
+      nodo.textContent = paso.x;
+      nodo.parentNode.classList.add("cons-aparece");
+      linea++;
+      temporizador = setTimeout(escribir, 900);
+      return;
+    }
+
     if(letra === 0) paso.nodo = nuevaLinea(paso);
     paso.nodo.textContent = paso.x.slice(0, ++letra);
 
@@ -4247,16 +4356,11 @@ revisarSesion();
 
   function detener(){ clearTimeout(temporizador); temporizador = null; }
 
-  if(quieto){
-    // Sin movimiento: el recorrido completo, escrito de una vez
-    GUION.forEach(function(p){ nuevaLinea(p).textContent = p.x; });
-  } else {
-    escribir();
-  }
+  escribir();
 
   document.addEventListener("visibilitychange", function(){
     if(document.hidden) detener();
-    else if(!temporizador && !quieto){ caja.innerHTML = ""; linea = 0; letra = 0; escribir(); }
+    else if(!temporizador){ caja.innerHTML = ""; linea = 0; letra = 0; escribir(); }
   });
 })();
 
