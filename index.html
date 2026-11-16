@@ -12,7 +12,7 @@
   --ink:#14212E; --ink-2:#4B5D6B; --ink-3:#7D8D99;
   --surface:#FFFFFF; --canvas:#E9EDF0; --field:#F3F6F8;
   --line:#CBD5DC; --line-soft:#E2E8EC;
-  --accent:#0F5F7A; --accent-ink:#0A4A5F;
+  --accent:#3852EF; --accent-ink:#2A3FC4;
   --urgent:#AE2C1F; --warm:#A9690B; --done:#186A45;
   --n2:#5B3E8C;
   --radius:5px;
@@ -32,12 +32,12 @@ button{cursor:pointer}
 #acceso{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px;
   position:relative;overflow:hidden;
   background:
-    radial-gradient(1500px 1000px at 6% 102%, rgba(0,99,175,.92) 0%, rgba(0,99,175,0) 72%),
-    radial-gradient(1100px 760px at 98% 106%, rgba(231,44,53,.72) 0%, rgba(231,44,53,0) 62%),
-    linear-gradient(180deg, #050B16 0%, #071527 38%, #0A2340 70%, #0C2C4E 100%)}
-/* Franja tricolor sutil al pie, como el pie del logo */
+    radial-gradient(1500px 1000px at 6% 102%, rgba(56,82,239,.85) 0%, rgba(56,82,239,0) 72%),
+    radial-gradient(1100px 760px at 98% 106%, rgba(125,178,247,.55) 0%, rgba(125,178,247,0) 62%),
+    linear-gradient(180deg, #070A22 0%, #0D1238 38%, #161B52 70%, #1E2466 100%)}
+/* Franja al pie con los azules de la paleta institucional */
 #acceso::after{content:"";position:absolute;left:0;right:0;bottom:0;height:4px;
-  background:linear-gradient(90deg, #0063AF 0%, #0063AF 44%, #E72C35 44%, #E72C35 100%)}
+  background:linear-gradient(90deg, #3852EF 0%, #3852EF 44%, #7DB2F7 44%, #7DB2F7 78%, #A6D1FA 78%, #A6D1FA 100%)}
 .acceso-card{background:var(--surface);border:1px solid rgba(255,255,255,.22);
   border-radius:8px;padding:34px 32px;width:min(420px,100%);text-align:center;
   position:relative;z-index:1;box-shadow:0 18px 50px rgba(3,24,44,.38)}
@@ -121,7 +121,7 @@ button{cursor:pointer}
 .acceso-card .logo{width:296px;max-width:100%;height:auto;display:block;margin:0 auto 22px}
 
 /* ---- Encabezado ---- */
-header{background:var(--ink);color:#fff;padding:0 18px;display:flex;align-items:center;
+header{background:#242147;color:#fff;padding:0 18px;display:flex;align-items:center;
   gap:16px;height:66px;position:sticky;top:0;z-index:40}
 header .logo{width:164px;height:auto;flex:none}
 header h1{font-size:15px;font-weight:600;margin:0;white-space:nowrap}
@@ -3994,7 +3994,7 @@ revisarSesion();
   if(!lienzo || !lienzo.getContext) return;
   var ctx = lienzo.getContext("2d");
 
-  var CLARO = "198,226,246", AZUL = "96,172,226", ROJO = "231,86,94", ORO = "255,236,205";
+  var CLARO = "198,226,246", AZUL = "96,172,226", ROJO = "125,178,247", ORO = "214,230,255";
   var ancho = 0, alto = 0, DIST = 165;
   var estrellas = [], nodos = [], pulsos = [], meteoros = [];
   var animacion = null, inicio = 0;
