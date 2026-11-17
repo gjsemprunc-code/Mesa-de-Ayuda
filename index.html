@@ -42,15 +42,16 @@ button{cursor:pointer}
 /* El cielo austral se dibuja detrás de la tarjeta */
 #fondo-red{position:absolute;inset:0;width:100%;height:100%;display:block;z-index:0}
 .gwrap{position:relative;z-index:2;min-height:100vh;display:flex;align-items:center;justify-content:center;gap:56px;padding:40px 24px;flex-wrap:wrap}
-.gbrand{max-width:440px}
+.gbrand{max-width:420px}
 .glogo{margin-bottom:26px}
-.glogo img{width:320px;max-width:100%;height:auto;filter:drop-shadow(0 2px 8px rgba(0,0,0,.3))}
+.glogo img{width:auto;max-width:100%;height:auto;filter:drop-shadow(0 2px 8px rgba(0,0,0,.3))}
 #acceso .gbrand h1{font-size:34px;line-height:1.15;color:#fff;margin:0 0 12px;letter-spacing:-.01em;font-weight:600}
 #acceso .gbrand p{color:#a9bfdc;font-size:15px;line-height:1.55;margin:0 0 26px}
 .gbtn{display:inline-flex;align-items:center;gap:10px;background:#fff;color:#1d2433;border:none;border-radius:10px;padding:12px 20px;font-weight:600;font-size:15px;cursor:pointer;box-shadow:0 6px 20px rgba(0,0,0,.25)}
 .gbtn:hover{transform:translateY(-1px)}
 .gbtn svg{width:20px;height:20px;flex:none}
 .gnote{margin-top:16px;font-size:12.5px;color:#7f9cc4;max-width:420px}
+@media(max-width:900px){#acceso .gbrand h1{font-size:27px}.gwrap{gap:30px}}
 .acceso-card{z-index:2}
 /* Velo suave al centro: la tarjeta se lee sin competir con el cielo */
 #acceso::before{content:"";position:absolute;inset:0;z-index:1;pointer-events:none;
